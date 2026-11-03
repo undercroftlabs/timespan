@@ -83,8 +83,15 @@ export class Timespan {
 
     const timeframe: TimeFrame = createTimeframe();
 
+    // Clone the pattern per call. The shared constant is global, so a throw
+    // mid-parse would otherwise leave lastIndex advanced for the next call.
+    const pattern = new RegExp(
+      Constants.InputRegexPattern.source,
+      Constants.InputRegexPattern.flags,
+    );
+
     // Start matching the regex.
-    let match = Constants.InputRegexPattern.exec(input);
+    let match = pattern.exec(input);
 
     // Check to see if we don't have a match.
     if (!match) {
@@ -100,7 +107,7 @@ export class Timespan {
       timeframe[plural] = value;
 
       // Match the next and run the loop again.
-      match = Constants.InputRegexPattern.exec(input);
+      match = pattern.exec(input);
     }
 
     // Set the end date to however many milliseconds we have calculated.

@@ -294,8 +294,26 @@ describe('Timespan', () => {
 
     it('should throw an error for invalid unit', () => {
       expect(() => Timespan.fromString('5 unknownUnit')).toThrowError(
-        'Invalid unit',
+        'Invalid date unit: unknownUnit.',
       );
+    });
+
+    it('should throw an error when the input has no unit', () => {
+      expect(() => Timespan.fromString('5')).toThrowError('Invalid unit');
+    });
+
+    it('should parse a valid string again after a parse throws', () => {
+      const startDate = new Date(Date.UTC(2020, 0, 1));
+      const first = Timespan.fromString('1h', startDate);
+
+      expect(first.toString()).toBe('1h');
+      expect(() => Timespan.fromString('1h 2x', startDate)).toThrow(
+        'Invalid date unit: x.',
+      );
+
+      const third = Timespan.fromString('1h', startDate);
+      expect(third.toString()).toBe('1h');
+      expect(third.toMilliseconds()).toBe(first.toMilliseconds());
     });
 
     it('should throw an error for input exceeding mac length', () => {
@@ -329,13 +347,13 @@ describe('Timespan', () => {
 
     it('should throw an error for input that contains invalid character "Hello\\tWorld"', () => {
       expect(() => Timespan.fromString('Hello\tWorld')).toThrowError(
-        'Invalid date unit: World',
+        'Invalid date unit: Hello',
       );
     });
 
     it('should throw an error for input that contains invalid character "Hello\\nWorld"', () => {
       expect(() => Timespan.fromString('Hello\nWorld')).toThrowError(
-        'Invalid unit',
+        'Invalid date unit: Hello',
       );
     });
   });
