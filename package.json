@@ -1,7 +1,7 @@
 {
   "name": "@undercroft/timespan",
   "version": "1.1.0",
-  "description": "",
+  "description": "Zero-dependency TypeScript library for parsing duration strings and calculating intervals between dates.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "publishConfig": {
@@ -12,10 +12,10 @@
   ],
   "author": "Michael Goodwin <mikejg101@icloud.com>",
   "license": "MIT",
-  "homepage": "https://github.com/mikejg101/timespan",
+  "homepage": "https://github.com/undercroftlabs/timespan",
   "repository": {
     "type": "git",
-    "url": "git@github.com:mikejg101/timespan.git"
+    "url": "git@github.com:undercroftlabs/timespan.git"
   },
   "keywords": [
     "timespan",
@@ -41,7 +41,7 @@
     "undercroft"
   ],
   "bugs": {
-    "url": "https://github.com/mikejg101/timespan/issues"
+    "url": "https://github.com/undercroftlabs/timespan/issues"
   },
   "jest-junit": {
     "outputDirectory": "./reports",
