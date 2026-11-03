@@ -19,14 +19,51 @@ describe('Timespan', () => {
   describe('start', () => {
     it('should return the start date', () => {
       const timespan = new Timespan(start, end);
-      expect(timespan.start).toBe(start);
+      expect(timespan.start.toISOString()).toBe(start.toISOString());
     });
   });
 
   describe('end', () => {
     it('should return the end date', () => {
       const timespan = new Timespan(start, end);
-      expect(timespan.end).toBe(end);
+      expect(timespan.end.toISOString()).toBe(end.toISOString());
+    });
+  });
+
+  describe('immutability', () => {
+    it('should ignore mutations of the dates passed to the constructor', () => {
+      const startDate = new Date('2023-01-15T00:00:00.000Z');
+      const endDate = new Date('2023-02-15T00:00:00.000Z');
+      const timespan = new Timespan(startDate, endDate);
+
+      startDate.setUTCFullYear(1999);
+      endDate.setUTCFullYear(1999);
+
+      expect(timespan.start.toISOString()).toBe('2023-01-15T00:00:00.000Z');
+      expect(timespan.end.toISOString()).toBe('2023-02-15T00:00:00.000Z');
+    });
+
+    it('should ignore mutations of the date returned by start', () => {
+      const timespan = new Timespan(start, end);
+      timespan.start.setUTCFullYear(1999);
+      expect(timespan.start.toISOString()).toBe(start.toISOString());
+    });
+
+    it('should ignore mutations of the date returned by end', () => {
+      const timespan = new Timespan(start, end);
+      timespan.end.setUTCFullYear(1999);
+      expect(timespan.end.toISOString()).toBe(end.toISOString());
+    });
+
+    it('should ignore mutations of the timeframe returned by toTimeframe', () => {
+      const timespan = new Timespan(start, end);
+      const timeframe = timespan.toTimeframe();
+      timeframe.years = 99;
+      timeframe.months = 99;
+
+      expect(timespan.toTimeframe().years).toBe(1);
+      expect(timespan.toTimeframe().months).toBe(1);
+      expect(timespan.toString()).toBe('1y 1M 2w 6d 4h 28m');
     });
   });
 

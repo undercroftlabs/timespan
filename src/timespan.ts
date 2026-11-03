@@ -43,9 +43,9 @@ export class Timespan {
     Assertions.assertValidDate(start);
     Assertions.assertValidDate(end);
     Assertions.assertValidDateRange(start, end);
-    this.startDate = start;
-    this.endDate = end;
-    this.timeFrame = calculateTimeFrame(start, end);
+    this.startDate = new Date(start.getTime());
+    this.endDate = new Date(end.getTime());
+    this.timeFrame = calculateTimeFrame(this.startDate, this.endDate);
     this.stringValue = timeFrameToString(this.timeFrame);
   }
 
@@ -54,7 +54,7 @@ export class Timespan {
    * @returns The start date.
    */
   public get start(): Date {
-    return this.startDate;
+    return new Date(this.startDate.getTime());
   }
 
   /**
@@ -62,7 +62,7 @@ export class Timespan {
    * @returns The end date.
    */
   public get end(): Date {
-    return this.endDate;
+    return new Date(this.endDate.getTime());
   }
 
   /**
@@ -259,7 +259,7 @@ export class Timespan {
    * Convert the timespan to a TimeFrame object.
    * @returns The TimeFrame object representing the timespan.
    */
-  public toTimeframe = (): TimeFrame => this.timeFrame;
+  public toTimeframe = (): TimeFrame => ({ ...this.timeFrame });
 
   /**
    * Convert the timespan to a string representation.
