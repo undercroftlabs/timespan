@@ -46,8 +46,9 @@ jobs:
     container:
       image: ${{ needs.resolve-playwright-image.outputs.image }}
       options: --user root --ipc=host
-    env:
-      HOME: /root
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Record container ready
         run: |
