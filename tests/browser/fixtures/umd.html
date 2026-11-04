@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Timespan UMD fixture</title>
+  </head>
+  <body>
+    <h1>Timespan UMD</h1>
+    <script>
+      window.pageErrors = [];
+      window.bundleReady = false;
+      window.onerror = function (message) {
+        window.pageErrors.push(String(message));
+      };
+      window.addEventListener('unhandledrejection', function (event) {
+        window.pageErrors.push(String(event.reason));
+      });
+    </script>
+    <script src="/dist/index.umd.js"></script>
+    <script>
+      window.bundleReady = typeof window.Timespan === 'function';
+    </script>
+  </body>
+</html>

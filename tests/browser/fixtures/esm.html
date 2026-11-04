@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Timespan ESM fixture</title>
+  </head>
+  <body>
+    <h1>Timespan ESM</h1>
+    <script>
+      window.pageErrors = [];
+      window.bundleReady = false;
+      window.onerror = function (message) {
+        window.pageErrors.push(String(message));
+      };
+      window.addEventListener('unhandledrejection', function (event) {
+        window.pageErrors.push(String(event.reason));
+      });
+    </script>
+    <script type="module">
+      import TimespanDefault, { Timespan } from '/dist/index.mjs';
+
+      window.Timespan = Timespan;
+      window.TimespanDefault = TimespanDefault;
+      window.bundleReady = typeof Timespan === 'function';
+    </script>
+  </body>
+</html>

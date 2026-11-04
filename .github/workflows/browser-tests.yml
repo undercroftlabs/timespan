@@ -1,0 +1,105 @@
+name: Browser Tests
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+  pull_request:
+    branches:
+      - main
+      - 'release/**'
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  resolve-playwright-image:
+    name: Resolve Playwright image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+      version: ${{ steps.image.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read Playwright image from the lockfile
+        id: image
+        run: |
+          set -euo pipefail
+          IMAGE="$(node tools/playwright-image.cjs)"
+          VERSION="$(node tools/playwright-image.cjs --version)"
+          echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Playwright image ${IMAGE}"
+
+  browser-tests:
+    name: browser-tests
+    needs: resolve-playwright-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: ${{ needs.resolve-playwright-image.outputs.image }}
+      options: --user root --ipc=host
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Record container ready
+        run: |
+          date -u +'container_ready=%Y-%m-%dT%H:%M:%SZ'
+          node --version
+          echo "Playwright image ${{ needs.resolve-playwright-image.outputs.image }}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Resolve latest supported Node LTS
+        id: node
+        run: node tools/supported-node-versions.cjs --github-output
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.node.outputs.latest }}.x
+          cache: npm
+
+      - name: Install npm dependencies
+        run: |
+          set -euo pipefail
+          date -u +'npm_ci_start=%Y-%m-%dT%H:%M:%SZ'
+          npm ci
+          date -u +'npm_ci_end=%Y-%m-%dT%H:%M:%SZ'
+          INSTALLED="$(node -p "require('./node_modules/@playwright/test/package.json').version")"
+          EXPECTED="${{ needs.resolve-playwright-image.outputs.version }}"
+          if [ "$INSTALLED" != "$EXPECTED" ]; then
+            echo "Playwright package ${INSTALLED} does not match image version ${EXPECTED}."
+            exit 1
+          fi
+
+      - name: Run browser distribution tests
+        env:
+          # Firefox refuses to launch as root when HOME is GitHub's
+          # /github/home (owned by pwuser). See Playwright's container docs.
+          HOME: /root
+        run: |
+          set -euo pipefail
+          date -u +'browser_tests_start=%Y-%m-%dT%H:%M:%SZ'
+          npm run test:browser
+          date -u +'browser_tests_end=%Y-%m-%dT%H:%M:%SZ'
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

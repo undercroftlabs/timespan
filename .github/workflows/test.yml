@@ -10,6 +10,7 @@ on:
     branches:
       - main
       - master
+      - 'release/**'
   pull_request:
     paths-ignore:
       - 'docs/**'
@@ -19,36 +20,47 @@ on:
     branches:
       - main
       - master
+      - 'release/**'
   workflow_dispatch:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'LICENSE'
-      - '.editorconfig'
-    branches:
-      - main
-      - master
+
+permissions:
+  contents: read
 
 jobs:
-  test:
+  resolve-node:
+    name: Resolve Node versions
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.versions.outputs.matrix }}
+      latest: ${{ steps.versions.outputs.latest }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: versions
+        run: node tools/supported-node-versions.cjs --github-output
+
+  unit:
+    name: test (${{ matrix.os }}, ${{ matrix.node }})
+    needs: resolve-node
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
           - windows-latest
-        node: [ 23.x ]
+        node: ${{ fromJSON(needs.resolve-node.outputs.matrix) }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+          cache: npm
 
       - name: Install modules
-        run: npm install
+        run: npm ci
 
       - name: Run tests with coverage and junit
         run: npm run test:ci
@@ -67,3 +79,17 @@ jobs:
           flags: unittests
           name: codecov-junit
           files: ./reports/junit.xml
+
+  test:
+    name: test
+    needs: unit
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm unit matrix succeeded
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.unit.result }}" != "success" ]; then
+            echo "Unit test matrix result: ${{ needs.unit.result }}"
+            exit 1
+          fi

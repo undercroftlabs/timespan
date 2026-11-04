@@ -1,9 +1,7 @@
 // Edge-case and fuzz suite for Timespan.
 //
-// These tests assert INTENDED behaviour. Some currently fail; each failure
-// maps to a finding in AUDIT-1.2.0.md or to a semantics decision marked
-// [SEMANTICS] that needs a maintainer call before fixing. Nothing in this
-// file changes library behaviour — it only documents and exposes it.
+// These tests assert INTENDED behaviour. Nothing in this file changes
+// library behaviour — it only documents and exposes it.
 
 import { Timespan } from '../src';
 

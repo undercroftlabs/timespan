@@ -10,6 +10,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": "^22.0.0 || ^24.0.0 || ^26.0.0"
+  },
   "author": "Michael Goodwin <mikejg101@icloud.com>",
   "license": "MIT",
   "homepage": "https://github.com/undercroftlabs/timespan",
@@ -64,16 +67,24 @@
     "test:cov": "jest --coverage --no-cache --runInBand",
     "test:junit": "cross-env JEST_JUNIT_CLASSNAME={filepath} jest --reporters=jest-junit",
     "test:ci": "cross-env JEST_JUNIT_CLASSNAME={filepath} jest --coverage --no-cache --runInBand --reporters=default --reporters=jest-junit",
+    "test:browser": "npm run build && playwright test",
+    "test:browser:ui": "npm run build && playwright test --ui",
+    "test:browser:headed": "npm run build && playwright test --headed",
+    "test:browser:report": "playwright show-report",
+    "test:browser:docker": "bash tests/browser/run-in-docker.sh",
+    "test:browser:container": "bash tests/browser/run-in-docker.sh",
     "addscope": "ts-node tools/undertools.ts update name @undercroft/timespan",
     "badge:cov": "npx lcov-badge-generator -o ./badges/coverage.svg ./coverage/lcov.info",
     "check": "./.husky/pre-commit",
     "sandbox": "ts-node ./sandbox.ts",
-    "size": "size-limit"
+    "size": "size-limit",
+    "node:versions": "node tools/supported-node-versions.cjs"
   },
   "devDependencies": {
     "@codecov/rollup-plugin": "^2.0.1",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
+    "@playwright/test": "^1.64.1",
     "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^1.0.2",
