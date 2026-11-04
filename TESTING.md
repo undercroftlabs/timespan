@@ -30,26 +30,46 @@ npm ci
 npx playwright install
 ```
 
-On Linux, also install the browser system libraries (Ubuntu/Debian):
+On Ubuntu/Debian, also install browser system libraries:
 
 ```bash
 npx playwright install --with-deps
 ```
 
-Playwright's `--with-deps` installer targets Ubuntu packages. On Fedora/RHEL, install browsers with `npx playwright install` and provide equivalent system libraries yourself, or rely on GitHub Actions (`ubuntu-latest`) for WebKit. Chromium and Firefox often run without extra packages; WebKit typically needs additional ICU, JPEG, and GStreamer libraries.
-
-Run the suite (rebuilds `dist/` and starts a local fixture server):
+Then:
 
 ```bash
 npm run test:browser
-```
-
-Debugging:
-
-```bash
 npm run test:browser:headed
 npm run test:browser:ui
-npm run test:browser:report
 ```
 
+Those commands rebuild `dist/` and start a local fixture server automatically. View the last HTML report with `npm run test:browser:report`.
+
 See `tests/browser/README.md` for fixture details.
+
+### Fedora / WebKit
+
+Playwright does not officially support Fedora. Chromium and Firefox often run after `npx playwright install`. WebKit typically needs Ubuntu packages (`libicu`, JPEG, GStreamer) that `--with-deps` installs with `sudo` on Debian-based systems.
+
+Do not drop WebKit from the project config. GitHub Actions runs all three engines on `ubuntu-latest`.
+
+Optional local workaround using the official Playwright container (Docker must be installed and running):
+
+```bash
+npm run test:browser:docker
+```
+
+Docker is not required. Native `npm run test:browser` remains the default.
+
+## Pull request CI
+
+Pushes and pull requests targeting `main` run:
+
+- Jest on Ubuntu and Windows (`test.yml`)
+- Playwright UMD and ESM tests in Chromium, Firefox, and WebKit (`browser-tests.yml`)
+- Coverage, size-limit, and bundle analysis workflows
+
+## Releases
+
+Version tags (`v*`) run the same browser suite against the tagged commit, then publish with npm Trusted Publishing. See [RELEASE.md](RELEASE.md).

@@ -22,6 +22,7 @@ Starting with version 1.1.0, you can use Timespan directly in the browser via th
 supported.
 
 ## CDNs
+
 - jsDelivr: `https://cdn.jsdelivr.net/npm/@undercroft/timespan/dist/index.umd.js`
 - unpkg: `https://unpkg.com/@undercroft/timespan/dist/index.umd.js`
 - Skypack: `https://cdn.skypack.dev/@undercroft/timespan`
@@ -29,20 +30,23 @@ supported.
 - jspm: `https://jspm.dev/@undercroft/timespan`
 - esm.run: `https://esm.run/@undercroft/timespan`
 
-#  Distribution & Compatibility
+# Distribution & Compatibility
+
 - Small bundle footprint (<4kB brotli-compressed)
 - Works in Node.js, modern browsers, and bundlers
 
 # Test Coverage & CI
+
 - Full unit test coverage with Jest
 - Automatically tested on Ubuntu and Windows
 - Browser distribution tests (UMD and ESM) with Playwright on Chromium, Firefox, and WebKit
 - Bundle size tracked via Size Limit
 - Code coverage reported via Codecov
 
-See [TESTING.md](TESTING.md) for local setup, including Playwright browser install on Linux.
+See [TESTING.md](TESTING.md) for local setup, including Playwright browser install on Linux, and [RELEASE.md](RELEASE.md) for tagged npm Trusted Publishing.
 
 # Breaking Changes (as of 1.1.0)
+
 - Removed internal module access — All usage must go through the public Timespan export
 - Internal validation and type guards added
 - Removed legacy and deprecated utility modules
@@ -71,7 +75,6 @@ import { Timespan } from '@undercroft/timespan';
 Then use it like this.
 
 ```html
-
 <script>
   const span = new window.Timespan(new Date(), new Date());
   console.log(span.toMilliseconds());

@@ -20,14 +20,9 @@ on:
       - main
       - master
   workflow_dispatch:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'LICENSE'
-      - '.editorconfig'
-    branches:
-      - main
-      - master
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -37,18 +32,19 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-        node: [ 23.x ]
+        node: [22.x, 24.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+          cache: npm
 
       - name: Install modules
-        run: npm install
+        run: npm ci
 
       - name: Run tests with coverage and junit
         run: npm run test:ci
