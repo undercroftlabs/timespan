@@ -73,7 +73,7 @@ export class Timespan {
    * @param input - The input string representing the timespan.
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan instance representing the parsed timespan.
-   * @throws Error if the input is invalid or contains an invalid unit.
+   * @throws Error if the input is invalid, contains an invalid unit, or repeats a unit.
    */
   public static fromString = (input: string, startDate?: Date): Timespan => {
     const start = startDate ? startDate : new Date();
@@ -102,6 +102,7 @@ export class Timespan {
     // match can ignore leftover digits ("99999999999ms") or accept a bare
     // unit ("h") and produce a span the caller cannot tell from zero.
     let consumed = '';
+    const seenUnits = new Set<string>();
 
     // Loop over the matches as we make more matches.
     while (match) {
@@ -113,6 +114,10 @@ export class Timespan {
       }
       const value = Number(rawValue);
       const plural = getConverter(unit).plural;
+      if (seenUnits.has(plural)) {
+        throw new Error(`Duplicate date unit: ${unit}.`);
+      }
+      seenUnits.add(plural);
       timeframe[plural] = value;
       consumed += match[0];
 

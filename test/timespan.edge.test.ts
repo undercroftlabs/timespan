@@ -116,7 +116,7 @@ describe('edge: fromString parsing', () => {
   });
 
   it('accepts an input of exactly the maximum length (75 chars)', () => {
-    const input = '1h '.repeat(25); // 75 chars
+    const input = `1h${' '.repeat(73)}`;
     expect(input.length).toBe(75);
     expect(() => Timespan.fromString(input, START)).not.toThrow();
   });
@@ -144,10 +144,16 @@ describe('edge: fromString parsing', () => {
     expect(() => Timespan.fromString('h', START)).toThrow();
   });
 
-  // [SEMANTICS] Repeated units: summing is the least surprising behaviour.
-  it('[SEMANTICS] sums repeated units instead of keeping the last one', () => {
-    expect(Timespan.fromString('1h 2h', START).toHours()).toBe(3);
-    expect(Timespan.fromString('30m 30m', START).toMinutes()).toBe(60);
+  it('throws when a unit is repeated', () => {
+    expect(() => Timespan.fromString('1h 2h', START)).toThrow(
+      'Duplicate date unit: h.',
+    );
+    expect(() => Timespan.fromString('30m 30m', START)).toThrow(
+      'Duplicate date unit: m.',
+    );
+    expect(() => Timespan.fromString('1h 30m 2hours', START)).toThrow(
+      'Duplicate date unit: hours.',
+    );
   });
 
   // [SEMANTICS] Fractional values are currently rejected by the
