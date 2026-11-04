@@ -72,15 +72,21 @@ export class MonthConverter extends DateUnitConverter {
    * @throws Error if the input date is invalid or if the number of months is negative.
    */
   public add(months: number, startDate: Date): Date {
-    const newDate = new Date(startDate);
+    const newDate = new Date(startDate.getTime());
+    const originalDay = newDate.getUTCDate();
     const originalHours = newDate.getUTCHours();
     const originalMinutes = newDate.getUTCMinutes();
     const originalSeconds = newDate.getUTCSeconds();
     const originalMilliseconds = newDate.getUTCMilliseconds();
-    // Set UTC time components to zero
-    newDate.setUTCHours(0, 0, 0, 0);
+
+    // Move to the first of the month first so setUTCMonth cannot overflow
+    // into a later month (Jan 31 + 1 month would otherwise become Mar 3).
+    newDate.setUTCDate(1);
     newDate.setUTCMonth(newDate.getUTCMonth() + months);
-    // Restore original UTC time components
+    const lastDayOfMonth = new Date(
+      Date.UTC(newDate.getUTCFullYear(), newDate.getUTCMonth() + 1, 0),
+    ).getUTCDate();
+    newDate.setUTCDate(Math.min(originalDay, lastDayOfMonth));
     newDate.setUTCHours(
       originalHours,
       originalMinutes,

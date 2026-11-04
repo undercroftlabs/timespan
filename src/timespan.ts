@@ -124,21 +124,34 @@ export class Timespan {
       throw new Error('Invalid input string');
     }
 
-    // Set the end date to however many milliseconds we have calculated.
-    const endDate = new Date(start);
-
-    endDate.setUTCFullYear(endDate.getUTCFullYear() + timeframe.years);
-    endDate.setUTCMonth(endDate.getUTCMonth() + timeframe.months);
-    endDate.setUTCDate(
-      endDate.getUTCDate() + timeframe.weeks * Constants.DaysPerWeek,
-    );
-    endDate.setUTCDate(endDate.getUTCDate() + timeframe.days);
-    endDate.setUTCHours(endDate.getUTCHours() + timeframe.hours);
-    endDate.setUTCMinutes(endDate.getUTCMinutes() + timeframe.minutes);
-    endDate.setUTCSeconds(endDate.getUTCSeconds() + timeframe.seconds);
-    endDate.setUTCMilliseconds(
-      endDate.getUTCMilliseconds() + timeframe.milliseconds,
-    );
+    // Apply units through the converters so year/month addition clamps the
+    // same way as fromYears / fromMonths instead of overflowing via Date setters.
+    const units: Array<
+      | 'years'
+      | 'months'
+      | 'weeks'
+      | 'days'
+      | 'hours'
+      | 'minutes'
+      | 'seconds'
+      | 'milliseconds'
+    > = [
+      'years',
+      'months',
+      'weeks',
+      'days',
+      'hours',
+      'minutes',
+      'seconds',
+      'milliseconds',
+    ];
+    let endDate = new Date(start);
+    for (const unit of units) {
+      const amount = timeframe[unit];
+      if (amount !== 0) {
+        endDate = getConverter(unit).add(amount, endDate);
+      }
+    }
 
     // Return the new timespan to the consumer. Since the timespan does all
     // timeframe and string calculations on initialization, our job here is done.
