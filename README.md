@@ -161,83 +161,33 @@ conversion methods.
 
 # More Examples of Creating TimeSpans
 
-You can create a Timespan object using the static methods provided by the class. Here are the available methods:
-
-Timespan.fromMilliseconds(milliseconds: number, startDate?: Date): Timespan
-Creates a Timespan object from a specified number of milliseconds.
+You can create a Timespan object using the static factory methods on the class. Each factory takes an amount and an
+optional start date (the current date is used when omitted).
 
 ```js
 import { Timespan } from '@undercroft/timespan';
 
-const timespan = Timespan.fromMilliseconds(5000);
-Timespan.fromSeconds(seconds, startDate);
+Timespan.fromMilliseconds(5000);
+Timespan.fromSeconds(120);
+Timespan.fromMinutes(60);
+Timespan.fromHours(24);
+Timespan.fromDays(7);
+Timespan.fromWeeks(4);
+Timespan.fromMonths(6);
+Timespan.fromYears(2);
+Timespan.fromUnits(90, 'minutes');
 ```
 
-Creates a Timespan object from a specified number of seconds.
+`fromString` accepts integer unit values only (for example `3d 5h 30m`). Repeated units and fractional values such as
+`1.5h` throw; use a factory like `fromHours` for fractions of fixed-length units.
 
-```js
-import { Timespan } from '@undercroft/timespan';
+# Comparing Timespans
 
-const timespan = Timespan.fromSeconds(120);
-Timespan.fromMinutes(minutes, startDate);
-```
+Use `equals` and `compareTo` to compare timespans. There are no `add` or `subtract` methods.
 
-Creates a Timespan object from a specified number of minutes.
-
-```js
-import { Timespan } from '@undercroft/timespan';
-
-const timespan = Timespan.fromMinutes(60);
-Timespan.fromHours(hours, startDate);
-```
-
-Creates a Timespan object from a specified number of hours.
-
-```js
-import { Timespan } from '@undercroft/timespan';
-
-const timespan = Timespan.fromHours(24);
-Timespan.fromDays(days, startDate);
-```
-
-Creates a Timespan object from a specified number of days.
-
-```js
-import { Timespan } from '@undercroft/timespan';
-
-const timespan = Timespan.fromDays(7);
-Timespan.fromWeeks(weeks, startDate);
-```
-
-Creates a Timespan object from a specified number of weeks.
-
-```js
-import { Timespan } from '@undercroft/timespan';
-
-const timespan = Timespan.fromWeeks(4);
-Timespan.fromMonths(months, startDate);
-```
-
-Creates a Timespan object from a specified number of months.
-
-```js
-import { Timespan } from '@undercroft/timespan';
-
-const timespan = Timespan.fromMonths(6);
-Timespan.fromYears(years, startDate);
-```
-
-Creates a Timespan object from a specified number of years.
-
-```js
-import { Timespan } from '@undercroft/timespan';
-
-const timespan = Timespan.fromYears(2);
-```
-
-Performing Calculations and Comparisons
-Once you have a Timespan object, you can perform various calculations and comparisons using the provided methods. Here
-are some examples:
+`equals` defaults to comparing total duration. Pass `'range'` to compare start and end instants instead.
+`compareTo` orders by duration and returns `-1`, `0`, or `1`. Static wrappers `Timespan.equals` and `Timespan.compareTo`
+call the same logic.
 
 ```js
 import { Timespan } from '@undercroft/timespan';
@@ -245,13 +195,16 @@ import { Timespan } from '@undercroft/timespan';
 const timespan1 = Timespan.fromHours(12);
 const timespan2 = Timespan.fromDays(2);
 
-const addedTimespan = timespan1.add(timespan2);
-const subtractedTimespan = timespan2.subtract(timespan1);
 const areEqual = timespan1.equals(timespan2);
+const sameDuration = Timespan.fromHours(24).equals(Timespan.fromDays(1));
+const sameRange = timespan1.equals(timespan2, 'range');
 const comparisonResult = timespan1.compareTo(timespan2);
+
+Timespan.equals(timespan1, timespan2);
+Timespan.compareTo(timespan1, timespan2);
 ```
 
-Please refer to the API documentation, or the source code for more details on the available methods and their usage.
+Please refer to the source code for more details on the available methods and their usage.
 
 ## Contributing
 
