@@ -64,11 +64,13 @@ Docker is not required. Native `npm run test:browser` remains the default.
 
 ## Pull request CI
 
-Pushes and pull requests targeting `main` run:
+Pushes and pull requests targeting `main` or `release/**` run:
 
 - Jest on Ubuntu and Windows (`test.yml`)
 - Playwright UMD and ESM tests in Chromium, Firefox, and WebKit (`browser-tests.yml`)
 - Coverage, size-limit, and bundle analysis workflows
+
+Jest runs on Node.js LTS (`22.x` and `24.x`). Required GitHub status checks must use those job names (`test (ubuntu-latest, 24.x)`, and so on). A required check for a Node version the workflow no longer runs will sit on pending forever.
 
 ## Releases
 
