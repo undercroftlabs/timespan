@@ -47,14 +47,18 @@ export class MonthConverter extends DateUnitConverter {
   public between(startDate: Date, endDate: Date): number {
     const startYear = startDate.getUTCFullYear();
     const startMonth = startDate.getUTCMonth();
-    const startDay = startDate.getUTCDate();
     const endYear = endDate.getUTCFullYear();
     const endMonth = endDate.getUTCMonth();
-    const endDay = endDate.getUTCDate();
 
     let months =
       (endYear - startYear) * Constants.MonthsPerYear + (endMonth - startMonth);
-    if (endDay < startDay) {
+    // Day-of-month comparison ignores time, so Jan 15 12:00 to Feb 15 11:00
+    // would count as a full month. A month has elapsed only once add()
+    // would land on or before the end.
+    if (
+      months > 0 &&
+      this.add(months, startDate).getTime() > endDate.getTime()
+    ) {
       months--;
     }
     return Math.floor(months);
