@@ -43,9 +43,9 @@ export class Timespan {
     Assertions.assertValidDate(start);
     Assertions.assertValidDate(end);
     Assertions.assertValidDateRange(start, end);
-    this.startDate = start;
-    this.endDate = end;
-    this.timeFrame = calculateTimeFrame(start, end);
+    this.startDate = new Date(start.getTime());
+    this.endDate = new Date(end.getTime());
+    this.timeFrame = calculateTimeFrame(this.startDate, this.endDate);
     this.stringValue = timeFrameToString(this.timeFrame);
   }
 
@@ -54,7 +54,7 @@ export class Timespan {
    * @returns The start date.
    */
   public get start(): Date {
-    return this.startDate;
+    return new Date(this.startDate.getTime());
   }
 
   /**
@@ -62,7 +62,7 @@ export class Timespan {
    * @returns The end date.
    */
   public get end(): Date {
-    return this.endDate;
+    return new Date(this.endDate.getTime());
   }
 
   /**
@@ -83,8 +83,15 @@ export class Timespan {
 
     const timeframe: TimeFrame = createTimeframe();
 
+    // Clone the pattern per call. The shared constant is global, so a throw
+    // mid-parse would otherwise leave lastIndex advanced for the next call.
+    const pattern = new RegExp(
+      Constants.InputRegexPattern.source,
+      Constants.InputRegexPattern.flags,
+    );
+
     // Start matching the regex.
-    let match = Constants.InputRegexPattern.exec(input);
+    let match = pattern.exec(input);
 
     // Check to see if we don't have a match.
     if (!match) {
@@ -100,7 +107,7 @@ export class Timespan {
       timeframe[plural] = value;
 
       // Match the next and run the loop again.
-      match = Constants.InputRegexPattern.exec(input);
+      match = pattern.exec(input);
     }
 
     // Set the end date to however many milliseconds we have calculated.
@@ -252,7 +259,7 @@ export class Timespan {
    * Convert the timespan to a TimeFrame object.
    * @returns The TimeFrame object representing the timespan.
    */
-  public toTimeframe = (): TimeFrame => this.timeFrame;
+  public toTimeframe = (): TimeFrame => ({ ...this.timeFrame });
 
   /**
    * Convert the timespan to a string representation.

@@ -19,14 +19,51 @@ describe('Timespan', () => {
   describe('start', () => {
     it('should return the start date', () => {
       const timespan = new Timespan(start, end);
-      expect(timespan.start).toBe(start);
+      expect(timespan.start.toISOString()).toBe(start.toISOString());
     });
   });
 
   describe('end', () => {
     it('should return the end date', () => {
       const timespan = new Timespan(start, end);
-      expect(timespan.end).toBe(end);
+      expect(timespan.end.toISOString()).toBe(end.toISOString());
+    });
+  });
+
+  describe('immutability', () => {
+    it('should ignore mutations of the dates passed to the constructor', () => {
+      const startDate = new Date('2023-01-15T00:00:00.000Z');
+      const endDate = new Date('2023-02-15T00:00:00.000Z');
+      const timespan = new Timespan(startDate, endDate);
+
+      startDate.setUTCFullYear(1999);
+      endDate.setUTCFullYear(1999);
+
+      expect(timespan.start.toISOString()).toBe('2023-01-15T00:00:00.000Z');
+      expect(timespan.end.toISOString()).toBe('2023-02-15T00:00:00.000Z');
+    });
+
+    it('should ignore mutations of the date returned by start', () => {
+      const timespan = new Timespan(start, end);
+      timespan.start.setUTCFullYear(1999);
+      expect(timespan.start.toISOString()).toBe(start.toISOString());
+    });
+
+    it('should ignore mutations of the date returned by end', () => {
+      const timespan = new Timespan(start, end);
+      timespan.end.setUTCFullYear(1999);
+      expect(timespan.end.toISOString()).toBe(end.toISOString());
+    });
+
+    it('should ignore mutations of the timeframe returned by toTimeframe', () => {
+      const timespan = new Timespan(start, end);
+      const timeframe = timespan.toTimeframe();
+      timeframe.years = 99;
+      timeframe.months = 99;
+
+      expect(timespan.toTimeframe().years).toBe(1);
+      expect(timespan.toTimeframe().months).toBe(1);
+      expect(timespan.toString()).toBe('1y 1M 2w 6d 4h 28m');
     });
   });
 
@@ -294,8 +331,26 @@ describe('Timespan', () => {
 
     it('should throw an error for invalid unit', () => {
       expect(() => Timespan.fromString('5 unknownUnit')).toThrowError(
-        'Invalid unit',
+        'Invalid date unit: unknownUnit.',
       );
+    });
+
+    it('should throw an error when the input has no unit', () => {
+      expect(() => Timespan.fromString('5')).toThrowError('Invalid unit');
+    });
+
+    it('should parse a valid string again after a parse throws', () => {
+      const startDate = new Date(Date.UTC(2020, 0, 1));
+      const first = Timespan.fromString('1h', startDate);
+
+      expect(first.toString()).toBe('1h');
+      expect(() => Timespan.fromString('1h 2x', startDate)).toThrow(
+        'Invalid date unit: x.',
+      );
+
+      const third = Timespan.fromString('1h', startDate);
+      expect(third.toString()).toBe('1h');
+      expect(third.toMilliseconds()).toBe(first.toMilliseconds());
     });
 
     it('should throw an error for input exceeding mac length', () => {
@@ -329,13 +384,13 @@ describe('Timespan', () => {
 
     it('should throw an error for input that contains invalid character "Hello\\tWorld"', () => {
       expect(() => Timespan.fromString('Hello\tWorld')).toThrowError(
-        'Invalid date unit: World',
+        'Invalid date unit: Hello',
       );
     });
 
     it('should throw an error for input that contains invalid character "Hello\\nWorld"', () => {
       expect(() => Timespan.fromString('Hello\nWorld')).toThrowError(
-        'Invalid unit',
+        'Invalid date unit: Hello',
       );
     });
   });
