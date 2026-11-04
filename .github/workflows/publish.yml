@@ -4,11 +4,14 @@ on:
     tags:
       - 'v*'
 jobs:
+  browser-tests:
+    uses: ./.github/workflows/browser-tests.yml
   release:
+    needs: browser-tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -20,11 +23,12 @@ jobs:
           draft: false
           prerelease: false
   publish:
+    needs: [browser-tests, release]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'

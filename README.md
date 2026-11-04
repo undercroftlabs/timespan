@@ -36,8 +36,11 @@ supported.
 # Test Coverage & CI
 - Full unit test coverage with Jest
 - Automatically tested on Ubuntu and Windows
+- Browser distribution tests (UMD and ESM) with Playwright on Chromium, Firefox, and WebKit
 - Bundle size tracked via Size Limit
 - Code coverage reported via Codecov
+
+See [TESTING.md](TESTING.md) for local setup, including Playwright browser install on Linux.
 
 # Breaking Changes (as of 1.1.0)
 - Removed internal module access — All usage must go through the public Timespan export
