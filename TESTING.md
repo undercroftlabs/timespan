@@ -52,17 +52,31 @@ See `tests/browser/README.md` for fixture details.
 
 Playwright does not officially support Fedora. Chromium and Firefox often run after `npx playwright install`. WebKit typically needs Ubuntu packages (`libicu`, JPEG, GStreamer) that `--with-deps` installs with `sudo` on Debian-based systems.
 
-Do not drop WebKit from the project config. GitHub Actions runs Chromium, Firefox, and WebKit in the official Playwright Docker image (`mcr.microsoft.com/playwright:v<lockfile-version>-noble`). The image already includes the browsers and OS libraries, so CI does not run `npx playwright install --with-deps`. GitHub-hosted runners may still pull that image on each job.
+Do not drop WebKit from the project config. GitHub Actions runs Chromium, Firefox, and WebKit in the official Playwright image (`mcr.microsoft.com/playwright:v<lockfile-version>-noble`). The image already includes the browsers and OS libraries, so CI does not run `npx playwright install --with-deps`. GitHub-hosted runners may still pull that image on each job.
 
 The image tag is derived from `package-lock.json` (`node tools/playwright-image.cjs`), not `latest`.
 
-Optional local workaround using the same container (Docker must be installed and running):
+### Containerized local run (Podman or Docker)
+
+On Fedora, install Podman and run the same official image. That avoids installing Ubuntu WebKit packages on the host:
 
 ```bash
+sudo dnf install podman
 npm run test:browser:docker
 ```
 
-Docker is not required for Chromium/Firefox on Fedora. Native `npm run test:browser` remains the default.
+The script prefers Podman on Linux when both engines are installed. Override with `CONTAINER_ENGINE`:
+
+```bash
+CONTAINER_ENGINE=podman npm run test:browser:docker
+CONTAINER_ENGINE=docker npm run test:browser:docker
+```
+
+`npm run test:browser:container` is an alias for the same command. The container copies the repo into a writable workspace, runs `npm ci` and `npm run build` there (host `node_modules` is not mounted), then runs Chromium, Firefox, and WebKit. HTML output lands in `playwright-report/` (`npm run test:browser:report`). Local engines cache the image after the first pull; CI does not.
+
+If a bind mount fails with a SELinux denial on Fedora, the runner already adds `:Z` for Podman. Do not run the container as privileged or with `sudo`. If reports are missing, check that `playwright-report/` and `test-results/` are writable by your user.
+
+Native `npm run test:browser` remains the default for Chromium/Firefox on Fedora. Docker/Podman is optional.
 
 To compare CI time before and after the container change, open the Browser Tests workflow run and compare total job duration plus the old “Install Playwright browsers” step against the new job (image pull + `npm ci` + `npm run test:browser`). Do not assume the image is cached between runs.
 
