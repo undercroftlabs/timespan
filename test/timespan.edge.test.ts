@@ -156,11 +156,13 @@ describe('edge: fromString parsing', () => {
     );
   });
 
-  // [SEMANTICS] Fractional values are currently rejected by the
-  // allowed-characters check before parsing even starts.
-  it('[SEMANTICS] supports fractional values', () => {
-    expect(Timespan.fromString('1.5h', START).toMinutes()).toBe(90);
-    expect(Timespan.fromString('0.5d', START).toHours()).toBe(12);
+  it('rejects fractional values in strings', () => {
+    expect(() => Timespan.fromString('1.5h', START)).toThrow(
+      'Invalid input string',
+    );
+    expect(() => Timespan.fromString('0.5d', START)).toThrow(
+      'Invalid input string',
+    );
   });
 
   it('produces a zero span for an all-zero input', () => {

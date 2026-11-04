@@ -73,7 +73,7 @@ export class Timespan {
    * @param input - The input string representing the timespan.
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan instance representing the parsed timespan.
-   * @throws Error if the input is invalid, contains an invalid unit, or repeats a unit.
+   * @throws Error if the input is invalid, contains an invalid unit, repeats a unit, or uses a fractional value. Use the unit factories (for example fromHours) for fractions of fixed-length units.
    */
   public static fromString = (input: string, startDate?: Date): Timespan => {
     const start = startDate ? startDate : new Date();
