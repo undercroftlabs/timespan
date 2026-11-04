@@ -83,6 +83,10 @@ jobs:
           fi
 
       - name: Run browser distribution tests
+        env:
+          # Firefox refuses to launch as root when HOME is GitHub's
+          # /github/home (owned by pwuser). See Playwright's container docs.
+          HOME: /root
         run: |
           set -euo pipefail
           date -u +'browser_tests_start=%Y-%m-%dT%H:%M:%SZ'
