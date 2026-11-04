@@ -98,16 +98,30 @@ export class Timespan {
       throw new Error(`Invalid unit`);
     }
 
+    // The pattern is unanchored and the value group may be empty, so a
+    // match can ignore leftover digits ("99999999999ms") or accept a bare
+    // unit ("h") and produce a span the caller cannot tell from zero.
+    let consumed = '';
+
     // Loop over the matches as we make more matches.
     while (match) {
-      const value = Number(match[Constants.InputRegexValueIndex]);
+      const rawValue = match[Constants.InputRegexValueIndex];
       const unit: string = match[Constants.InputRegexUnitIndex];
       Assertions.assertValidTimeUnit(unit);
+      if (rawValue.length === 0) {
+        throw new Error('Invalid input string');
+      }
+      const value = Number(rawValue);
       const plural = getConverter(unit).plural;
       timeframe[plural] = value;
+      consumed += match[0];
 
       // Match the next and run the loop again.
       match = pattern.exec(input);
+    }
+
+    if (consumed !== input.replace(/\s+/g, '')) {
+      throw new Error('Invalid input string');
     }
 
     // Set the end date to however many milliseconds we have calculated.
