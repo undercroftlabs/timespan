@@ -330,13 +330,13 @@ describe('Timespan', () => {
     });
 
     it('should throw an error for invalid unit', () => {
-      expect(() => Timespan.fromString('5 unknownUnit')).toThrowError(
+      expect(() => Timespan.fromString('5 unknownUnit')).toThrow(
         'Invalid date unit: unknownUnit.',
       );
     });
 
     it('should throw an error when the input has no unit', () => {
-      expect(() => Timespan.fromString('5')).toThrowError('Invalid unit');
+      expect(() => Timespan.fromString('5')).toThrow('Invalid unit');
     });
 
     it('should parse a valid string again after a parse throws', () => {
@@ -354,7 +354,7 @@ describe('Timespan', () => {
     });
 
     it('should throw an error for input exceeding mac length', () => {
-      expect(() => Timespan.fromString(''.padEnd(100, '1'))).toThrowError(
+      expect(() => Timespan.fromString(''.padEnd(100, '1'))).toThrow(
         'Invalid input string',
       );
     });
@@ -370,26 +370,26 @@ describe('Timespan', () => {
     it.each(blacklistedCharacters)(
       'should throw an error for input that contains invalid character %s',
       (character) => {
-        expect(() => Timespan.fromString(character)).toThrowError(
+        expect(() => Timespan.fromString(character)).toThrow(
           'Invalid input string',
         );
       },
     );
 
     it('should throw an error for input that contains invalid character " Hello World"', () => {
-      expect(() => Timespan.fromString(' Hello World')).toThrowError(
+      expect(() => Timespan.fromString(' Hello World')).toThrow(
         'Invalid date unit: Hello',
       );
     });
 
     it('should throw an error for input that contains invalid character "Hello\\tWorld"', () => {
-      expect(() => Timespan.fromString('Hello\tWorld')).toThrowError(
+      expect(() => Timespan.fromString('Hello\tWorld')).toThrow(
         'Invalid date unit: Hello',
       );
     });
 
     it('should throw an error for input that contains invalid character "Hello\\nWorld"', () => {
-      expect(() => Timespan.fromString('Hello\nWorld')).toThrowError(
+      expect(() => Timespan.fromString('Hello\nWorld')).toThrow(
         'Invalid date unit: Hello',
       );
     });
