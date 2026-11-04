@@ -36,8 +36,12 @@ npm run test:browser:ui
 npm run test:browser:report
 ```
 
-On Fedora, WebKit may fail to launch. Keep the WebKit project enabled so Ubuntu CI still covers Safari. Optionally run the full three-browser suite in Docker:
+On Fedora, WebKit may fail to launch. Keep the WebKit project enabled so CI still covers Safari.
+
+CI uses the official Playwright image matching the lockfile (`node tools/playwright-image.cjs`) and does not install browsers on the runner. Optionally run the same image locally:
 
 ```bash
 npm run test:browser:docker
 ```
+
+That command expects `npm ci` and `npm run build` to have already produced `node_modules` and `dist/` on the host. Docker is optional.

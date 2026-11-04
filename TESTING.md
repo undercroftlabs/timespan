@@ -52,15 +52,19 @@ See `tests/browser/README.md` for fixture details.
 
 Playwright does not officially support Fedora. Chromium and Firefox often run after `npx playwright install`. WebKit typically needs Ubuntu packages (`libicu`, JPEG, GStreamer) that `--with-deps` installs with `sudo` on Debian-based systems.
 
-Do not drop WebKit from the project config. GitHub Actions runs all three engines on `ubuntu-latest`.
+Do not drop WebKit from the project config. GitHub Actions runs Chromium, Firefox, and WebKit in the official Playwright Docker image (`mcr.microsoft.com/playwright:v<lockfile-version>-noble`). The image already includes the browsers and OS libraries, so CI does not run `npx playwright install --with-deps`. GitHub-hosted runners may still pull that image on each job.
 
-Optional local workaround using the official Playwright container (Docker must be installed and running):
+The image tag is derived from `package-lock.json` (`node tools/playwright-image.cjs`), not `latest`.
+
+Optional local workaround using the same container (Docker must be installed and running):
 
 ```bash
 npm run test:browser:docker
 ```
 
-Docker is not required. Native `npm run test:browser` remains the default.
+Docker is not required for Chromium/Firefox on Fedora. Native `npm run test:browser` remains the default.
+
+To compare CI time before and after the container change, open the Browser Tests workflow run and compare total job duration plus the old “Install Playwright browsers” step against the new job (image pull + `npm ci` + `npm run test:browser`). Do not assume the image is cached between runs.
 
 ## Pull request CI
 

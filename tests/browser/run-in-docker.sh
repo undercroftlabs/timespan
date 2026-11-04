@@ -14,32 +14,22 @@ if [[ ! -f node_modules/@playwright/test/package.json ]]; then
   exit 1
 fi
 
-version="$(node -p "require('./node_modules/@playwright/test/package.json').version")"
+image="$(node tools/playwright-image.cjs)"
+lock_version="$(node tools/playwright-image.cjs --version)"
+installed_version="$(node -p "require('./node_modules/@playwright/test/package.json').version")"
 
-pull_image() {
-  local image="$1"
-  docker pull "$image"
-}
+if [[ "$installed_version" != "$lock_version" ]]; then
+  echo "Installed @playwright/test ${installed_version} does not match lockfile ${lock_version}."
+  exit 1
+fi
 
-run_image() {
-  local image="$1"
-  docker run --rm \
-    --ipc=host \
-    -e CI="${CI:-1}" \
-    -v "${root}:/work" \
-    -w /work \
-    "$image" \
-    npx playwright test
-}
-
-for distro in noble jammy; do
-  image="mcr.microsoft.com/playwright:v${version}-${distro}"
-  echo "Trying Playwright image ${image}"
-  if pull_image "$image"; then
-    run_image "$image"
-    exit 0
-  fi
-done
-
-echo "Could not pull a Playwright Docker image for v${version} (tried noble and jammy)."
-exit 1
+echo "Using Playwright image ${image}"
+docker pull "$image"
+docker run --rm \
+  --ipc=host \
+  -e CI="${CI:-1}" \
+  -e HOME=/root \
+  -v "${root}:/work" \
+  -w /work \
+  "$image" \
+  npx playwright test

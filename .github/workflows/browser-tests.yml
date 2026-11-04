@@ -15,11 +15,46 @@ permissions:
   contents: read
 
 jobs:
-  browser-tests:
+  resolve-playwright-image:
+    name: Resolve Playwright image
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+      version: ${{ steps.image.outputs.version }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read Playwright image from the lockfile
+        id: image
+        run: |
+          set -euo pipefail
+          IMAGE="$(node tools/playwright-image.cjs)"
+          VERSION="$(node tools/playwright-image.cjs --version)"
+          echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Playwright image ${IMAGE}"
+
+  browser-tests:
+    name: browser-tests
+    needs: resolve-playwright-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: ${{ needs.resolve-playwright-image.outputs.image }}
+      options: --user root --ipc=host
+    env:
+      HOME: /root
+    steps:
+      - name: Record container ready
+        run: |
+          date -u +'container_ready=%Y-%m-%dT%H:%M:%SZ'
+          node --version
+          echo "Playwright image ${{ needs.resolve-playwright-image.outputs.image }}"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -33,14 +68,25 @@ jobs:
           node-version: ${{ steps.node.outputs.latest }}.x
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+      - name: Install npm dependencies
+        run: |
+          set -euo pipefail
+          date -u +'npm_ci_start=%Y-%m-%dT%H:%M:%SZ'
+          npm ci
+          date -u +'npm_ci_end=%Y-%m-%dT%H:%M:%SZ'
+          INSTALLED="$(node -p "require('./node_modules/@playwright/test/package.json').version")"
+          EXPECTED="${{ needs.resolve-playwright-image.outputs.version }}"
+          if [ "$INSTALLED" != "$EXPECTED" ]; then
+            echo "Playwright package ${INSTALLED} does not match image version ${EXPECTED}."
+            exit 1
+          fi
 
       - name: Run browser distribution tests
-        run: npm run test:browser
+        run: |
+          set -euo pipefail
+          date -u +'browser_tests_start=%Y-%m-%dT%H:%M:%SZ'
+          npm run test:browser
+          date -u +'browser_tests_end=%Y-%m-%dT%H:%M:%SZ'
 
       - name: Upload Playwright artifacts
         if: failure()
