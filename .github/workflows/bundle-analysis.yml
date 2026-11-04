@@ -3,17 +3,24 @@ on:
   pull_request:
     branches:
       - main
+      - 'release/**'
+permissions:
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+      - name: Resolve latest supported Node LTS
+        id: node
+        run: node tools/supported-node-versions.cjs --github-output
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: ${{ steps.node.outputs.latest }}.x
           registry-url: 'https://registry.npmjs.org'
+          cache: npm
       - name: Install dependencies
         run: npm ci
       - name: Build the project (includes bundle analysis)
