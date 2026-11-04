@@ -11,50 +11,54 @@ const port = Number(process.env.PLAYWRIGHT_SERVER_PORT || 4173);
 const host = '127.0.0.1';
 
 const mimeTypes = {
-  '.css': 'text/css; charset=utf-8',
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
   '.map': 'application/json; charset=utf-8',
   '.mjs': 'text/javascript; charset=utf-8',
-  '.ts': 'text/plain; charset=utf-8',
 };
 
+const umdFixture = path.join(fixturesRoot, 'umd.html');
+const esmFixture = path.join(fixturesRoot, 'esm.html');
+const umdBundle = path.join(distRoot, 'index.umd.js');
+const umdSourceMap = path.join(distRoot, 'index.umd.js.map');
+const esmBundle = path.join(distRoot, 'index.mjs');
+const esmSourceMap = path.join(distRoot, 'index.mjs.map');
+
 /**
- * Resolve a request path to a file under dist/ or the fixture directory.
+ * Map a request URL to a hardcoded fixture or dist file.
+ * Only exact known paths are served so request data never reaches the filesystem.
  * @param {string} requestUrl
  * @returns {string | null}
  */
-function resolveSafePath(requestUrl) {
-  const decoded = decodeURIComponent(requestUrl.split('?')[0]);
-  const normalized = path.posix.normalize(decoded);
-
-  if (normalized === '/' || normalized === '.') {
-    return path.join(fixturesRoot, 'umd.html');
-  }
-
-  let candidate;
-  if (normalized === '/dist' || normalized.startsWith('/dist/')) {
-    candidate = path.join(distRoot, normalized.slice('/dist'.length));
-  } else {
-    candidate = path.join(fixturesRoot, normalized);
-  }
-
-  const resolved = path.resolve(candidate);
-  const allowedRoots = [fixturesRoot, distRoot];
-  const isAllowed = allowedRoots.some(
-    (root) => resolved === root || resolved.startsWith(root + path.sep),
-  );
-
-  if (!isAllowed) {
+function lookupAllowedFile(requestUrl) {
+  let decoded;
+  try {
+    decoded = decodeURIComponent(requestUrl.split('?')[0]);
+  } catch {
     return null;
   }
 
-  return resolved;
+  switch (decoded) {
+    case '/':
+    case '/umd.html':
+      return umdFixture;
+    case '/esm.html':
+      return esmFixture;
+    case '/dist/index.umd.js':
+      return umdBundle;
+    case '/dist/index.umd.js.map':
+      return umdSourceMap;
+    case '/dist/index.mjs':
+      return esmBundle;
+    case '/dist/index.mjs.map':
+      return esmSourceMap;
+    default:
+      return null;
+  }
 }
 
 const server = http.createServer((req, res) => {
-  const filePath = resolveSafePath(req.url || '/');
+  const filePath = lookupAllowedFile(req.url || '/');
   if (!filePath) {
     res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('Forbidden');
