@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] – 2026-11-08
+
+Correctness release: comparison APIs plus parser and calendar fixes. No new duration units or string formats.
+
+### Added
+- Instance and static `equals`, comparing either total duration (default) or start/end range.
+- Instance and static `compareTo`, ordering timespans by duration.
+
+### Changed
+- Package metadata (`homepage`, `repository`, `bugs`) now points at `undercroftlabs/timespan`.
+- Dev toolchain: TypeScript 6, Jest 30, ESLint 10, husky 9, and matching plugin updates.
+- JS bundle size limits raised from 3.5 KB to 4 KB (brotli).
+
+### Fixed
+- `fromString` no longer shares regex `lastIndex` across calls after a throw.
+- `start`, `end`, and `toTimeframe()` return copies so callers cannot mutate stored state.
+- Malformed strings that used to parse as a silent zero (11-digit values, bare units) now throw.
+- Repeated units in `fromString` throw `Duplicate date unit` instead of keeping the last value.
+- Fractional values in `fromString` remain rejected; use unit factories such as `fromHours` for fractions of fixed-length units.
+- Year and month counting use elapsed anniversary (including time of day for months), not calendar subtraction.
+- Month and year addition clamp at period end, and `fromString` uses the same converters as `fromMonths` / `fromYears`.
+
+---
+
 ## [1.1.0] – 2025-04-13
 
 **⚠ BREAKING CHANGE:**  

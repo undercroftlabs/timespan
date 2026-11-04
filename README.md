@@ -6,14 +6,14 @@ JavaScript.
 
 Works in Typescript too!
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/mikejg101/timespan/publish.yml)](https://github.com/mikejg101/timespan/actions/workflows/publish.yml)
-[![Issues Status](https://img.shields.io/github/issues/mikejg101/timespan)](https://github.com/mikejg101/timespan/issues)
-[![Pull Request Status](https://img.shields.io/github/issues-pr-raw/mikejg101/timespan)](https://github.com/mikejg101/timespan/pulls)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/undercroftlabs/timespan/publish.yml)](https://github.com/undercroftlabs/timespan/actions/workflows/publish.yml)
+[![Issues Status](https://img.shields.io/github/issues/undercroftlabs/timespan)](https://github.com/undercroftlabs/timespan/issues)
+[![Pull Request Status](https://img.shields.io/github/issues-pr-raw/undercroftlabs/timespan)](https://github.com/undercroftlabs/timespan/pulls)
 [![NPM Version Status](https://img.shields.io/npm/v/@undercroft/timespan)](https://www.npmjs.com/package/@undercroft/timespan)
-[![License Status](https://img.shields.io/github/license/mikejg101/timespan)](https://github.com/mikejg101/timespan/blob/main/LICENSE)
+[![License Status](https://img.shields.io/github/license/undercroftlabs/timespan)](https://github.com/undercroftlabs/timespan/blob/main/LICENSE)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/@undercroft/timespan)](https://bundlephobia.com/package/@undercroft/timespan)
 [![Install Size](https://packagephobia.com/badge?p=@undercroft/timespan)](https://packagephobia.com/result?p=@undercroft/timespan)
-[![codecov](https://codecov.io/gh/mikejg101/timespan/graph/badge.svg?token=XLOYLAS2X1)](https://codecov.io/gh/mikejg101/timespan)
+[![codecov](https://codecov.io/gh/undercroftlabs/timespan/graph/badge.svg?token=XLOYLAS2X1)](https://codecov.io/gh/undercroftlabs/timespan)
 [![Known Vulnerabilities](https://snyk.io/test/npm/@undercroft/timespan/badge.svg)](https://snyk.io/test/npm/@undercroft/timespan)
 
 # UMD Support
