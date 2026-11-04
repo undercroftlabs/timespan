@@ -10,6 +10,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": "^22.0.0 || ^24.0.0 || ^26.0.0"
+  },
   "author": "Michael Goodwin <mikejg101@icloud.com>",
   "license": "MIT",
   "homepage": "https://github.com/undercroftlabs/timespan",
@@ -73,7 +76,8 @@
     "badge:cov": "npx lcov-badge-generator -o ./badges/coverage.svg ./coverage/lcov.info",
     "check": "./.husky/pre-commit",
     "sandbox": "ts-node ./sandbox.ts",
-    "size": "size-limit"
+    "size": "size-limit",
+    "node:versions": "node tools/supported-node-versions.cjs"
   },
   "devDependencies": {
     "@codecov/rollup-plugin": "^2.0.1",

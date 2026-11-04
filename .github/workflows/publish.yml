@@ -52,9 +52,11 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      - id: node
+        run: node tools/supported-node-versions.cjs --github-output
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: ${{ steps.node.outputs.latest }}.x
           cache: npm
       - run: npm ci
       - run: npm test
@@ -67,9 +69,11 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      - id: node
+        run: node tools/supported-node-versions.cjs --github-output
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: ${{ steps.node.outputs.latest }}.x
           cache: npm
       - run: npm ci
       - run: npm run test:dist
@@ -96,10 +100,14 @@ jobs:
       - name: Checkout tagged commit
         uses: actions/checkout@v4
 
+      - name: Resolve latest supported Node LTS
+        id: node
+        run: node tools/supported-node-versions.cjs --github-output
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: ${{ steps.node.outputs.latest }}.x
           registry-url: 'https://registry.npmjs.org'
 
       - name: Ensure npm supports Trusted Publishing

@@ -70,7 +70,15 @@ Pushes and pull requests targeting `main` or `release/**` run:
 - Playwright UMD and ESM tests in Chromium, Firefox, and WebKit (`browser-tests.yml`)
 - Coverage, size-limit, and bundle analysis workflows
 
-Jest runs on Node.js LTS (`22.x` and `24.x`). Required GitHub status checks must use those job names (`test (ubuntu-latest, 24.x)`, and so on). A required check for a Node version the workflow no longer runs will sit on pending forever.
+Supported Node versions come from `engines.node` in `package.json` (even-numbered, non-EOL LTS). CI expands that range into the Test matrix. Single-job workflows (Playwright, size-limit, publish) use the newest major in that list.
+
+To add or drop a Node line:
+
+1. Edit `engines.node` (for example add `^28.0.0` when 28 is Active LTS, or drop `^22.0.0` at EOL).
+2. Run `npm test` locally on the newest listed LTS.
+3. Push. GitHub Actions reads `engines` and tests every remaining even major.
+
+The required GitHub check is the aggregate job named `test`, not each matrix cell, so bumping `engines` does not leave stale `23.x` checks pending. Dropping the minimum supported major is a breaking change.
 
 ## Releases
 

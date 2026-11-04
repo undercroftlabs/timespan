@@ -58,7 +58,7 @@ permissions:
 
 The GitHub Release job requests `contents: write` and does **not** receive `id-token: write`.
 
-Trusted Publishing requires Node.js 22.14+ and npm 11.5.1+. The publish job uses Node.js 24 and checks the npm CLI version.
+Trusted Publishing requires Node.js 22.14+ and npm 11.5.1+. The publish job uses the newest even LTS listed in `package.json` `engines.node` and checks the npm CLI version.
 
 Provenance attestations are generated automatically for public packages from this public repository. After a successful publish:
 
