@@ -53,9 +53,13 @@ export class YearConverter extends DateUnitConverter {
    * @throws Error if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
-    const startYear = startDate.getUTCFullYear();
-    const endYear = endDate.getUTCFullYear();
-    return endYear - startYear;
+    let years = endDate.getUTCFullYear() - startDate.getUTCFullYear();
+    // Calendar-year subtraction counts a January 1 crossing as a full year.
+    // A year has elapsed only once add() would land on or before the end.
+    if (years > 0 && this.add(years, startDate).getTime() > endDate.getTime()) {
+      years--;
+    }
+    return years;
   }
 
   /**

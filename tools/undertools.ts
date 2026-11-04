@@ -11,7 +11,7 @@ invoker.getCommands().forEach(({ command, description, builder }) => {
         return yargs;
       }
     : builder;
-  yargs.command(command, description, builderFunction, (argv) => {
+  cli.command(command, description, builderFunction, (argv) => {
     invoker.execute(command, argv);
   });
 });

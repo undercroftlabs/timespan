@@ -13,7 +13,8 @@ export class TestDistribution implements Command {
       console.log(buildHeader('All tests passed successfully.', false));
       return 0;
     } catch (e) {
-      console.log(buildHeader(`Tests Failed ${e.message}`, true));
+      const message = e instanceof Error ? e.message : String(e);
+      console.log(buildHeader(`Tests Failed ${message}`, true));
       return 1;
     }
   }

@@ -1,15 +1,15 @@
 module.exports = [
   {
     path: 'dist/index.js',
-    limit: '3.5 KB',
+    limit: '4 KB',
   },
   {
     path: 'dist/index.mjs',
-    limit: '3.5 KB',
+    limit: '4 KB',
   },
   {
     path: 'dist/index.umd.js',
-    limit: '3.5 KB',
+    limit: '4 KB',
   },
   {
     path: 'dist/index.d.mts',

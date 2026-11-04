@@ -1,25 +1,21 @@
 name: 'Bundle Analysis'
-
 on:
   pull_request:
     branches:
-      - master
       - main
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
+      - name: Checkout branch
+        uses: actions/checkout@v3
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '23.x'
-
-      - name: Install modules
-        run: npm install
-
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: npm ci
       - name: Build the project (includes bundle analysis)
         run: npm run build
         env:
