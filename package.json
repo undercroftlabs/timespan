@@ -18,7 +18,7 @@
   "homepage": "https://github.com/undercroftlabs/timespan",
   "repository": {
     "type": "git",
-    "url": "git@github.com:undercroftlabs/timespan.git"
+    "url": "git+https://github.com/undercroftlabs/timespan.git"
   },
   "keywords": [
     "timespan",
