@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.0] – 2026-11-08
+## [1.2.0] – 2026-11-04
 
 Correctness release: comparison APIs plus parser and calendar fixes. No new duration units or string formats.
 
