@@ -78,7 +78,8 @@
     "check": "./.husky/pre-commit",
     "sandbox": "ts-node ./sandbox.ts",
     "size": "size-limit",
-    "node:versions": "node tools/supported-node-versions.cjs"
+    "node:versions": "node tools/supported-node-versions.cjs",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "@codecov/rollup-plugin": "^2.0.1",
