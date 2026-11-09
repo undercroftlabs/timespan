@@ -1,5 +1,5 @@
 module.exports = {
-  roots: ['<rootDir>/test'],
+  roots: ['<rootDir>/test', '<rootDir>/src'],
   testPathIgnorePatterns: ['<rootDir>/tests/browser/'],
   testMatch: [
     '**/__tests__/**/*.+(ts|tsx|js)',
