@@ -355,7 +355,7 @@ describe('Timespan', () => {
 
     it('should throw an error for input exceeding mac length', () => {
       expect(() => Timespan.fromString(''.padEnd(100, '1'))).toThrow(
-        'Invalid input string',
+        'Invalid input string: expected at most 75 characters.',
       );
     });
 

@@ -123,7 +123,7 @@ describe('edge: fromString parsing', () => {
     const input = `${'1h '.repeat(25)} `; // 76 chars
     expect(input.length).toBe(76);
     expect(() => Timespan.fromString(input, START)).toThrow(
-      'Invalid input string',
+      'Invalid input string: expected at most 75 characters.',
     );
   });
 
