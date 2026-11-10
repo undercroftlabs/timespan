@@ -1,6 +1,7 @@
-import { DateUnitConverter } from './date-unit-converter';
+import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { MonthUnit } from '../types';
+import { DateUnitConverter } from './date-unit-converter';
 
 /**
  * Represents a converter for the month unit.
@@ -45,6 +46,8 @@ export class MonthConverter extends DateUnitConverter {
    * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
+    assertValidDateRange(startDate, endDate);
+
     const startYear = startDate.getUTCFullYear();
     const startMonth = startDate.getUTCMonth();
     const endYear = endDate.getUTCFullYear();
