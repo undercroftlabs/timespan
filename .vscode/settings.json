@@ -2,6 +2,9 @@
   "explorer.excludeGitIgnore": true,
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
-    "*.ts": "${capture}.test.ts"
-  }
+    "*.ts": "${capture}.test.ts",
+    "package.json": "",
+    "tsconfig.json": ""
+  },
+  "explorer.compactFolders": false
 }
