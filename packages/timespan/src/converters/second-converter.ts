@@ -1,5 +1,6 @@
-import { DateUnitConverter } from './date-unit-converter';
+import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import { SecondUnit } from '../types';
+import { DateUnitConverter } from './date-unit-converter';
 
 /**
  * Represents a converter for the second unit.
@@ -44,9 +45,16 @@ export class SecondConverter extends DateUnitConverter {
    * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
-    return Math.floor(
-      (endDate.getTime() - startDate.getTime()) / this.millisecondsPerUnit,
+    assertValidDateRange(startDate, endDate);
+
+    const startMillis = startDate.getTime();
+    const endMillis = endDate.getTime();
+
+    const secondCount = Math.floor(
+      (endMillis - startMillis) / this.millisecondsPerUnit,
     );
+
+    return Math.floor(secondCount);
   }
 
   /**
