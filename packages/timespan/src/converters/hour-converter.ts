@@ -72,6 +72,12 @@ export class HourConverter extends DateUnitConverter {
   public add(hours: number, startDate: Date): Date {
     assertValidDate(startDate);
 
+    if (hours < 0) {
+      throw new Error(
+        'Invalid number of hours: expected zero or a positive number.',
+      );
+    }
+
     return new Date(startDate.getTime() + hours * this.millisecondsPerUnit);
   }
 }
