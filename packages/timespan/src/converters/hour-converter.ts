@@ -78,6 +78,15 @@ export class HourConverter extends DateUnitConverter {
       );
     }
 
-    return new Date(startDate.getTime() + hours * this.millisecondsPerUnit);
+    const time = startDate.getTime() + hours * this.millisecondsPerUnit;
+    if (
+      time > Constants.MaxSafeTimestamp ||
+      time < Constants.MinSafeTimestamp
+    ) {
+      throw new Error(
+        'Invalid number of hours: expected a result within the representable date range.',
+      );
+    }
+    return new Date(time);
   }
 }

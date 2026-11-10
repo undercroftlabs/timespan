@@ -166,6 +166,8 @@ describe('HourConverter', () => {
         ${'string start'}                    | ${1}                                | ${'2023-05-01' as unknown as Date}
         ${'plain object start'}              | ${1}                                | ${{} as unknown as Date}
         ${'object with getTime'}             | ${1}                                | ${{ getTime: () => 0 } as unknown as Date}
+        ${'one past the maximum span'}       | ${maxHours + 1}                     | ${epoch}
+        ${'one hour past the maximum date'}  | ${1}                                | ${new Date(maxTimestamp)}
       `(
         'throws for $label',
         ({ hours, start }: { hours: number; start: Date }) => {
