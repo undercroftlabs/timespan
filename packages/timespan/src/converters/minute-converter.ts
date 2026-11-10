@@ -76,6 +76,15 @@ export class MinuteConverter extends DateUnitConverter {
       );
     }
 
-    return new Date(startDate.getTime() + minutes * this.millisecondsPerUnit);
+    const time = startDate.getTime() + minutes * this.millisecondsPerUnit;
+    if (
+      time > Constants.MaxSafeTimestamp ||
+      time < Constants.MinSafeTimestamp
+    ) {
+      throw new Error(
+        'Invalid number of minutes: expected a result within the representable date range.',
+      );
+    }
+    return new Date(time);
   }
 }
