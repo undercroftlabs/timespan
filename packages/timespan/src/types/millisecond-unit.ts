@@ -1,2 +1,6 @@
 export type MillisecondUnit =
-  'milliseconds' | 'millisecond' | 'msec' | 'mss' | 'ms';
+  | 'milliseconds'
+  | 'millisecond'
+  | 'msec'
+  | 'mss'
+  | 'ms';

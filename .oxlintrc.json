@@ -1,9 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "typescript",
-    "jsdoc"
-  ],
+  "plugins": ["typescript", "jsdoc"],
   "jsPlugins": [
     {
       "name": "jsdoc-js",
@@ -18,9 +15,7 @@
   "env": {
     "builtin": true
   },
-  "ignorePatterns": [
-    "**/dist/**"
-  ],
+  "ignorePatterns": ["**/dist/**"],
   "rules": {
     "no-array-constructor": "error",
     "no-unused-expressions": "error",
@@ -321,12 +316,7 @@
   },
   "overrides": [
     {
-      "files": [
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.mts",
-        "**/*.cts"
-      ],
+      "files": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
       "rules": {
         "constructor-super": "off",
         "getter-return": "off",
@@ -351,23 +341,17 @@
       }
     },
     {
-      "files": [
-        "packages/timespan/src/**/*.ts"
-      ],
+      "files": ["packages/timespan/src/**/*.ts"],
       "rules": {
         "no-console": "error"
       }
     },
     {
-      "files": [
-        "**/*.{test,spec}.ts"
-      ],
+      "files": ["**/*.{test,spec}.ts"],
       "rules": {
         "sonarjs/no-primitive-wrappers": "off"
       },
-      "jsPlugins": [
-        "eslint-plugin-sonarjs"
-      ]
+      "jsPlugins": ["eslint-plugin-sonarjs"]
     }
   ]
 }

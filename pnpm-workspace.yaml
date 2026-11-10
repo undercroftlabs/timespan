@@ -1,6 +1,6 @@
 packages:
-  - "packages/*"
-  - "tests/*"
+  - 'packages/*'
+  - 'tests/*'
 
 preferWorkspacePackages: true
 
@@ -9,4 +9,4 @@ catalog:
 
 allowBuilds:
   esbuild: true
-  "@parcel/watcher": true
+  '@parcel/watcher': true
