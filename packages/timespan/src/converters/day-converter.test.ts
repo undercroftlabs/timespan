@@ -54,21 +54,25 @@ describe('DayConverter', () => {
       const bigintValue = Function('return 1n')();
 
       test.each`
-        label                     | start                                          | end
-        ${'null start'}           | ${null as unknown as Date}                     | ${epoch}
-        ${'null end'}             | ${epoch}                                       | ${null as unknown as Date}
-        ${'both null'}            | ${null as unknown as Date}                     | ${null as unknown as Date}
-        ${'undefined start'}      | ${undefined as unknown as Date}                | ${epoch}
-        ${'undefined end'}        | ${epoch}                                       | ${undefined as unknown as Date}
-        ${'numeric timestamps'}   | ${0 as unknown as Date}                        | ${later as unknown as Date}
-        ${'ISO strings in order'} | ${'2023-05-01' as unknown as Date}             | ${'2023-05-31' as unknown as Date}
-        ${'empty strings'}        | ${'' as unknown as Date}                       | ${'' as unknown as Date}
-        ${'NaN timestamps'}       | ${Number.NaN as unknown as Date}               | ${Number.NaN as unknown as Date}
-        ${'Infinity timestamps'}  | ${Number.NEGATIVE_INFINITY as unknown as Date} | ${Number.POSITIVE_INFINITY as unknown as Date}
-        ${'bigint timestamps'}    | ${bigintValue as unknown as Date}              | ${bigintValue as unknown as Date}
-        ${'booleans'}             | ${false as unknown as Date}                    | ${true as unknown as Date}
-        ${'plain objects'}        | ${{} as unknown as Date}                       | ${{} as unknown as Date}
-        ${'arrays'}               | ${[] as unknown as Date}                       | ${[] as unknown as Date}
+        label                            | start                                          | end
+        ${'start one millisecond later'} | ${new Date(1)}                                 | ${epoch}
+        ${'start one day later'}         | ${later}                                       | ${epoch}
+        ${'reversed May range'}          | ${new Date('2023-05-31T00:00:00.000Z')}        | ${new Date('2023-05-01T00:00:00.000Z')}
+        ${'reversed leap day'}           | ${new Date('2020-03-01T00:00:00.000Z')}        | ${new Date('2020-02-28T00:00:00.000Z')}
+        ${'null start'}                  | ${null as unknown as Date}                     | ${epoch}
+        ${'null end'}                    | ${epoch}                                       | ${null as unknown as Date}
+        ${'both null'}                   | ${null as unknown as Date}                     | ${null as unknown as Date}
+        ${'undefined start'}             | ${undefined as unknown as Date}                | ${epoch}
+        ${'undefined end'}               | ${epoch}                                       | ${undefined as unknown as Date}
+        ${'numeric timestamps'}          | ${0 as unknown as Date}                        | ${later as unknown as Date}
+        ${'ISO strings in order'}        | ${'2023-05-01' as unknown as Date}             | ${'2023-05-31' as unknown as Date}
+        ${'empty strings'}               | ${'' as unknown as Date}                       | ${'' as unknown as Date}
+        ${'NaN timestamps'}              | ${Number.NaN as unknown as Date}               | ${Number.NaN as unknown as Date}
+        ${'Infinity timestamps'}         | ${Number.NEGATIVE_INFINITY as unknown as Date} | ${Number.POSITIVE_INFINITY as unknown as Date}
+        ${'bigint timestamps'}           | ${bigintValue as unknown as Date}              | ${bigintValue as unknown as Date}
+        ${'booleans'}                    | ${false as unknown as Date}                    | ${true as unknown as Date}
+        ${'plain objects'}               | ${{} as unknown as Date}                       | ${{} as unknown as Date}
+        ${'arrays'}                      | ${[] as unknown as Date}                       | ${[] as unknown as Date}
       `('throws for $label', ({ start, end }: { start: Date; end: Date }) => {
         expect(() => dayConverter.between(start, end)).toThrow();
       });

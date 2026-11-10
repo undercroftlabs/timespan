@@ -46,6 +46,12 @@ export class DayConverter extends DateUnitConverter {
     const startMillis = startDate.getTime();
     const endMillis = endDate.getTime();
 
+    if (startMillis > endMillis) {
+      throw new Error(
+        'Invalid date range: expected the start date to be less than or equal to the end date.',
+      );
+    }
+
     const dayCount = Math.floor(
       (endMillis - startMillis) / this.millisecondsPerUnit,
     );
