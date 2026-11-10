@@ -7,6 +7,24 @@ preferWorkspacePackages: true
 catalog:
   typescript: ^6.0.3
 
+packageExtensions:
+  jest:
+    peerDependencies:
+      ts-node: "-"
+  jest-cli:
+    peerDependencies:
+      ts-node: "-"
+  "@jest/core":
+    peerDependencies:
+      ts-node: "-"
+  jest-config:
+    peerDependencies:
+      ts-node: "-"
+
+peerDependencyRules:
+  ignoreMissing:
+    - ts-node
+
 allowBuilds:
   esbuild: true
   "@parcel/watcher": true

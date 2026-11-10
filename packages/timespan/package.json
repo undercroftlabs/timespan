@@ -81,7 +81,7 @@
     "test:cov": "jest --coverage --no-cache --runInBand",
     "test:junit": "cross-env JEST_JUNIT_CLASSNAME={filepath} jest --reporters=jest-junit",
     "test:ci": "cross-env JEST_JUNIT_CLASSNAME={filepath} jest --coverage --no-cache --runInBand --reporters=default --reporters=jest-junit",
-    "sandbox": "ts-node ./sandbox.ts",
+    "sandbox": "node --experimental-strip-types ./sandbox.ts",
     "size": "size-limit"
   },
   "devDependencies": {
@@ -97,7 +97,6 @@
     "publint": "^0.3.25",
     "size-limit": "^14.3.0",
     "ts-jest": "^29.4.15",
-    "ts-node": "^10.9.2",
     "tsup": "^9.0.0",
     "typescript": "catalog:"
   }
