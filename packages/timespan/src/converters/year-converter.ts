@@ -1,3 +1,4 @@
+import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { YearUnit } from '../types';
@@ -73,6 +74,8 @@ export class YearConverter extends DateUnitConverter {
    * @throws {Error} if the input date is invalid or if the number of years is negative.
    */
   public add(years: number, startDate: Date): Date {
+    assertValidDate(startDate);
+
     const startYear = startDate.getUTCFullYear();
     const targetYear = startYear + years;
 
