@@ -68,7 +68,7 @@ export class MillisecondConverter extends DateUnitConverter {
   public add(milliseconds: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (milliseconds < 0) {
+    if (!Number.isFinite(milliseconds) || milliseconds < 0) {
       throw new Error(
         'Invalid number of milliseconds: expected zero or a positive number.',
       );
