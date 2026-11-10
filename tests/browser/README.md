@@ -7,7 +7,7 @@ These Playwright tests load the **built** TimeSpan files from `dist/`, not TypeS
 | UMD    | `dist/index.umd.js` | Classic `<script>` tag; global `window.Timespan` |
 | ESM    | `dist/index.mjs`    | Native `import` in a module script               |
 
-CommonJS (`dist/index.js`) is a Node distribution. Browsers cannot load it with a script tag or a native ES module import. Node coverage for CJS (and packed-package layout) lives in `npm run test:dist`.
+CommonJS (`dist/index.js`) is a Node distribution. Browsers cannot load it with a script tag or a native ES module import. Node coverage for CommonJS, ESM, and the packed tarball lives in `npm run test:dist`.
 
 ## Local setup
 

@@ -1,0 +1,39 @@
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import test from 'node:test';
+
+const require = createRequire(import.meta.url);
+
+/**
+ * Runs one known duration through the built Timespan export.
+ * @param Timespan - Built Timespan constructor.
+ */
+function assertCanonicalTimespan(Timespan) {
+  const timespan = Timespan.fromString(
+    '1yr 2mos 3wks 4dys 5hrs 6mins 7secs 8mss',
+    new Date(Date.UTC(2000, 0, 1)),
+  );
+
+  assert.equal(timespan.toYears(), 1);
+  assert.equal(timespan.toMonths(), 14);
+  assert.equal(timespan.toWeeks(), 64);
+  assert.equal(timespan.toDays(), 450);
+  assert.equal(timespan.toHours(), 10805);
+  assert.equal(timespan.toMinutes(), 648306);
+  assert.equal(timespan.toSeconds(), 38898367);
+  assert.equal(timespan.toMilliseconds(), 38898367008);
+  assert.equal(timespan.toString(), '1y 2M 3w 4d 5h 6m 7s 8ms');
+}
+
+test('CommonJS distribution exports Timespan', () => {
+  const loaded = require('../dist/index.js');
+  assert.equal(typeof loaded.Timespan, 'function');
+  assertCanonicalTimespan(loaded.Timespan);
+});
+
+test('ESM distribution exports Timespan as named and default', async () => {
+  const loaded = await import('../dist/index.mjs');
+  assert.equal(typeof loaded.Timespan, 'function');
+  assert.equal(loaded.default, loaded.Timespan);
+  assertCanonicalTimespan(loaded.Timespan);
+});

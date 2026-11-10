@@ -10,12 +10,11 @@ npm test
 
 ## Distribution tests
 
-`npm run test:dist` rebuilds the package and checks the published layout:
+`npm run test:dist` rebuilds the package, then checks the published tarball:
 
-- Node CommonJS (`dist/index.js`)
-- Node ESM (`dist/index.mjs`)
-- TypeScript declarations (`dist/index.d.ts`)
-- An `npm pack` install into a temporary consumer project
+- `publint` checks the package entry points
+- `attw` checks TypeScript resolution of the root export
+- A Node test loads `dist/index.js` and `dist/index.mjs` and runs one timespan
 
 Browser UMD/ESM loading is covered separately below so those checks run in real browsers.
 

@@ -71,7 +71,7 @@ Confirm the version exists, then open the package version page on npmjs.com and 
 ## Lifecycle scripts during CI publish
 
 - `postinstall` runs `husky`. GitHub Actions sets `CI=true`, so Husky does not install local git hooks.
-- `prepublishOnly` runs `pinst --disable` (so the published tarball does not run Husky for consumers) and `test:dist` (consumer layout check). That dist check also runs as an explicit job; the extra `prepublishOnly` run is a last-line safety net on the exact files about to be packed.
+- `prepublishOnly` runs `pinst --disable` (so the published tarball does not run Husky for consumers) and `test:dist` (publint, attw, and a load of the built CommonJS and ESM files). That dist check also runs as an explicit job; the extra `prepublishOnly` run is a last-line safety net on the exact files about to be packed.
 - `postpublish` runs `pinst --enable` in the runner workspace only. It is not committed.
 
 `files` in `package.json` is `["dist"]`, so the tarball contains the built JavaScript, UMD, and TypeScript declarations.
