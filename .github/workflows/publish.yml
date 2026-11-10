@@ -45,7 +45,7 @@ jobs:
           echo "Publishing $TAG from commit ${GITHUB_SHA}"
 
   unit-tests:
-    name: Jest unit tests
+    name: Unit tests
     needs: validate-tag
     runs-on: ubuntu-latest
     permissions:

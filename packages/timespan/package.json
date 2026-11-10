@@ -63,11 +63,6 @@
   "bugs": {
     "url": "https://github.com/undercroftlabs/timespan/issues"
   },
-  "jest-junit": {
-    "classNameTemplate": "{filepath}",
-    "outputDirectory": "./reports",
-    "outputName": "junit.xml"
-  },
   "scripts": {
     "prepublishOnly": "pnpm run test:dist",
     "build": "pnpm run clean && tsup src/index.ts --dts --format esm,cjs --minify --sourcemap --out-dir dist && pnpm run build:umd",
@@ -78,10 +73,10 @@
     "test:dist:lint": "publint --strict --pack npm",
     "test:dist:types": "attw --pack . --entrypoints .",
     "test:dist:load": "pnpm --filter @undercroft/timespan-bundle-e2e test:load",
-    "test": "jest --no-cache --runInBand",
-    "test:cov": "jest --coverage --no-cache --runInBand",
-    "test:junit": "jest --reporters=jest-junit",
-    "test:ci": "jest --coverage --no-cache --runInBand --reporters=default --reporters=jest-junit",
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
+    "test:junit": "vitest run --reporter=default --reporter=junit",
+    "test:ci": "vitest run --coverage --reporter=default --reporter=junit",
     "sandbox": "node --experimental-strip-types ./sandbox.ts",
     "size": "size-limit"
   },
@@ -90,13 +85,11 @@
     "@codecov/rollup-plugin": "^2.0.1",
     "@rollup/plugin-terser": "^1.0.2",
     "@size-limit/preset-small-lib": "^14.3.0",
-    "@types/jest": "^30.0.0",
     "@types/node": "^26.6.6",
-    "jest": "^30.5.2",
-    "jest-junit": "^17.0.0",
+    "@vitest/coverage-v8": "^4.0.0",
     "publint": "^0.3.25",
     "size-limit": "^14.3.0",
-    "ts-jest": "^29.4.15",
+    "vitest": "^4.0.0",
     "tsup": "^9.0.0",
     "typescript": "catalog:"
   }

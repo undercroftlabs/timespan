@@ -2,7 +2,7 @@
 
 ## Unit tests
 
-Jest unit tests live in `packages/timespan` and run against TypeScript source:
+Vitest unit tests live in `packages/timespan` and run against TypeScript source:
 
 ```bash
 pnpm test
@@ -83,7 +83,7 @@ To compare CI time before and after the container change, open the Browser Tests
 
 Pushes and pull requests targeting `main` or `release/**` run:
 
-- Jest on Ubuntu and Windows (`test.yml`)
+- Vitest on Ubuntu and Windows (`test.yml`)
 - Playwright UMD and ESM tests in Chromium, Firefox, and WebKit (`browser-tests.yml`)
 - Coverage, size-limit, and bundle analysis workflows
 

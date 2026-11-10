@@ -6,7 +6,7 @@ Tagged GitHub Actions releases publish `@undercroft/timespan` with **npm Trusted
 
 1. Push a version tag matching `v*` (for example `v1.2.0`).
 2. `publish.yml` validates the tag format and that it matches `packages/timespan/package.json` (`v1.2.0` ↔ `1.2.0`).
-3. Jest unit tests, distribution tests, and Playwright browser tests run against **that tagged commit**. Browser tests use the official Playwright Docker image that matches `pnpm-lock.yaml`.
+3. Vitest unit tests, distribution tests, and Playwright browser tests run against **that tagged commit**. Browser tests use the official Playwright Docker image that matches `pnpm-lock.yaml`.
 4. The `publish` job (environment `npm-publish`) publishes with OIDC.
 5. The workflow checks that the version is visible on the npm registry.
 6. A GitHub Release is created from `changelog.md` **after** npm publish succeeds.
