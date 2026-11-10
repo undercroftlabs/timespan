@@ -78,7 +78,7 @@ export class MonthConverter extends DateUnitConverter {
   public add(months: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (months < 0) {
+    if (!Number.isFinite(months) || months < 0) {
       throw new Error(
         'Invalid number of months: expected zero or a positive number.',
       );
