@@ -1,12 +1,11 @@
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
+import { appendFileSync, readFileSync } from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 /**
  * Parse even-numbered LTS majors from an npm engines.node range.
- * @param {string} enginesNode
- * @returns {number[]}
+ * @param enginesNode - The `engines.node` range from package.json.
+ * @returns Sorted even major versions.
  */
 function supportedNodeMajors(enginesNode) {
   if (!enginesNode || typeof enginesNode !== 'string') {
@@ -37,17 +36,24 @@ function supportedNodeMajors(enginesNode) {
 
 /**
  * Read supported Node majors from the repo package.json.
- * @param {string} root
- * @returns {number[]}
+ * @param root - Repository root directory.
+ * @returns Sorted even major versions.
  */
 function readFromPackage(root) {
-  const packageJsonPath = path.join(root, 'packages', 'timespan', 'package.json');
-  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const packageJsonPath = path.join(
+    root,
+    'packages',
+    'timespan',
+    'package.json',
+  );
+  const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
   return supportedNodeMajors(pkg.engines && pkg.engines.node);
 }
 
 /**
- * @param {number[]} majors
+ * Shape the majors list for CLI and GitHub Actions output.
+ * @param majors - Sorted even major versions.
+ * @returns Matrix strings and the newest major.
  */
 function report(majors) {
   return {
@@ -57,8 +63,12 @@ function report(majors) {
   };
 }
 
-if (require.main === module) {
-  const root = path.resolve(__dirname, '..');
+const isMain =
+  process.argv[1] !== undefined &&
+  import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isMain) {
+  const root = path.resolve(import.meta.dirname, '..');
   const info = report(readFromPackage(root));
   const args = new Set(process.argv.slice(2));
 
@@ -77,16 +87,12 @@ if (require.main === module) {
     if (!outputFile) {
       throw new Error('GITHUB_OUTPUT is not set.');
     }
-    fs.appendFileSync(outputFile, `matrix=${JSON.stringify(info.matrix)}\n`);
-    fs.appendFileSync(outputFile, `latest=${info.latest}\n`);
+    appendFileSync(outputFile, `matrix=${JSON.stringify(info.matrix)}\n`);
+    appendFileSync(outputFile, `latest=${info.latest}\n`);
     process.exit(0);
   }
 
   process.stdout.write(`${JSON.stringify(info, null, 2)}\n`);
 }
 
-module.exports = {
-  supportedNodeMajors,
-  readFromPackage,
-  report,
-};
+export { readFromPackage, report, supportedNodeMajors };

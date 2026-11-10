@@ -1,13 +1,13 @@
-const tsPlugin = require('@typescript-eslint/eslint-plugin');
-const jsdoc = require('eslint-plugin-jsdoc');
-const sonarjs = require('eslint-plugin-sonarjs');
-const prettierPlugin = require('eslint-plugin-prettier');
-const eslintConfigPrettier = require('eslint-config-prettier');
-const noUnderscore = require('eslint-plugin-no-underscore');
+import eslintConfigPrettier from 'eslint-config-prettier';
+import jsdoc from 'eslint-plugin-jsdoc';
+import noUnderscore from 'eslint-plugin-no-underscore';
+import prettierPlugin from 'eslint-plugin-prettier';
+import sonarjs from 'eslint-plugin-sonarjs';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 
-module.exports = [
+export default [
   {
-    ignores: ['dist/**'],
+    ignores: ['**/dist/**'],
   },
   ...tsPlugin.configs['flat/recommended'],
   eslintConfigPrettier,
@@ -42,6 +42,13 @@ module.exports = [
     files: ['packages/timespan/src/**/*.ts'],
     rules: {
       'no-console': 'error',
+    },
+  },
+  {
+    files: ['**/*.{test,spec}.ts'],
+    rules: {
+      // Tests construct String objects to prove they are rejected as non-primitives.
+      'sonarjs/no-primitive-wrappers': 'off',
     },
   },
 ];

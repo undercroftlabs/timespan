@@ -14,7 +14,7 @@ const baseURL = `http://127.0.0.1:${port}`;
  */
 export default defineConfig({
   testDir: packageDir,
-  testMatch: /.*\.spec\.ts/,
+  testMatch: '**/*.spec.ts',
   outputDir: path.join(repoRoot, 'test-results'),
   fullyParallel: true,
   forbidOnly: isCi,
@@ -44,7 +44,7 @@ export default defineConfig({
     navigationTimeout: 15_000,
   },
   webServer: {
-    command: 'node serve.cjs',
+    command: 'node serve.mjs',
     cwd: packageDir,
     url: `${baseURL}/umd.html`,
     reuseExistingServer: !isCi,

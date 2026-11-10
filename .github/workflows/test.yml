@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: versions
-        run: node tools/supported-node-versions.cjs --github-output
+        run: node tools/supported-node-versions.mjs --github-output
 
   unit:
     name: test (${{ matrix.os }}, ${{ matrix.node }})

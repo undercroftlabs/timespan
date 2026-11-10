@@ -53,7 +53,7 @@ Playwright does not officially support Fedora. Chromium and Firefox often run af
 
 Do not drop WebKit from the project config. GitHub Actions runs Chromium, Firefox, and WebKit in the official Playwright image (`mcr.microsoft.com/playwright:v<lockfile-version>-noble`). The image already includes the browsers and OS libraries, so CI does not run `npx playwright install --with-deps`. GitHub-hosted runners may still pull that image on each job.
 
-The image tag is derived from `pnpm-lock.yaml` (`node tools/playwright-image.cjs`), not `latest`.
+The image tag is derived from `pnpm-lock.yaml` (`node tools/playwright-image.mjs`), not `latest`.
 
 ### Containerized local run (Podman or Docker)
 

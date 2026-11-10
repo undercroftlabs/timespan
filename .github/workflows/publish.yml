@@ -53,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: node
-        run: node tools/supported-node-versions.cjs --github-output
+        run: node tools/supported-node-versions.mjs --github-output
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -71,7 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: node
-        run: node tools/supported-node-versions.cjs --github-output
+        run: node tools/supported-node-versions.mjs --github-output
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -104,7 +104,7 @@ jobs:
 
       - name: Resolve latest supported Node LTS
         id: node
-        run: node tools/supported-node-versions.cjs --github-output
+        run: node tools/supported-node-versions.mjs --github-output
 
       - uses: pnpm/action-setup@v4
 

@@ -24,7 +24,7 @@
     "check": "./.husky/pre-commit",
     "sandbox": "pnpm --filter @undercroft/timespan sandbox",
     "size": "pnpm --filter @undercroft/timespan size",
-    "node:versions": "node tools/supported-node-versions.cjs"
+    "node:versions": "node tools/supported-node-versions.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",

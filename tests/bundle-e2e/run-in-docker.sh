@@ -107,8 +107,8 @@ fi
 engine="$(resolve_engine)"
 verify_engine "$engine"
 
-image="$(node tools/playwright-image.cjs)"
-lock_version="$(node tools/playwright-image.cjs --version)"
+image="$(node tools/playwright-image.mjs)"
+lock_version="$(node tools/playwright-image.mjs --version)"
 mount_suffix="$(bind_mount_opts "$engine")"
 
 if [[ "${1:-}" == "--print-config" ]]; then
@@ -167,7 +167,7 @@ cd /tmp/work
 corepack enable
 corepack pnpm install --frozen-lockfile
 installed="$(node -p "require('./tests/bundle-e2e/node_modules/@playwright/test/package.json').version")"
-expected="$(node tools/playwright-image.cjs --version)"
+expected="$(node tools/playwright-image.mjs --version)"
 if [ "$installed" != "$expected" ]; then
   echo "Playwright package ${installed} does not match image version ${expected}." >&2
   exit 1

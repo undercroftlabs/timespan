@@ -31,8 +31,8 @@ jobs:
         id: image
         run: |
           set -euo pipefail
-          IMAGE="$(node tools/playwright-image.cjs)"
-          VERSION="$(node tools/playwright-image.cjs --version)"
+          IMAGE="$(node tools/playwright-image.mjs)"
+          VERSION="$(node tools/playwright-image.mjs --version)"
           echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "Playwright image ${IMAGE}"
@@ -61,7 +61,7 @@ jobs:
 
       - name: Resolve latest supported Node LTS
         id: node
-        run: node tools/supported-node-versions.cjs --github-output
+        run: node tools/supported-node-versions.mjs --github-output
 
       - uses: pnpm/action-setup@v4
 
