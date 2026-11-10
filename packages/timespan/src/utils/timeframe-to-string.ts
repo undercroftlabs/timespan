@@ -1,6 +1,6 @@
+import { TimeUnit } from '../types';
 import { TimeFrame } from '../types/timeframe';
-import { isValidTimeUnit } from '../type-utils/is-valid-time-unit';
-import { getConverter } from '../unit-conversion-map';
+import { getConverter, getTimeUnits } from '../unit-conversion-map';
 
 /**
  * Calculates a string representation of a TimeFrame.
@@ -14,8 +14,8 @@ export function timeFrameToString(timeFrame: TimeFrame): string {
   for (const unit of Object.keys(timeFrame)) {
     const numericValue = Number(timeFrame[unit]);
     // Check if the value is non-zero and append to the timespanParts
-    if (numericValue !== 0 && isValidTimeUnit(unit)) {
-      const abbreviation = getConverter(unit).abbreviation;
+    if (numericValue !== 0 && getTimeUnits().includes(unit as TimeUnit)) {
+      const abbreviation = getConverter(unit as TimeUnit).abbreviation;
       timespanParts.push(`${numericValue}${abbreviation}`);
     }
   }

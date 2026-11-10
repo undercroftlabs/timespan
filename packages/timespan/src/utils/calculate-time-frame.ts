@@ -1,5 +1,4 @@
 import { TimeFrame } from '../types/timeframe';
-import { createTimeframe } from '../type-utils/create-timeframe';
 import Constants from '../constants';
 import { getConverter } from '../unit-conversion-map';
 
@@ -10,7 +9,16 @@ import { getConverter } from '../unit-conversion-map';
  * @returns The TimeFrame object representing the timespan.
  */
 export function calculateTimeFrame(startDate: Date, endDate: Date): TimeFrame {
-  const timeFrame: TimeFrame = createTimeframe();
+  const timeFrame: TimeFrame = {
+    years: 0,
+    months: 0,
+    weeks: 0,
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    milliseconds: 0,
+  };
   const tempDate = new Date(startDate);
 
   // Calculating the years and months is... complicated.

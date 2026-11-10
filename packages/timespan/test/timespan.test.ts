@@ -11,7 +11,7 @@ describe('Timespan', () => {
       const startDate = new Date('2023-06-01');
       const endDate = new Date('2023-05-31');
       expect(() => new Timespan(startDate, endDate)).toThrow(
-        'Start date cannot be greater than end date.',
+        'Invalid date range: expected the start date to be less than or equal to the end date.',
       );
     });
   });
@@ -71,7 +71,7 @@ describe('Timespan', () => {
     it('should throw an error for invalid date input', () => {
       const startDate = '2023-05-01' as unknown as Date;
       expect(() => Timespan.fromUnits(5, 'year', startDate)).toThrow(
-        'Invalid date input.',
+        'Invalid date: expected a valid Date.',
       );
     });
 
@@ -326,12 +326,12 @@ describe('Timespan', () => {
     it('should throw an error for an invalid unit', () => {
       expect(() => {
         Timespan.fromString('1y 2M 3w 4d 5x');
-      }).toThrow('Invalid date unit: x');
+      }).toThrow('Invalid time unit: expected a recognized time unit.');
     });
 
     it('should throw an error for invalid unit', () => {
       expect(() => Timespan.fromString('5 unknownUnit')).toThrow(
-        'Invalid date unit: unknownUnit.',
+        'Invalid time unit: expected a recognized time unit.',
       );
     });
 
@@ -345,7 +345,7 @@ describe('Timespan', () => {
 
       expect(first.toString()).toBe('1h');
       expect(() => Timespan.fromString('1h 2x', startDate)).toThrow(
-        'Invalid date unit: x.',
+        'Invalid time unit: expected a recognized time unit.',
       );
 
       const third = Timespan.fromString('1h', startDate);
@@ -378,19 +378,19 @@ describe('Timespan', () => {
 
     it('should throw an error for input that contains invalid character " Hello World"', () => {
       expect(() => Timespan.fromString(' Hello World')).toThrow(
-        'Invalid date unit: Hello',
+        'Invalid time unit: expected a recognized time unit.',
       );
     });
 
     it('should throw an error for input that contains invalid character "Hello\\tWorld"', () => {
       expect(() => Timespan.fromString('Hello\tWorld')).toThrow(
-        'Invalid date unit: Hello',
+        'Invalid time unit: expected a recognized time unit.',
       );
     });
 
     it('should throw an error for input that contains invalid character "Hello\\nWorld"', () => {
       expect(() => Timespan.fromString('Hello\nWorld')).toThrow(
-        'Invalid date unit: Hello',
+        'Invalid time unit: expected a recognized time unit.',
       );
     });
   });

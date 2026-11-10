@@ -10,6 +10,7 @@
     "postinstall": "husky",
     "build": "pnpm --filter @undercroft/timespan build",
     "lint": "oxlint . && oxfmt --check",
+    "lint:fix": "oxlint . && oxfmt",
     "test": "pnpm --filter @undercroft/timespan test",
     "test:cov": "pnpm --filter @undercroft/timespan test:cov",
     "test:ci": "pnpm --filter @undercroft/timespan test:ci",

@@ -1,13 +1,16 @@
-import { isValidTimeUnit } from '../type-utils/is-valid-time-unit';
 import { TimeUnit } from '../types';
+import { getTimeUnits } from '../unit-conversion-map';
 
 /**
- * Asserts that the given unit is part of the time unit conversion table.
- * @param unit - The time unit to validate.
- * @throws {Error} if the unit is not recognized.
+ * Asserts that `unit` is an alias in the time unit conversion table.
+ * @param unit - Value to check. `null`, `undefined`, unknown names, and any
+ * other non-unit are rejected.
+ * @throws {Error} `Invalid time unit: expected a recognized time unit.`
+ * @example
+ * assertValidTimeUnit('day');
  */
 export function assertValidTimeUnit(unit: unknown): asserts unit is TimeUnit {
-  if (!isValidTimeUnit(unit)) {
-    throw new Error(`Invalid date unit: ${unit}.`);
+  if (!getTimeUnits().includes(unit as TimeUnit)) {
+    throw new Error('Invalid time unit: expected a recognized time unit.');
   }
 }

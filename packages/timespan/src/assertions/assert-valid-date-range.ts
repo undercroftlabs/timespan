@@ -1,13 +1,23 @@
-import { isValidDateRange } from '../type-utils/is-valid-date-range';
-
 /**
- * Asserts that the start date is not after the end date.
- * @param startDate - The proposed start date.
- * @param endDate - The proposed end date.
- * @throws {Error} if the date range is invalid.
+ * Asserts that `startDate` and `endDate` are valid dates and that the start
+ * is less than or equal to the end. Equal instants are accepted.
+ * @param startDate - Proposed start. Non-dates and invalid dates are rejected.
+ * @param endDate - Proposed end. Non-dates and invalid dates are rejected.
+ * @throws {Error} `Invalid date range: expected the start date to be less than or equal to the end date.`
+ * @example
+ * assertValidDateRange(new Date(0), new Date(1));
  */
-export function assertValidDateRange(startDate: Date, endDate: Date): void {
-  if (!isValidDateRange(startDate, endDate)) {
-    throw new Error('Start date cannot be greater than end date.');
+export function assertValidDateRange(
+  startDate: unknown,
+  endDate: unknown,
+): void {
+  if (
+    !(startDate instanceof Date) ||
+    !(endDate instanceof Date) ||
+    !(startDate.getTime() <= endDate.getTime())
+  ) {
+    throw new Error(
+      'Invalid date range: expected the start date to be less than or equal to the end date.',
+    );
   }
 }

@@ -2,7 +2,6 @@ import { TimeFrame } from './types/timeframe';
 import { TimeUnit } from './types';
 import { calculateTimeFrame, timeFrameToString } from './utils';
 import { getConverter } from './unit-conversion-map';
-import { createTimeframe } from './type-utils/create-timeframe';
 import * as Assertions from './assertions';
 import Constants from './constants';
 
@@ -84,7 +83,16 @@ export class Timespan {
     Assertions.assertMaxInputLength(input);
     Assertions.assertAllowedCharacters(input);
 
-    const timeframe: TimeFrame = createTimeframe();
+    const timeframe: TimeFrame = {
+      years: 0,
+      months: 0,
+      weeks: 0,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+    };
 
     // Clone the pattern per call. The shared constant is global, so a throw
     // mid-parse would otherwise leave lastIndex advanced for the next call.
