@@ -1,3 +1,4 @@
+import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { MonthUnit } from '../types';
@@ -75,6 +76,8 @@ export class MonthConverter extends DateUnitConverter {
    * @throws {Error} if the input date is invalid or if the number of months is negative.
    */
   public add(months: number, startDate: Date): Date {
+    assertValidDate(startDate);
+
     const newDate = new Date(startDate.getTime());
     const originalDay = newDate.getUTCDate();
     const originalHours = newDate.getUTCHours();
