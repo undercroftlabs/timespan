@@ -45,7 +45,7 @@ module.exports = [
     },
   },
   {
-    files: ['src/**/*.ts'],
+    files: ['packages/timespan/src/**/*.ts'],
     rules: {
       'no-console': 'error',
     },

@@ -1,0 +1,10 @@
+packages:
+  - "packages/*"
+  - "tests/*"
+
+preferWorkspacePackages: true
+
+allowBuilds:
+  esbuild: true
+  "@swc/core": true
+  "@parcel/watcher": true

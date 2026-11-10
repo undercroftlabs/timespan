@@ -2,7 +2,7 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/../.." && pwd)"
-script="${root}/tests/browser/run-in-docker.sh"
+script="${root}/tests/bundle-e2e/run-in-docker.sh"
 
 fail() {
   echo "FAIL: $*" >&2

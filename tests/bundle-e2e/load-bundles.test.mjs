@@ -25,14 +25,14 @@ function assertCanonicalTimespan(Timespan) {
   assert.equal(timespan.toString(), '1y 2M 3w 4d 5h 6m 7s 8ms');
 }
 
-test('CommonJS distribution exports Timespan', () => {
-  const loaded = require('../dist/index.js');
+test('CommonJS entry resolves from the installed package', () => {
+  const loaded = require('@undercroft/timespan');
   assert.equal(typeof loaded.Timespan, 'function');
   assertCanonicalTimespan(loaded.Timespan);
 });
 
-test('ESM distribution exports Timespan as named and default', async () => {
-  const loaded = await import('../dist/index.mjs');
+test('ESM entry resolves from the installed package', async () => {
+  const loaded = await import('@undercroft/timespan');
   assert.equal(typeof loaded.Timespan, 'function');
   assert.equal(loaded.default, loaded.Timespan);
   assertCanonicalTimespan(loaded.Timespan);

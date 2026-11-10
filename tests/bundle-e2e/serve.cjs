@@ -3,10 +3,15 @@
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
+const { createRequire } = require('node:module');
 
-const repoRoot = path.resolve(__dirname, '../..');
+const requireFromPackage = createRequire(__filename);
+const packageJsonPath = requireFromPackage.resolve(
+  '@undercroft/timespan/package.json',
+);
+const packageRoot = path.dirname(packageJsonPath);
+const packageJson = requireFromPackage(packageJsonPath);
 const fixturesRoot = path.join(__dirname, 'fixtures');
-const distRoot = path.join(repoRoot, 'dist');
 const port = Number(process.env.PLAYWRIGHT_SERVER_PORT || 4173);
 const host = '127.0.0.1';
 
@@ -17,15 +22,29 @@ const mimeTypes = {
   '.mjs': 'text/javascript; charset=utf-8',
 };
 
+/**
+ * Resolve a published export target from the installed package.
+ * @param {string} exportPath
+ * @param {'import' | 'require'} condition
+ * @returns {string}
+ */
+function resolvePublishedFile(exportPath, condition) {
+  const entry = packageJson.exports[exportPath];
+  if (typeof entry === 'string') {
+    return path.join(packageRoot, entry);
+  }
+  const target =
+    typeof entry.default === 'string' ? entry.default : entry[condition].default;
+  return path.join(packageRoot, target);
+}
+
 const umdFixture = path.join(fixturesRoot, 'umd.html');
 const esmFixture = path.join(fixturesRoot, 'esm.html');
-const umdBundle = path.join(distRoot, 'index.umd.js');
-const umdSourceMap = path.join(distRoot, 'index.umd.js.map');
-const esmBundle = path.join(distRoot, 'index.mjs');
-const esmSourceMap = path.join(distRoot, 'index.mjs.map');
+const umdBundle = resolvePublishedFile('./umd', 'require');
+const esmBundle = resolvePublishedFile('.', 'import');
 
 /**
- * Map a request URL to a hardcoded fixture or dist file.
+ * Map a request URL to a fixture or a file from the installed package.
  * Only exact known paths are served so request data never reaches the filesystem.
  * @param {string} requestUrl
  * @returns {string | null}
@@ -47,11 +66,11 @@ function lookupAllowedFile(requestUrl) {
     case '/dist/index.umd.js':
       return umdBundle;
     case '/dist/index.umd.js.map':
-      return umdSourceMap;
+      return `${umdBundle}.map`;
     case '/dist/index.mjs':
       return esmBundle;
     case '/dist/index.mjs.map':
-      return esmSourceMap;
+      return `${esmBundle}.map`;
     default:
       return null;
   }

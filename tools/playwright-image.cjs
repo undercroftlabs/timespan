@@ -1,18 +1,19 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 
-const lockfilePath = path.join(__dirname, '..', 'package-lock.json');
-const lockfile = require(lockfilePath);
-const pkg = lockfile.packages && lockfile.packages['node_modules/@playwright/test'];
+const lockfilePath = path.join(__dirname, '..', 'pnpm-lock.yaml');
+const lockfile = fs.readFileSync(lockfilePath, 'utf8');
+const versionMatch = lockfile.match(/@playwright\/test@(\d+\.\d+\.\d+)/);
 
-if (!pkg || !pkg.version) {
+if (!versionMatch) {
   throw new Error(
-    'Could not read node_modules/@playwright/test version from package-lock.json',
+    'Could not read @playwright/test version from pnpm-lock.yaml',
   );
 }
 
-const version = pkg.version;
+const version = versionMatch[1];
 const image = `mcr.microsoft.com/playwright:v${version}-noble`;
 
 if (require.main === module) {

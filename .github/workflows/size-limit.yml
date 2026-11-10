@@ -16,16 +16,17 @@ jobs:
       - name: Resolve latest supported Node LTS
         id: node
         run: node tools/supported-node-versions.cjs --github-output
+      - uses: pnpm/action-setup@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ steps.node.outputs.latest }}.x
           registry-url: 'https://registry.npmjs.org'
-          cache: npm
+          cache: pnpm
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Build the project
-        run: npm run build
+        run: pnpm run build
       - name: Run size-limit
         uses: andresz1/size-limit-action@v1
         with:

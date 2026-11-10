@@ -41,7 +41,7 @@ function supportedNodeMajors(enginesNode) {
  * @returns {number[]}
  */
 function readFromPackage(root) {
-  const packageJsonPath = path.join(root, 'package.json');
+  const packageJsonPath = path.join(root, 'packages', 'timespan', 'package.json');
   const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
   return supportedNodeMajors(pkg.engines && pkg.engines.node);
 }

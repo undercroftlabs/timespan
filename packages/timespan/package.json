@@ -1,0 +1,106 @@
+{
+  "name": "@undercroft/timespan",
+  "version": "1.2.0",
+  "description": "Zero-dependency TypeScript library for parsing duration strings and calculating intervals between dates.",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./umd": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.umd.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": "^22.0.0 || ^24.0.0 || ^26.0.0"
+  },
+  "author": "Michael Goodwin <mikejg101@icloud.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/undercroftlabs/timespan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/undercroftlabs/timespan.git"
+  },
+  "keywords": [
+    "timespan",
+    "duration",
+    "date",
+    "time",
+    "datetime",
+    "timeframe",
+    "interval",
+    "javascript",
+    "typescript",
+    "time parser",
+    "time formatter",
+    "human-readable",
+    "date math",
+    "date utilities",
+    "date calculation",
+    "library",
+    "esm",
+    "umd",
+    "node",
+    "browser",
+    "undercroft"
+  ],
+  "bugs": {
+    "url": "https://github.com/undercroftlabs/timespan/issues"
+  },
+  "jest-junit": {
+    "outputDirectory": "./reports",
+    "outputName": "junit.xml"
+  },
+  "scripts": {
+    "prepublishOnly": "pnpm run test:dist",
+    "build": "pnpm run clean && tsup src/index.ts --dts --format esm,cjs --minify --sourcemap --out-dir dist && pnpm run build:umd",
+    "build:umd": "rollup -c",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "package": "pnpm run build && npm pack",
+    "test:dist": "pnpm run build && pnpm run test:dist:lint && pnpm run test:dist:types && pnpm run test:dist:load",
+    "test:dist:lint": "publint --strict --pack npm",
+    "test:dist:types": "attw --pack . --entrypoints .",
+    "test:dist:load": "pnpm --filter @undercroft/timespan-bundle-e2e test:load",
+    "test": "jest --no-cache --runInBand",
+    "test:cov": "jest --coverage --no-cache --runInBand",
+    "test:junit": "cross-env JEST_JUNIT_CLASSNAME={filepath} jest --reporters=jest-junit",
+    "test:ci": "cross-env JEST_JUNIT_CLASSNAME={filepath} jest --coverage --no-cache --runInBand --reporters=default --reporters=jest-junit",
+    "sandbox": "ts-node ./sandbox.ts"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@codecov/rollup-plugin": "^2.0.1",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^1.0.2",
+    "@swc/core": "^1.16.21",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.6.6",
+    "cross-env": "^10.1.0",
+    "dotenv": "^18.0.9",
+    "jest": "^30.5.2",
+    "jest-junit": "^17.0.0",
+    "publint": "^0.3.25",
+    "ts-jest": "^29.4.15",
+    "ts-loader": "^9.6.2",
+    "ts-node": "^10.9.2",
+    "tsup": "^9.0.0",
+    "typescript": "^6.0.3"
+  }
+}

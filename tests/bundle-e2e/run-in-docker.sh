@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Run TimeSpan Playwright browser tests in Podman or Docker.
 # Usage:
-#   npm run test:browser:docker
-#   CONTAINER_ENGINE=podman npm run test:browser:docker
-#   CONTAINER_ENGINE=docker npm run test:browser:docker
+#   pnpm run test:browser:docker
+#   CONTAINER_ENGINE=podman pnpm run test:browser:docker
+#   CONTAINER_ENGINE=docker pnpm run test:browser:docker
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -54,7 +54,7 @@ resolve_engine() {
 
   echo "Neither Podman nor Docker is installed." >&2
   echo "On Fedora: sudo dnf install podman" >&2
-  echo "Or install Docker and retry. Native Chromium/Firefox: npm run test:browser" >&2
+  echo "Or install Docker and retry. Native Chromium/Firefox: pnpm run test:browser" >&2
   return 1
 }
 
@@ -100,7 +100,7 @@ bind_mount_opts() {
 }
 
 if ! command -v node >/dev/null 2>&1; then
-  echo "Node.js is required on the host to resolve the Playwright image from package-lock.json." >&2
+  echo "Node.js is required on the host to resolve the Playwright image from pnpm-lock.yaml." >&2
   exit 1
 fi
 
@@ -155,25 +155,26 @@ set +e
 set -euo pipefail
 mkdir -p /tmp/work /tmp/npm-cache /out/playwright-report /out/test-results
 tar -C /src \
-  --exclude=./node_modules \
+  --exclude=node_modules \
   --exclude=./playwright-report \
   --exclude=./test-results \
-  --exclude=./coverage \
-  --exclude=./dist \
+  --exclude=coverage \
+  --exclude=dist \
   --exclude=./.git \
   --exclude=./reports \
   -cf - . | tar -C /tmp/work -xf -
 cd /tmp/work
-npm ci
-installed="$(node -p "require('./node_modules/@playwright/test/package.json').version")"
+corepack enable
+corepack pnpm install --frozen-lockfile
+installed="$(node -p "require('./tests/bundle-e2e/node_modules/@playwright/test/package.json').version")"
 expected="$(node tools/playwright-image.cjs --version)"
 if [ "$installed" != "$expected" ]; then
   echo "Playwright package ${installed} does not match image version ${expected}." >&2
   exit 1
 fi
-npm run build
+corepack pnpm run build
 set +e
-npx playwright test
+corepack pnpm --filter @undercroft/timespan-bundle-e2e test:playwright
 status=$?
 set -e
 if [ -d playwright-report ]; then

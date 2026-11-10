@@ -13,11 +13,11 @@
         "--runTestsByPath",
         "${jest.testFile}"
       ],
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/packages/timespan",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,
-      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "program": "${workspaceFolder}/packages/timespan/node_modules/.bin/jest",
       "windows": {
         "program": "${workspaceFolder}/node_modules/jest/bin/jest"
       }

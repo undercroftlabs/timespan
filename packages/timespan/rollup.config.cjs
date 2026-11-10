@@ -18,7 +18,7 @@ module.exports = {
     terser(),
     codecovRollupPlugin({
       enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
-      bundleName: 'mikejg101/timespan',
+      bundleName: '@undercroft/timespan',
       uploadToken: process.env.CODECOV_TOKEN,
     }),
   ],
