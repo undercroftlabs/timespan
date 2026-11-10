@@ -151,31 +151,33 @@ describe('MillisecondConverter', () => {
       const bigintValue = Function('return 1n')();
 
       test.each`
-        label                                | milliseconds                        | start
-        ${'negative one millisecond'}        | ${-1}                               | ${epoch}
-        ${'negative half millisecond'}       | ${-0.5}                             | ${epoch}
-        ${'negative fraction'}               | ${-1.5}                             | ${epoch}
-        ${'large negative amount'}           | ${-10_000}                          | ${epoch}
-        ${'negative Infinity amount'}        | ${Number.NEGATIVE_INFINITY}         | ${epoch}
-        ${'NaN amount'}                      | ${Number.NaN}                       | ${epoch}
-        ${'Infinity amount'}                 | ${Number.POSITIVE_INFINITY}         | ${epoch}
-        ${'string amount'}                   | ${'5' as unknown as number}         | ${epoch}
-        ${'empty string amount'}             | ${'' as unknown as number}          | ${epoch}
-        ${'null amount'}                     | ${null as unknown as number}        | ${epoch}
-        ${'undefined amount'}                | ${undefined as unknown as number}   | ${epoch}
-        ${'boolean amount'}                  | ${true as unknown as number}        | ${epoch}
-        ${'object amount'}                   | ${{} as unknown as number}          | ${epoch}
-        ${'array amount'}                    | ${[1] as unknown as number}         | ${epoch}
-        ${'bigint amount'}                   | ${bigintValue as unknown as number} | ${epoch}
-        ${'invalid start date'}              | ${1}                                | ${new Date(Number.NaN)}
-        ${'invalid start from empty string'} | ${1}                                | ${new Date('')}
-        ${'invalid start from Infinity'}     | ${1}                                | ${new Date(Number.POSITIVE_INFINITY)}
-        ${'null start'}                      | ${1}                                | ${null as unknown as Date}
-        ${'undefined start'}                 | ${1}                                | ${undefined as unknown as Date}
-        ${'numeric start'}                   | ${1}                                | ${0 as unknown as Date}
-        ${'string start'}                    | ${1}                                | ${'2023-05-01' as unknown as Date}
-        ${'plain object start'}              | ${1}                                | ${{} as unknown as Date}
-        ${'object with getTime'}             | ${1}                                | ${{ getTime: () => 0 } as unknown as Date}
+        label                                      | milliseconds                        | start
+        ${'negative one millisecond'}              | ${-1}                               | ${epoch}
+        ${'negative half millisecond'}             | ${-0.5}                             | ${epoch}
+        ${'negative fraction'}                     | ${-1.5}                             | ${epoch}
+        ${'large negative amount'}                 | ${-10_000}                          | ${epoch}
+        ${'negative Infinity amount'}              | ${Number.NEGATIVE_INFINITY}         | ${epoch}
+        ${'NaN amount'}                            | ${Number.NaN}                       | ${epoch}
+        ${'Infinity amount'}                       | ${Number.POSITIVE_INFINITY}         | ${epoch}
+        ${'string amount'}                         | ${'5' as unknown as number}         | ${epoch}
+        ${'empty string amount'}                   | ${'' as unknown as number}          | ${epoch}
+        ${'null amount'}                           | ${null as unknown as number}        | ${epoch}
+        ${'undefined amount'}                      | ${undefined as unknown as number}   | ${epoch}
+        ${'boolean amount'}                        | ${true as unknown as number}        | ${epoch}
+        ${'object amount'}                         | ${{} as unknown as number}          | ${epoch}
+        ${'array amount'}                          | ${[1] as unknown as number}         | ${epoch}
+        ${'bigint amount'}                         | ${bigintValue as unknown as number} | ${epoch}
+        ${'invalid start date'}                    | ${1}                                | ${new Date(Number.NaN)}
+        ${'invalid start from empty string'}       | ${1}                                | ${new Date('')}
+        ${'invalid start from Infinity'}           | ${1}                                | ${new Date(Number.POSITIVE_INFINITY)}
+        ${'null start'}                            | ${1}                                | ${null as unknown as Date}
+        ${'undefined start'}                       | ${1}                                | ${undefined as unknown as Date}
+        ${'numeric start'}                         | ${1}                                | ${0 as unknown as Date}
+        ${'string start'}                          | ${1}                                | ${'2023-05-01' as unknown as Date}
+        ${'plain object start'}                    | ${1}                                | ${{} as unknown as Date}
+        ${'object with getTime'}                   | ${1}                                | ${{ getTime: () => 0 } as unknown as Date}
+        ${'one past the maximum span'}             | ${maxTimestamp + 1}                 | ${epoch}
+        ${'one millisecond past the maximum date'} | ${1}                                | ${new Date(maxTimestamp)}
       `(
         'throws for $label',
         ({ milliseconds, start }: { milliseconds: number; start: Date }) => {
