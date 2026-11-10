@@ -1,3 +1,4 @@
+import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { WeekUnit } from '../types';
@@ -71,6 +72,8 @@ export class WeekConverter extends DateUnitConverter {
    * @throws {Error} if the input date is invalid or if the number of weeks is negative.
    */
   public add(weeks: number, startDate: Date): Date {
+    assertValidDate(startDate);
+
     const weeksInMilliseconds = weeks * this.millisecondsPerUnit;
     const addedMilliseconds = startDate.getTime() + weeksInMilliseconds;
     return new Date(addedMilliseconds);
