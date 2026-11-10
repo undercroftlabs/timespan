@@ -133,6 +133,11 @@ describe('MonthConverter', () => {
 
       test.each`
         label                                | months                              | start
+        ${'negative one month'}              | ${-1}                               | ${epoch}
+        ${'negative half month'}             | ${-0.5}                             | ${epoch}
+        ${'negative fraction'}               | ${-1.5}                             | ${epoch}
+        ${'large negative amount'}           | ${-10_000}                          | ${epoch}
+        ${'negative Infinity amount'}        | ${Number.NEGATIVE_INFINITY}         | ${epoch}
         ${'bigint amount'}                   | ${bigintValue as unknown as number} | ${epoch}
         ${'invalid start date'}              | ${1}                                | ${new Date(Number.NaN)}
         ${'invalid start from empty string'} | ${1}                                | ${new Date('')}

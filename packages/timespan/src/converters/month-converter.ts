@@ -78,6 +78,12 @@ export class MonthConverter extends DateUnitConverter {
   public add(months: number, startDate: Date): Date {
     assertValidDate(startDate);
 
+    if (months < 0) {
+      throw new Error(
+        'Invalid number of months: expected zero or a positive number.',
+      );
+    }
+
     const newDate = new Date(startDate.getTime());
     const originalDay = newDate.getUTCDate();
     const originalHours = newDate.getUTCHours();
