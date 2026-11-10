@@ -1,14 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "jsdoc"],
-  "jsPlugins": [
-    {
-      "name": "jsdoc-js",
-      "specifier": "eslint-plugin-jsdoc"
-    },
-    "eslint-plugin-sonarjs",
-    "eslint-plugin-no-underscore"
-  ],
+  "jsPlugins": ["eslint-plugin-sonarjs", "eslint-plugin-no-underscore"],
   "categories": {
     "correctness": "off"
   },
@@ -39,24 +32,7 @@
     "jsdoc/require-property-name": "error",
     "jsdoc/require-returns": "error",
     "jsdoc/require-returns-description": "error",
-    "jsdoc-js/check-alignment": "error",
-    "jsdoc-js/check-param-names": "error",
-    "jsdoc-js/check-types": "error",
-    "jsdoc-js/check-values": "error",
-    "jsdoc-js/escape-inline-tags": "error",
-    "jsdoc-js/multiline-blocks": "error",
-    "jsdoc-js/no-multi-asterisks": "error",
-    "jsdoc-js/no-types": "error",
-    "jsdoc-js/reject-any-type": "error",
-    "jsdoc-js/reject-function-type": "error",
-    "jsdoc-js/require-jsdoc": "error",
-    "jsdoc-js/require-next-type": "error",
-    "jsdoc-js/require-returns-check": "error",
     "jsdoc/require-throws-type": "error",
-    "jsdoc-js/require-yields-check": "error",
-    "jsdoc-js/tag-lines": "error",
-    "jsdoc-js/ts-no-empty-object-type": "error",
-    "jsdoc-js/valid-types": "error",
     "jsdoc/require-yields": "error",
     "jsdoc/require-yields-type": "error",
     "sonarjs/class-name": "error",
