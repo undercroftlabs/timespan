@@ -68,6 +68,12 @@ export class SecondConverter extends DateUnitConverter {
   public add(seconds: number, startDate: Date): Date {
     assertValidDate(startDate);
 
+    if (seconds < 0) {
+      throw new Error(
+        'Invalid number of seconds: expected zero or a positive number.',
+      );
+    }
+
     return new Date(startDate.getTime() + seconds * this.millisecondsPerUnit);
   }
 }
