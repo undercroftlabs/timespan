@@ -14,7 +14,6 @@
     "test:cov": "pnpm --filter @undercroft/timespan test:cov",
     "test:ci": "pnpm --filter @undercroft/timespan test:ci",
     "test:dist": "pnpm --filter @undercroft/timespan test:dist",
-    "test:e2e": "pnpm --filter @undercroft/timespan build && pnpm --filter @undercroft/timespan-bundle-e2e test",
     "test:browser": "pnpm --filter @undercroft/timespan build && pnpm --filter @undercroft/timespan-bundle-e2e test:playwright",
     "test:browser:ui": "pnpm --filter @undercroft/timespan build && pnpm --filter @undercroft/timespan-bundle-e2e test:ui",
     "test:browser:headed": "pnpm --filter @undercroft/timespan build && pnpm --filter @undercroft/timespan-bundle-e2e test:headed",

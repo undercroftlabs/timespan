@@ -57,22 +57,15 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'node-bundles',
-      testMatch: /bundles\.spec\.ts/,
-    },
-    {
       name: 'chromium',
-      testIgnore: /bundles\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'firefox',
-      testIgnore: /bundles\.spec\.ts/,
       use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'webkit',
-      testIgnore: /bundles\.spec\.ts/,
       use: { ...devices['Desktop Safari'] },
     },
   ],
