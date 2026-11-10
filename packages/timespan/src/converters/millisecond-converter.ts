@@ -1,3 +1,4 @@
+import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import { MillisecondUnit } from '../types';
 import { DateUnitConverter } from './date-unit-converter';
@@ -65,6 +66,8 @@ export class MillisecondConverter extends DateUnitConverter {
    * @throws {Error} if the input date is invalid or if the number of milliseconds is negative.
    */
   public add(milliseconds: number, startDate: Date): Date {
+    assertValidDate(startDate);
+
     return new Date(startDate.getTime() + milliseconds);
   }
 }
