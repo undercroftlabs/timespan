@@ -70,7 +70,7 @@ export class MinuteConverter extends DateUnitConverter {
   public add(minutes: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (minutes < 0) {
+    if (!Number.isFinite(minutes) || minutes < 0) {
       throw new Error(
         'Invalid number of minutes: expected zero or a positive number.',
       );

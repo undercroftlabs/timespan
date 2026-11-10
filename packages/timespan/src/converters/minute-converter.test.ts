@@ -156,6 +156,15 @@ describe('MinuteConverter', () => {
         ${'negative fraction'}               | ${-1.5}                             | ${epoch}
         ${'large negative amount'}           | ${-10_000}                          | ${epoch}
         ${'negative Infinity amount'}        | ${Number.NEGATIVE_INFINITY}         | ${epoch}
+        ${'NaN amount'}                      | ${Number.NaN}                       | ${epoch}
+        ${'Infinity amount'}                 | ${Number.POSITIVE_INFINITY}         | ${epoch}
+        ${'string amount'}                   | ${'5' as unknown as number}         | ${epoch}
+        ${'empty string amount'}             | ${'' as unknown as number}          | ${epoch}
+        ${'null amount'}                     | ${null as unknown as number}        | ${epoch}
+        ${'undefined amount'}                | ${undefined as unknown as number}   | ${epoch}
+        ${'boolean amount'}                  | ${true as unknown as number}        | ${epoch}
+        ${'object amount'}                   | ${{} as unknown as number}          | ${epoch}
+        ${'array amount'}                    | ${[1] as unknown as number}         | ${epoch}
         ${'bigint amount'}                   | ${bigintValue as unknown as number} | ${epoch}
         ${'invalid start date'}              | ${1}                                | ${new Date(Number.NaN)}
         ${'invalid start from empty string'} | ${1}                                | ${new Date('')}
