@@ -73,6 +73,12 @@ export class DayConverter extends DateUnitConverter {
   public add(days: number, startDate: Date): Date {
     assertValidDate(startDate);
 
+    if (days < 0) {
+      throw new Error(
+        'Invalid number of days: expected zero or a positive number.',
+      );
+    }
+
     return new Date(startDate.getTime() + days * this.millisecondsPerUnit);
   }
 }
