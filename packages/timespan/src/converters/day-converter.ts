@@ -1,4 +1,5 @@
 import { assertValidDate } from '../assertions/assert-valid-date';
+import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { DayUnit } from '../types';
 import { DateUnitConverter } from './date-unit-converter';
@@ -44,17 +45,10 @@ export class DayConverter extends DateUnitConverter {
    * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
-    assertValidDate(startDate);
-    assertValidDate(endDate);
+    assertValidDateRange(startDate, endDate);
 
     const startMillis = startDate.getTime();
     const endMillis = endDate.getTime();
-
-    if (startMillis > endMillis) {
-      throw new Error(
-        'Invalid date range: expected the start date to be less than or equal to the end date.',
-      );
-    }
 
     const dayCount = Math.floor(
       (endMillis - startMillis) / this.millisecondsPerUnit,
