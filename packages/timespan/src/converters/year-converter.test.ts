@@ -143,6 +143,8 @@ describe('YearConverter', () => {
         ${'string start'}                    | ${1}                                | ${'2023-05-01' as unknown as Date}
         ${'plain object start'}              | ${1}                                | ${{} as unknown as Date}
         ${'object with getTime'}             | ${1}                                | ${{ getTime: () => 0 } as unknown as Date}
+        ${'a span past the maximum date'}    | ${300_000}                          | ${epoch}
+        ${'one year past the maximum date'}  | ${1}                                | ${new Date(maxTimestamp)}
       `(
         'throws for $label',
         ({ years, start }: { years: number; start: Date }) => {

@@ -100,6 +100,16 @@ export class YearConverter extends DateUnitConverter {
       dateWithYearsAdded.setUTCDate(YearConverter.february28);
     }
 
+    const time = dateWithYearsAdded.getTime();
+    if (
+      !Number.isFinite(time) ||
+      time > Constants.MaxSafeTimestamp ||
+      time < Constants.MinSafeTimestamp
+    ) {
+      throw new Error(
+        'Invalid number of years: expected a result within the representable date range.',
+      );
+    }
     return dateWithYearsAdded;
   }
 }
