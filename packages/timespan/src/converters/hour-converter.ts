@@ -1,3 +1,4 @@
+import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { HourUnit } from '../types';
@@ -69,6 +70,8 @@ export class HourConverter extends DateUnitConverter {
    * @throws {Error} if the input date is invalid or if the number of hours is negative.
    */
   public add(hours: number, startDate: Date): Date {
+    assertValidDate(startDate);
+
     return new Date(startDate.getTime() + hours * this.millisecondsPerUnit);
   }
 }

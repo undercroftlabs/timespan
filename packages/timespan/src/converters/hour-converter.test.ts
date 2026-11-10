@@ -141,13 +141,17 @@ describe('HourConverter', () => {
       const bigintValue = Function('return 1n')();
 
       test.each`
-        label                   | hours                               | start
-        ${'bigint amount'}      | ${bigintValue as unknown as number} | ${epoch}
-        ${'null start'}         | ${1}                                | ${null as unknown as Date}
-        ${'undefined start'}    | ${1}                                | ${undefined as unknown as Date}
-        ${'numeric start'}      | ${1}                                | ${0 as unknown as Date}
-        ${'string start'}       | ${1}                                | ${'2023-05-01' as unknown as Date}
-        ${'plain object start'} | ${1}                                | ${{} as unknown as Date}
+        label                                | hours                               | start
+        ${'bigint amount'}                   | ${bigintValue as unknown as number} | ${epoch}
+        ${'invalid start date'}              | ${1}                                | ${new Date(Number.NaN)}
+        ${'invalid start from empty string'} | ${1}                                | ${new Date('')}
+        ${'invalid start from Infinity'}     | ${1}                                | ${new Date(Number.POSITIVE_INFINITY)}
+        ${'null start'}                      | ${1}                                | ${null as unknown as Date}
+        ${'undefined start'}                 | ${1}                                | ${undefined as unknown as Date}
+        ${'numeric start'}                   | ${1}                                | ${0 as unknown as Date}
+        ${'string start'}                    | ${1}                                | ${'2023-05-01' as unknown as Date}
+        ${'plain object start'}              | ${1}                                | ${{} as unknown as Date}
+        ${'object with getTime'}             | ${1}                                | ${{ getTime: () => 0 } as unknown as Date}
       `(
         'throws for $label',
         ({ hours, start }: { hours: number; start: Date }) => {
