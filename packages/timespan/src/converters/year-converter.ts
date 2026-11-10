@@ -76,6 +76,12 @@ export class YearConverter extends DateUnitConverter {
   public add(years: number, startDate: Date): Date {
     assertValidDate(startDate);
 
+    if (years < 0) {
+      throw new Error(
+        'Invalid number of years: expected zero or a positive number.',
+      );
+    }
+
     const startYear = startDate.getUTCFullYear();
     const targetYear = startYear + years;
 
