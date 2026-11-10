@@ -65,8 +65,7 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm run test:dist",
-    "build": "pnpm run clean && tsup src/index.ts --dts --format esm,cjs --minify --sourcemap --out-dir dist && pnpm run build:umd",
-    "build:umd": "rollup -c",
+    "build": "tsdown",
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "package": "pnpm run build && npm pack",
     "test:dist": "pnpm run build && pnpm run test:dist:lint && pnpm run test:dist:types && pnpm run test:dist:load",
@@ -83,14 +82,13 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@codecov/rollup-plugin": "^2.0.1",
-    "@rollup/plugin-terser": "^1.0.2",
     "@size-limit/preset-small-lib": "^14.3.0",
     "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^4.0.0",
     "publint": "^0.3.25",
     "size-limit": "^14.3.0",
+    "tsdown": "^0.23.0",
     "vitest": "^4.0.0",
-    "tsup": "^9.0.0",
     "typescript": "catalog:"
   }
 }
