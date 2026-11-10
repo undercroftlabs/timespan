@@ -76,7 +76,7 @@
     "test:cov": "vitest run --coverage",
     "test:junit": "vitest run --reporter=default --reporter=junit",
     "test:ci": "vitest run --coverage --reporter=default --reporter=junit",
-    "sandbox": "node --experimental-strip-types ./sandbox.ts",
+    "sandbox": "node ./sandbox.ts",
     "size": "size-limit"
   },
   "devDependencies": {

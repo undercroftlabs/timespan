@@ -32,9 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.versions.outputs.matrix }}
-      latest: ${{ steps.versions.outputs.latest }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: versions
         run: node tools/supported-node-versions.mjs --github-output
 
@@ -51,12 +50,12 @@ jobs:
         node: ${{ fromJSON(needs.resolve-node.outputs.matrix) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: pnpm/action-setup@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm

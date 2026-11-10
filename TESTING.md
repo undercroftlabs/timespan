@@ -87,7 +87,7 @@ Pushes and pull requests targeting `main` or `release/**` run:
 - Playwright UMD and ESM tests in Chromium, Firefox, and WebKit (`browser-tests.yml`)
 - Coverage, size-limit, and bundle analysis workflows
 
-Supported Node versions come from `engines.node` in `package.json` (even-numbered, non-EOL LTS). CI expands that range into the Test matrix. Single-job workflows (Playwright, size-limit, publish) use the newest major in that list.
+Supported Node versions come from `engines.node` in `packages/timespan/package.json` (even-numbered, non-EOL LTS). CI expands that range into the Test matrix. Build, browser, coverage, size, and publish jobs run on Node 26.
 
 To add or drop a Node line:
 
