@@ -1,6 +1,7 @@
-import { DateUnitConverter } from './date-unit-converter';
+import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { YearUnit } from '../types';
+import { DateUnitConverter } from './date-unit-converter';
 
 /**
  * Represents a converter for the year unit.
@@ -53,6 +54,8 @@ export class YearConverter extends DateUnitConverter {
    * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
+    assertValidDateRange(startDate, endDate);
+
     let years = endDate.getUTCFullYear() - startDate.getUTCFullYear();
     // Calendar-year subtraction counts a January 1 crossing as a full year.
     // A year has elapsed only once add() would land on or before the end.
