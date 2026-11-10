@@ -105,6 +105,16 @@ export class MonthConverter extends DateUnitConverter {
       originalSeconds,
       originalMilliseconds,
     );
+    const time = newDate.getTime();
+    if (
+      !Number.isFinite(time) ||
+      time > Constants.MaxSafeTimestamp ||
+      time < Constants.MinSafeTimestamp
+    ) {
+      throw new Error(
+        'Invalid number of months: expected a result within the representable date range.',
+      );
+    }
     return newDate;
   }
 }

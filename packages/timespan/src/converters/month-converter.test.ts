@@ -157,6 +157,8 @@ describe('MonthConverter', () => {
         ${'string start'}                    | ${1}                                | ${'2023-05-01' as unknown as Date}
         ${'plain object start'}              | ${1}                                | ${{} as unknown as Date}
         ${'object with getTime'}             | ${1}                                | ${{ getTime: () => 0 } as unknown as Date}
+        ${'a span past the maximum date'}    | ${10_000_000}                       | ${epoch}
+        ${'one month past the maximum date'} | ${1}                                | ${new Date(maxTimestamp)}
       `(
         'throws for $label',
         ({ months, start }: { months: number; start: Date }) => {
