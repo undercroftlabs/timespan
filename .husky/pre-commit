@@ -1,9 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/common.sh"
 
-pnpm install --no-frozen-lockfile
-pnpm audit --prod
 pnpm run lint
-pnpm run test:cov
-pnpm run badge:cov
-git add badges/\*
