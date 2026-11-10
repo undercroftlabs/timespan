@@ -9,21 +9,27 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Resolve latest supported Node LTS
+        id: node
+        run: node tools/supported-node-versions.cjs --github-output
+
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ steps.node.outputs.latest }}.x
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - uses: ArtiomTr/jest-coverage-report-action@v2.2.4
-        with:
-          package-manager: pnpm
-          test-script: test:cov
-          working-directory: packages/timespan
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests with coverage
+        run: pnpm run test:cov
