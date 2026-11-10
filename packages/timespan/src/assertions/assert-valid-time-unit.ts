@@ -4,7 +4,7 @@ import { TimeUnit } from '../types';
 /**
  * Asserts that the given unit is part of the time unit conversion table.
  * @param unit - The time unit to validate.
- * @throws Error if the unit is not recognized.
+ * @throws {Error} if the unit is not recognized.
  */
 export function assertValidTimeUnit(unit: unknown): asserts unit is TimeUnit {
   if (!isValidTimeUnit(unit)) {

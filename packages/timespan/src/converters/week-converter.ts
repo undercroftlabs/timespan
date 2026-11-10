@@ -47,7 +47,7 @@ export class WeekConverter extends DateUnitConverter {
    * @param startDate - The start date.
    * @param endDate - The end date.
    * @returns The number of weeks between the two dates.
-   * @throws Error if the input dates are invalid or if the start date is greater than the end date.
+   * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
     return Math.floor(
@@ -60,7 +60,7 @@ export class WeekConverter extends DateUnitConverter {
    * @param weeks - The number of weeks to add.
    * @param startDate - The start date.
    * @returns The new date after adding the weeks.
-   * @throws Error if the input date is invalid or if the number of weeks is negative.
+   * @throws {Error} if the input date is invalid or if the number of weeks is negative.
    */
   public add(weeks: number, startDate: Date): Date {
     const weeksInMilliseconds = weeks * this.millisecondsPerUnit;

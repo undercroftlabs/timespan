@@ -8,33 +8,28 @@ describe('YearConverter', () => {
   });
 
   describe('between', () => {
-    it('should calculate the number of years between two dates', () => {
-      const startDate = new Date('2020-01-01T00:00:00');
-      const endDate = new Date('2023-01-01T00:00:00');
-      const result = yearConverter.between(startDate, endDate);
-      expect(result).toBe(3);
-    });
-
-    it('should calculate the correct number of years when range falls within a leap year', () => {
-      const startDate = new Date('2020-02-29T00:00:00');
-      const endDate = new Date('2024-02-29T00:00:00');
-      const result = yearConverter.between(startDate, endDate);
-      expect(result).toEqual(4);
-    });
-
-    it('should calculate the correct number of years when range does not fall within a leap year', () => {
-      const startDate = new Date('2021-02-28T00:00:00');
-      const endDate = new Date('2024-02-28T00:00:00');
-      const result = yearConverter.between(startDate, endDate);
-      expect(result).toEqual(3);
-    });
-
-    it('should increment totalYears when range covers a leap year', () => {
-      const startDate = new Date('2020-01-01');
-      const endDate = new Date('2021-12-31');
-      const result = yearConverter.between(startDate, endDate);
-      expect(result).toEqual(1);
-    });
+    it.each`
+      label                                              | start                    | end                      | years
+      ${'whole years'}                                   | ${'2020-01-01T00:00:00'} | ${'2023-01-01T00:00:00'} | ${3}
+      ${'a range that falls within a leap year'}         | ${'2020-02-29T00:00:00'} | ${'2024-02-29T00:00:00'} | ${4}
+      ${'a range that does not fall within a leap year'} | ${'2021-02-28T00:00:00'} | ${'2024-02-28T00:00:00'} | ${3}
+      ${'a range that covers a leap year'}               | ${'2020-01-01'}          | ${'2021-12-31'}          | ${1}
+    `(
+      'counts $label',
+      ({
+        start,
+        end,
+        years,
+      }: {
+        start: string;
+        end: string;
+        years: number;
+      }) => {
+        expect(yearConverter.between(new Date(start), new Date(end))).toBe(
+          years,
+        );
+      },
+    );
   });
 
   describe('add', () => {

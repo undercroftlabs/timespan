@@ -5,7 +5,11 @@
 
 import { Timespan } from '../src';
 
-// Deterministic PRNG (mulberry32) so fuzz runs are reproducible.
+/**
+ * Deterministic mulberry32 PRNG so fuzz runs are reproducible.
+ * @param seed - Initial 32-bit seed.
+ * @returns A function that yields the next value in the range `[0, 1)`.
+ */
 function mulberry32(seed: number) {
   let a = seed >>> 0;
   return () => {

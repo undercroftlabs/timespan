@@ -123,7 +123,9 @@ describe('assertAllowedCharacters', () => {
       'throws "Invalid input string: expected letters, digits, and whitespace only." for $label',
       ({ value }: { value: unknown }) => {
         expect(() => assertAllowedCharacters(value)).toThrow(
-          new Error('Invalid input string: expected letters, digits, and whitespace only.'),
+          new Error(
+            'Invalid input string: expected letters, digits, and whitespace only.',
+          ),
         );
       },
     );
@@ -131,7 +133,9 @@ describe('assertAllowedCharacters', () => {
 
   it('still accepts a valid string after rejecting an invalid one', () => {
     expect(() => assertAllowedCharacters('1-day')).toThrow(
-      new Error('Invalid input string: expected letters, digits, and whitespace only.'),
+      new Error(
+        'Invalid input string: expected letters, digits, and whitespace only.',
+      ),
     );
     expect(assertAllowedCharacters('1 day')).toBeUndefined();
     expect(assertAllowedCharacters('1 day')).toBeUndefined();

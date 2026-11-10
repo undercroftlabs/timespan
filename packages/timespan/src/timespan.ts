@@ -73,9 +73,12 @@ export class Timespan {
    * @param input - The input string representing the timespan.
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan instance representing the parsed timespan.
-   * @throws Error if the input is invalid, contains an invalid unit, repeats a unit, or uses a fractional value. Use the unit factories (for example fromHours) for fractions of fixed-length units.
+   * @throws {Error} if the input is invalid, contains an invalid unit, repeats a unit, or uses a fractional value. Use the unit factories (for example fromHours) for fractions of fixed-length units.
    */
-  public static fromString = (input: string, startDate?: Date): Timespan => {
+  public static readonly fromString = (
+    input: string,
+    startDate?: Date,
+  ): Timespan => {
     const start = startDate ? startDate : new Date();
     Assertions.assertValidDate(start);
     Assertions.assertMaxInputLength(input);
@@ -170,7 +173,7 @@ export class Timespan {
    * @param startDate - The date to start from.
    * @returns A Timespan object representing the specified number of time units.
    */
-  public static fromUnits = (
+  public static readonly fromUnits = (
     amount: number,
     unit: TimeUnit,
     startDate?: Date,
@@ -193,7 +196,7 @@ export class Timespan {
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan object representing the specified number of milliseconds.
    */
-  public static fromMilliseconds = (
+  public static readonly fromMilliseconds = (
     millis: number,
     startDate?: Date,
   ): Timespan => this.fromUnits(millis, 'milliseconds', startDate);
@@ -204,8 +207,10 @@ export class Timespan {
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan object representing the specified number of seconds.
    */
-  public static fromSeconds = (seconds: number, startDate?: Date): Timespan =>
-    this.fromUnits(seconds, 'seconds', startDate);
+  public static readonly fromSeconds = (
+    seconds: number,
+    startDate?: Date,
+  ): Timespan => this.fromUnits(seconds, 'seconds', startDate);
 
   /**
    * Creates a Timespan object from a specified number of minutes.
@@ -213,8 +218,10 @@ export class Timespan {
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan object representing the specified number of minutes.
    */
-  public static fromMinutes = (minutes: number, startDate?: Date): Timespan =>
-    this.fromUnits(minutes, 'minutes', startDate);
+  public static readonly fromMinutes = (
+    minutes: number,
+    startDate?: Date,
+  ): Timespan => this.fromUnits(minutes, 'minutes', startDate);
 
   /**
    * Creates a Timespan object from a specified number of hours.
@@ -222,8 +229,10 @@ export class Timespan {
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan object representing the specified number of hours.
    */
-  public static fromHours = (hours: number, startDate?: Date): Timespan =>
-    this.fromUnits(hours, 'hours', startDate);
+  public static readonly fromHours = (
+    hours: number,
+    startDate?: Date,
+  ): Timespan => this.fromUnits(hours, 'hours', startDate);
 
   /**
    * Creates a Timespan object from a specified number of days.
@@ -231,8 +240,10 @@ export class Timespan {
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan object representing the specified number of days.
    */
-  public static fromDays = (days: number, startDate?: Date): Timespan =>
-    this.fromUnits(days, 'days', startDate);
+  public static readonly fromDays = (
+    days: number,
+    startDate?: Date,
+  ): Timespan => this.fromUnits(days, 'days', startDate);
 
   /**
    * Creates a Timespan object from a specified number of weeks.
@@ -240,8 +251,10 @@ export class Timespan {
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan object representing the specified number of weeks.
    */
-  public static fromWeeks = (weeks: number, startDate?: Date): Timespan =>
-    this.fromUnits(weeks, 'weeks', startDate);
+  public static readonly fromWeeks = (
+    weeks: number,
+    startDate?: Date,
+  ): Timespan => this.fromUnits(weeks, 'weeks', startDate);
 
   /**
    * Creates a Timespan object from a specified number of months.
@@ -249,8 +262,10 @@ export class Timespan {
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan object representing the specified number of months.
    */
-  public static fromMonths = (months: number, startDate?: Date): Timespan =>
-    this.fromUnits(months, 'months', startDate);
+  public static readonly fromMonths = (
+    months: number,
+    startDate?: Date,
+  ): Timespan => this.fromUnits(months, 'months', startDate);
 
   /**
    * Creates a Timespan object from a specified number of years.
@@ -258,8 +273,10 @@ export class Timespan {
    * @param startDate - Optional start date for the timespan. If not provided, the current date is used.
    * @returns A Timespan object representing the specified number of years.
    */
-  public static fromYears = (years: number, startDate?: Date): Timespan =>
-    this.fromUnits(years, 'years', startDate);
+  public static readonly fromYears = (
+    years: number,
+    startDate?: Date,
+  ): Timespan => this.fromUnits(years, 'years', startDate);
 
   /**
    * Check if two timespans are equal.
@@ -268,13 +285,11 @@ export class Timespan {
    * @param compareBy - The method of comparison: 'range' for start and end dates, 'duration' for total duration.
    * @returns True if the two timespans are equal, false otherwise.
    */
-  public static equals(
+  public static readonly equals = (
     ts1: Timespan,
     ts2: Timespan,
     compareBy: 'range' | 'duration' = 'duration',
-  ): boolean {
-    return ts1.equals(ts2, compareBy);
-  }
+  ): boolean => ts1.equals(ts2, compareBy);
 
   /**
    * Compare two timespans.
@@ -283,9 +298,8 @@ export class Timespan {
    * @returns A negative number if ts1 is less than ts2, a positive number if
    * ts1 is greater than ts2, and 0 if they are equal.
    */
-  public static compareTo = (ts1: Timespan, ts2: Timespan): number => {
-    return ts1.compareTo(ts2);
-  };
+  public static readonly compareTo = (ts1: Timespan, ts2: Timespan): number =>
+    ts1.compareTo(ts2);
 
   /**
    * Convert the timespan to a TimeFrame object.

@@ -41,7 +41,7 @@ export class MillisecondConverter extends DateUnitConverter {
    * @param startDate - The start date.
    * @param endDate - The end date.
    * @returns The number of milliseconds between the two dates.
-   * @throws Error if the input dates are invalid or if the start date is greater than the end date.
+   * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
     return endDate.getTime() - startDate.getTime();
@@ -52,7 +52,7 @@ export class MillisecondConverter extends DateUnitConverter {
    * @param milliseconds - The number of milliseconds to add.
    * @param startDate - The start date.
    * @returns The new date after adding the milliseconds.
-   * @throws Error if the input date is invalid or if the number of milliseconds is negative.
+   * @throws {Error} if the input date is invalid or if the number of milliseconds is negative.
    */
   public add(milliseconds: number, startDate: Date): Date {
     return new Date(startDate.getTime() + milliseconds);

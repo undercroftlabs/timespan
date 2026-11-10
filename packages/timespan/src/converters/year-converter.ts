@@ -50,7 +50,7 @@ export class YearConverter extends DateUnitConverter {
    * @param startDate - The start date.
    * @param endDate - The end date.
    * @returns The number of years between the two dates.
-   * @throws Error if the input dates are invalid or if the start date is greater than the end date.
+   * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
     let years = endDate.getUTCFullYear() - startDate.getUTCFullYear();
@@ -67,7 +67,7 @@ export class YearConverter extends DateUnitConverter {
    * @param years - The number of years to add.
    * @param startDate - The start date.
    * @returns The new date after adding the years.
-   * @throws Error if the input date is invalid or if the number of years is negative.
+   * @throws {Error} if the input date is invalid or if the number of years is negative.
    */
   public add(years: number, startDate: Date): Date {
     const startYear = startDate.getUTCFullYear();

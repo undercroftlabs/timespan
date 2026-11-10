@@ -69,7 +69,7 @@ describe('Timespan', () => {
 
   describe('fromUnits', () => {
     it('should throw an error for invalid date input', () => {
-      const startDate = '2023-05-01' as any;
+      const startDate = '2023-05-01' as unknown as Date;
       expect(() => Timespan.fromUnits(5, 'year', startDate)).toThrow(
         'Invalid date input.',
       );
@@ -556,17 +556,6 @@ describe('Timespan', () => {
       const updatedDate = Timespan.fromMonths(amountToAdd);
       const expected = 3;
       expect(updatedDate.toMonths()).toBe(expected);
-    });
-
-    it('should create timespan from years', () => {
-      const amountToAdd = 2;
-      const startDateInMilliseconds = startDate.getTime();
-      const endDateInMilliseconds = new Date(
-        startDate.getTime() + amountToAdd,
-      ).getTime();
-      const updatedDate = Timespan.fromYears(amountToAdd);
-      const expected = endDateInMilliseconds - startDateInMilliseconds;
-      expect(updatedDate.toYears()).toBe(expected);
     });
 
     it('should create timespan from years', () => {

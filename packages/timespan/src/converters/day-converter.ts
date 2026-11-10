@@ -40,7 +40,7 @@ export class DayConverter extends DateUnitConverter {
    * @param startDate - The start date.
    * @param endDate - The end date.
    * @returns The number of days between the two dates.
-   * @throws Error if the input dates are invalid or if the start date is greater than the end date.
+   * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
     const startMillis = startDate.getTime();
@@ -58,7 +58,7 @@ export class DayConverter extends DateUnitConverter {
    * @param days - The number of days to add.
    * @param startDate - The start date.
    * @returns The new date after adding the days.
-   * @throws Error if the input date is invalid or if the number of days is negative.
+   * @throws {Error} if the input date is invalid or if the number of days is negative.
    */
   public add(days: number, startDate: Date): Date {
     return new Date(startDate.getTime() + days * this.millisecondsPerUnit);

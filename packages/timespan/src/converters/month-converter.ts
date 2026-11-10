@@ -42,7 +42,7 @@ export class MonthConverter extends DateUnitConverter {
    * @param startDate - The start date.
    * @param endDate - The end date.
    * @returns The number of months between the two dates.
-   * @throws Error if the input dates are invalid or if the start date is greater than the end date.
+   * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
     const startYear = startDate.getUTCFullYear();
@@ -69,7 +69,7 @@ export class MonthConverter extends DateUnitConverter {
    * @param months - The number of months to add.
    * @param startDate - The start date.
    * @returns The new date after adding the months.
-   * @throws Error if the input date is invalid or if the number of months is negative.
+   * @throws {Error} if the input date is invalid or if the number of months is negative.
    */
   public add(months: number, startDate: Date): Date {
     const newDate = new Date(startDate.getTime());
