@@ -160,6 +160,8 @@ describe('WeekConverter', () => {
         ${'string start'}                    | ${1}                                | ${'2023-05-01' as unknown as Date}
         ${'plain object start'}              | ${1}                                | ${{} as unknown as Date}
         ${'object with getTime'}             | ${1}                                | ${{ getTime: () => 0 } as unknown as Date}
+        ${'one past the maximum span'}       | ${maxWeeks + 1}                     | ${epoch}
+        ${'one week past the maximum date'}  | ${1}                                | ${new Date(maxTimestamp)}
       `(
         'throws for $label',
         ({ weeks, start }: { weeks: number; start: Date }) => {
