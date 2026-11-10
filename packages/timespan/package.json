@@ -66,7 +66,6 @@
   "scripts": {
     "prepublishOnly": "pnpm run test:dist",
     "build": "tsdown",
-    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "package": "pnpm run build && npm pack",
     "test:dist": "pnpm run build && pnpm run test:dist:lint && pnpm run test:dist:types && pnpm run test:dist:load",
     "test:dist:lint": "publint --strict --pack npm",
@@ -74,7 +73,6 @@
     "test:dist:load": "pnpm --filter @undercroft/timespan-bundle-e2e test:load",
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
-    "test:junit": "vitest run --reporter=default --reporter=junit",
     "test:ci": "vitest run --coverage --reporter=default --reporter=junit",
     "sandbox": "node ./sandbox.ts",
     "size": "size-limit"
