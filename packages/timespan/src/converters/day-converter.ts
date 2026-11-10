@@ -1,6 +1,7 @@
-import { DateUnitConverter } from './date-unit-converter';
+import { assertValidDate } from '../assertions/assert-valid-date';
 import Constants from '../constants';
 import { DayUnit } from '../types';
+import { DateUnitConverter } from './date-unit-converter';
 
 /**
  * Represents a converter for the day unit.
@@ -43,6 +44,9 @@ export class DayConverter extends DateUnitConverter {
    * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
+    assertValidDate(startDate);
+    assertValidDate(endDate);
+
     const startMillis = startDate.getTime();
     const endMillis = endDate.getTime();
 
