@@ -332,10 +332,10 @@ describe('edge: fromUnits and conversions', () => {
   });
 
   it('throws for an invalid unit passed to fromUnits / toUnit', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     expect(() => Timespan.fromUnits(1, 'fortnights' as any, START)).toThrow();
     const ts = Timespan.fromDays(1, START);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     expect(() => ts.toUnit('fortnights' as any)).toThrow();
   });
 

@@ -25,12 +25,16 @@ function assertCanonicalTimespan(Timespan) {
   assert.equal(timespan.toString(), '1y 2M 3w 4d 5h 6m 7s 8ms');
 }
 
+// node:assert is not recognized as a test assertion by this rule.
+// oxlint-disable-next-line sonarjs/assertions-in-tests
 test('CommonJS entry resolves from the installed package', () => {
   const loaded = require('@undercroft/timespan');
   assert.equal(typeof loaded.Timespan, 'function');
   assertCanonicalTimespan(loaded.Timespan);
 });
 
+// node:assert is not recognized as a test assertion by this rule.
+// oxlint-disable-next-line sonarjs/assertions-in-tests
 test('ESM entry resolves from the installed package', async () => {
   const loaded = await import('@undercroft/timespan');
   assert.equal(typeof loaded.Timespan, 'function');
