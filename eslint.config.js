@@ -7,13 +7,7 @@ const noUnderscore = require('eslint-plugin-no-underscore');
 
 module.exports = [
   {
-    ignores: [
-      'dist/**',
-      '**/*.config.js',
-      '**/*.config.ts',
-      '**/*.test.js',
-      '**/*.test.ts',
-    ],
+    ignores: ['dist/**'],
   },
   ...tsPlugin.configs['flat/recommended'],
   eslintConfigPrettier,
