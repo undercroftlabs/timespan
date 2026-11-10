@@ -21,7 +21,7 @@
     "test:browser:report": "pnpm --filter @undercroft/timespan-bundle-e2e test:report",
     "test:browser:docker": "bash tests/bundle-e2e/run-in-docker.sh",
     "test:browser:container": "bash tests/bundle-e2e/run-in-docker.sh",
-    "badge:cov": "pnpm --filter @undercroft/timespan test:cov && npx lcov-badge-generator -o ./badges/coverage.svg ./packages/timespan/coverage/lcov.info",
+    "badge:cov": "pnpm --filter @undercroft/timespan test:cov && lcov-badge-generator -o ./badges/coverage.svg ./packages/timespan/coverage/lcov.info",
     "check": "./.husky/pre-commit",
     "sandbox": "pnpm --filter @undercroft/timespan sandbox",
     "size": "size-limit",
@@ -40,6 +40,7 @@
     "eslint-plugin-prettier": "^5.5.7",
     "eslint-plugin-sonarjs": "^4.2.2",
     "husky": "^9.1.7",
+    "lcov-badge-generator": "1.0.5",
     "prettier": "^3.9.10",
     "size-limit": "^14.3.0",
     "typescript": "^6.0.3"
