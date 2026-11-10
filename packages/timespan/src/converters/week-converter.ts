@@ -74,6 +74,12 @@ export class WeekConverter extends DateUnitConverter {
   public add(weeks: number, startDate: Date): Date {
     assertValidDate(startDate);
 
+    if (weeks < 0) {
+      throw new Error(
+        'Invalid number of weeks: expected zero or a positive number.',
+      );
+    }
+
     const weeksInMilliseconds = weeks * this.millisecondsPerUnit;
     const addedMilliseconds = startDate.getTime() + weeksInMilliseconds;
     return new Date(addedMilliseconds);
