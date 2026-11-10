@@ -1,8 +1,17 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const resolve = require('@rollup/plugin-node-resolve');
-const commonjs = require('@rollup/plugin-commonjs');
 const terser = require('@rollup/plugin-terser');
-const { codecovRollupPlugin } = require('@codecov/rollup-plugin');
+
+const plugins = [terser()];
+
+if (process.env.CODECOV_BUNDLE_ANALYSIS === '1') {
+  const { codecovRollupPlugin } = require('@codecov/rollup-plugin');
+  plugins.push(
+    codecovRollupPlugin({
+      enableBundleAnalysis: true,
+      bundleName: '@undercroft/timespan',
+      uploadToken: process.env.CODECOV_TOKEN,
+    }),
+  );
+}
 
 module.exports = {
   input: 'dist/index.js',
@@ -12,14 +21,5 @@ module.exports = {
     name: 'Timespan',
     sourcemap: true,
   },
-  plugins: [
-    resolve(),
-    commonjs(),
-    terser(),
-    codecovRollupPlugin({
-      enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
-      bundleName: '@undercroft/timespan',
-      uploadToken: process.env.CODECOV_TOKEN,
-    }),
-  ],
+  plugins,
 };

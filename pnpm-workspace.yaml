@@ -4,6 +4,9 @@ packages:
 
 preferWorkspacePackages: true
 
+catalog:
+  typescript: ^6.0.3
+
 allowBuilds:
   esbuild: true
   "@parcel/watcher": true

@@ -81,23 +81,24 @@
     "test:cov": "jest --coverage --no-cache --runInBand",
     "test:junit": "cross-env JEST_JUNIT_CLASSNAME={filepath} jest --reporters=jest-junit",
     "test:ci": "cross-env JEST_JUNIT_CLASSNAME={filepath} jest --coverage --no-cache --runInBand --reporters=default --reporters=jest-junit",
-    "sandbox": "ts-node ./sandbox.ts"
+    "sandbox": "ts-node ./sandbox.ts",
+    "size": "size-limit"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@codecov/rollup-plugin": "^2.0.1",
-    "@rollup/plugin-commonjs": "^29.0.3",
-    "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^1.0.2",
+    "@size-limit/preset-small-lib": "^14.3.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.6",
     "cross-env": "^10.1.0",
     "jest": "^30.5.2",
     "jest-junit": "^17.0.0",
     "publint": "^0.3.25",
+    "size-limit": "^14.3.0",
     "ts-jest": "^29.4.15",
     "ts-node": "^10.9.2",
     "tsup": "^9.0.0",
-    "typescript": "^6.0.3"
+    "typescript": "catalog:"
   }
 }

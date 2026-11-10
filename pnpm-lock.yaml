@@ -4,6 +4,12 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    typescript:
+      specifier: ^6.0.3
+      version: 6.0.3
+
 importers:
 
   .:
@@ -14,9 +20,6 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^21.2.4
         version: 21.2.4
-      '@size-limit/preset-small-lib':
-        specifier: ^14.3.0
-        version: 14.3.0(size-limit@14.3.0)
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.72.1
         version: 8.72.2(@typescript-eslint/parser@8.72.2(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3)
@@ -50,11 +53,8 @@ importers:
       prettier:
         specifier: ^3.9.10
         version: 3.9.10
-      size-limit:
-        specifier: ^14.3.0
-        version: 14.3.0
       typescript:
-        specifier: ^6.0.3
+        specifier: 'catalog:'
         version: 6.0.3
 
   packages/timespan:
@@ -65,15 +65,12 @@ importers:
       '@codecov/rollup-plugin':
         specifier: ^2.0.1
         version: 2.0.1(rollup@4.68.2)
-      '@rollup/plugin-commonjs':
-        specifier: ^29.0.3
-        version: 29.0.3(rollup@4.68.2)
-      '@rollup/plugin-node-resolve':
-        specifier: ^16.0.3
-        version: 16.0.3(rollup@4.68.2)
       '@rollup/plugin-terser':
         specifier: ^1.0.2
         version: 1.0.2(rollup@4.68.2)
+      '@size-limit/preset-small-lib':
+        specifier: ^14.3.0
+        version: 14.3.0(size-limit@14.3.0)
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
@@ -92,6 +89,9 @@ importers:
       publint:
         specifier: ^0.3.25
         version: 0.3.25
+      size-limit:
+        specifier: ^14.3.0
+        version: 14.3.0
       ts-jest:
         specifier: ^29.4.15
         version: 29.4.15(@babel/core@7.29.13)(@jest/transform@30.5.2)(@jest/types@30.5.1)(babel-jest@30.5.2(@babel/core@7.29.13))(esbuild@0.28.2)(jest-util@30.5.1)(jest@30.5.2(@types/node@26.6.6)(ts-node@10.9.2(@swc/core@1.16.22)(@types/node@26.6.6)(typescript@6.0.3)))(typescript@6.0.3)
@@ -102,7 +102,7 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0(@swc/core@1.16.22)(jiti@2.7.0)(typescript@6.0.3)(yaml@2.9.1)
       typescript:
-        specifier: ^6.0.3
+        specifier: 'catalog:'
         version: 6.0.3
 
   tests/bundle-e2e:
@@ -1046,38 +1046,11 @@ packages:
   '@rolldown/pluginutils@1.1.0':
     resolution: {integrity: sha512-K+NU2HDCEem4sClgHH4ZZXwdJeNFkJo+hRk479DIwdIviAPN2hFJH1KHHwg8CxHQXvi0M5XY4deTXINfIiSG6w==}
 
-  '@rollup/plugin-commonjs@29.0.3':
-    resolution: {integrity: sha512-ZaOxZceP7SOUW7Lqw5IRVweSQYWaeIPnXIGLiB690EBA3FGJTO40EEr2L5yZplJWsgTCogILRSpcAe7+U0Otdg==}
-    engines: {node: '>=16.0.0 || 14 >= 14.17'}
-    peerDependencies:
-      rollup: ^2.68.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-
-  '@rollup/plugin-node-resolve@16.0.3':
-    resolution: {integrity: sha512-lUYM3UBGuM93CnMPG1YocWu7X802BrNF3jW2zny5gQyLQgRFJhV1Sq0Zi74+dh/6NBx1DxFC4b4GXg9wUCG5Qg==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^2.78.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-
   '@rollup/plugin-terser@1.0.2':
     resolution: {integrity: sha512-+UihHnuLnQDQ/9wog7ym+7oawCXkjTIo0WwkK7s//0mkktTN0VhYk6fGVxH+NtGzW064w5RCGgreMDxRVhHCzw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       rollup: ^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-
-  '@rollup/pluginutils@5.5.1':
-    resolution: {integrity: sha512-P9ZvnfouRu4MSC+ilERaw6FmZs8zqKhpHxEs4aGDGWQAMzQGXnhvCSvoNwokfNvdt7t3Y5Y4p6gStQgezeIqug==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
     peerDependenciesMeta:
       rollup:
         optional: true
@@ -1397,9 +1370,6 @@ packages:
 
   '@types/q@1.5.8':
     resolution: {integrity: sha512-hroOstUScF6zhIi+5+x0dzqrHA1EJi+Irri6b1fxolMTqqHIV/Cg77EtnQcZqZCu8hR3mX2BzIxN4/GzI68Kfw==}
-
-  '@types/resolve@1.20.2':
-    resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
@@ -1922,9 +1892,6 @@ packages:
     resolution: {integrity: sha512-+2AvZKjJaNq9GQljm3tr0utwrig5BL+jgJGvz5rDpGKNIp+ojcRXWUwBbh/sGIi1QCprR6PsKFakub+w1v+4hQ==}
     engines: {node: '>= 12.0.0'}
 
-  commondir@1.0.1:
-    resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
-
   concat-stream@1.6.2:
     resolution: {integrity: sha512-27HBghJxjiZtIk3Ycvn/4kbJk/1uZuJFfuPEns6LaEvpvG1f0hTea8lilrouyo9mVc2GWdcEZ8OLoGmSADlrCw==}
     engines: {'0': node >= 0.8}
@@ -2289,9 +2256,6 @@ packages:
   estraverse@5.3.0:
     resolution: {integrity: sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==}
     engines: {node: '>=4.0'}
-
-  estree-walker@2.0.2:
-    resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
 
   esutils@2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
@@ -2682,9 +2646,6 @@ packages:
     resolution: {integrity: sha512-1Qed0/Hr2m+YqxnM09CjA2d/i6YZNfF6R2oRAOj36eUdS6qIV/huPJNSEpKbupewFs+ZsJlxsjjPbc0/afW6Lw==}
     engines: {node: '>= 0.4'}
 
-  is-module@1.0.0:
-    resolution: {integrity: sha512-51ypPSPCoTEIN9dy5Oy+h4pShgJmPCygKfyRCISBI+JoWT/2oJvK8QPxmwv7b/p239jXrm9M1mlQbyKJ5A152g==}
-
   is-negative-zero@2.0.3:
     resolution: {integrity: sha512-5KoIu2Ngpyek75jXodFvnafB6DJgr3u8uuK0LEZJjrU19DrMD3EVERaR8sjz8CCGgpZvxPl9SuE1GMVPFHx1mw==}
     engines: {node: '>= 0.4'}
@@ -2696,9 +2657,6 @@ packages:
   is-plain-obj@4.1.0:
     resolution: {integrity: sha512-+Pgi+vMuUNkJyExiMBt5IlFoMyKnr5zhJ4Uspz58WOhBF5QoIZkFyNHIbBAtHwzVAgk5RtndVNsDRN61/mmDqg==}
     engines: {node: '>=12'}
-
-  is-reference@1.2.1:
-    resolution: {integrity: sha512-U82MsXXiFIrjCK4otLT+o2NA2Cd2g5MLoOVXUZjIOhLurrRxpEXzI8O0KZHr3IjLvlAH1kTPYSuqer5T9ZVBKQ==}
 
   is-regex@1.2.1:
     resolution: {integrity: sha512-MjYsKHO5O7mCsmRGxWcLWheFqN9DJ/2TmngvjKXihe6efViPqc274+Fx/4fYj/r03+ESvBdTXK0V6tA3rgez1g==}
@@ -5170,41 +5128,11 @@ snapshots:
 
   '@rolldown/pluginutils@1.1.0': {}
 
-  '@rollup/plugin-commonjs@29.0.3(rollup@4.68.2)':
-    dependencies:
-      '@rollup/pluginutils': 5.5.1(rollup@4.68.2)
-      commondir: 1.0.1
-      estree-walker: 2.0.2
-      fdir: 6.5.0(picomatch@4.0.7)
-      is-reference: 1.2.1
-      magic-string: 0.30.21
-      picomatch: 4.0.7
-    optionalDependencies:
-      rollup: 4.68.2
-
-  '@rollup/plugin-node-resolve@16.0.3(rollup@4.68.2)':
-    dependencies:
-      '@rollup/pluginutils': 5.5.1(rollup@4.68.2)
-      '@types/resolve': 1.20.2
-      deepmerge: 4.3.1
-      is-module: 1.0.0
-      resolve: 1.22.14
-    optionalDependencies:
-      rollup: 4.68.2
-
   '@rollup/plugin-terser@1.0.2(rollup@4.68.2)':
     dependencies:
       serialize-javascript: 7.1.4
       smob: 1.6.2
       terser: 5.51.2
-    optionalDependencies:
-      rollup: 4.68.2
-
-  '@rollup/pluginutils@5.5.1(rollup@4.68.2)':
-    dependencies:
-      '@types/estree': 1.0.10
-      estree-walker: 2.0.2
-      picomatch: 4.0.7
     optionalDependencies:
       rollup: 4.68.2
 
@@ -5446,8 +5374,6 @@ snapshots:
       undici-types: 8.9.0
 
   '@types/q@1.5.8': {}
-
-  '@types/resolve@1.20.2': {}
 
   '@types/stack-utils@2.0.3': {}
 
@@ -5974,8 +5900,6 @@ snapshots:
 
   comment-parser@1.4.9: {}
 
-  commondir@1.0.1: {}
-
   concat-stream@1.6.2:
     dependencies:
       buffer-from: 1.1.2
@@ -6424,8 +6348,6 @@ snapshots:
 
   estraverse@5.3.0: {}
 
-  estree-walker@2.0.2: {}
-
   esutils@2.0.3: {}
 
   execa@5.1.1:
@@ -6816,8 +6738,6 @@ snapshots:
 
   is-map@2.0.3: {}
 
-  is-module@1.0.0: {}
-
   is-negative-zero@2.0.3: {}
 
   is-number-object@1.1.1:
@@ -6826,10 +6746,6 @@ snapshots:
       has-tostringtag: 1.0.2
 
   is-plain-obj@4.1.0: {}
-
-  is-reference@1.2.1:
-    dependencies:
-      '@types/estree': 1.0.10
 
   is-regex@1.2.1:
     dependencies:

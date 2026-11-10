@@ -71,7 +71,7 @@ CONTAINER_ENGINE=podman pnpm run test:browser:docker
 CONTAINER_ENGINE=docker pnpm run test:browser:docker
 ```
 
-`pnpm run test:browser:container` is an alias for the same command. The container copies the repo into a writable workspace, runs `pnpm install --frozen-lockfile` and `pnpm run build` there (host `node_modules` is not mounted), then runs Chromium, Firefox, and WebKit. HTML output lands in `playwright-report/` (`pnpm run test:browser:report`). Local engines cache the image after the first pull; CI does not.
+The container copies the repo into a writable workspace, runs `pnpm install --frozen-lockfile` and `pnpm run build` there (host `node_modules` is not mounted), then runs Chromium, Firefox, and WebKit. HTML output lands in `playwright-report/` (`pnpm run test:browser:report`). Local engines cache the image after the first pull; CI does not.
 
 If a bind mount fails with a SELinux denial on Fedora, the runner already adds `:Z` for Podman. Do not run the container as privileged or with `sudo`. If reports are missing, check that `playwright-report/` and `test-results/` are writable by your user.
 

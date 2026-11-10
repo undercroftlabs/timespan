@@ -20,17 +20,15 @@
     "test:browser:headed": "pnpm --filter @undercroft/timespan build && pnpm --filter @undercroft/timespan-bundle-e2e test:headed",
     "test:browser:report": "pnpm --filter @undercroft/timespan-bundle-e2e test:report",
     "test:browser:docker": "bash tests/bundle-e2e/run-in-docker.sh",
-    "test:browser:container": "bash tests/bundle-e2e/run-in-docker.sh",
     "badge:cov": "pnpm --filter @undercroft/timespan test:cov && lcov-badge-generator -o ./badges/coverage.svg ./packages/timespan/coverage/lcov.info",
     "check": "./.husky/pre-commit",
     "sandbox": "pnpm --filter @undercroft/timespan sandbox",
-    "size": "size-limit",
+    "size": "pnpm --filter @undercroft/timespan size",
     "node:versions": "node tools/supported-node-versions.cjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
-    "@size-limit/preset-small-lib": "^14.3.0",
     "@typescript-eslint/eslint-plugin": "^8.72.1",
     "@typescript-eslint/parser": "^8.72.1",
     "eslint": "^10.14.0",
@@ -42,7 +40,6 @@
     "husky": "^9.1.7",
     "lcov-badge-generator": "1.0.5",
     "prettier": "^3.9.10",
-    "size-limit": "^14.3.0",
-    "typescript": "^6.0.3"
+    "typescript": "catalog:"
   }
 }

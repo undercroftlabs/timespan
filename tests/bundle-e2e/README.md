@@ -43,6 +43,6 @@ sudo dnf install podman
 pnpm run test:browser:docker
 ```
 
-That command auto-selects Podman on Linux, or Docker if Podman is absent. Pin the engine with `CONTAINER_ENGINE=podman` or `CONTAINER_ENGINE=docker`. `pnpm run test:browser:container` is the same runner.
+That command auto-selects Podman on Linux, or Docker if Podman is absent. Pin the engine with `CONTAINER_ENGINE=podman` or `CONTAINER_ENGINE=docker`.
 
 The container installs dependencies and builds `dist/` inside an isolated workspace. Host `node_modules` is not overwritten. After the run, open `playwright-report/` or `pnpm run test:browser:report`. The first pull caches the lockfile-matched image locally.

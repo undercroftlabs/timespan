@@ -28,3 +28,4 @@ jobs:
         run: pnpm run build
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          CODECOV_BUNDLE_ANALYSIS: '1'
