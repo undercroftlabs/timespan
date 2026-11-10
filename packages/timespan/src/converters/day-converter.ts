@@ -73,6 +73,15 @@ export class DayConverter extends DateUnitConverter {
       );
     }
 
-    return new Date(startDate.getTime() + days * this.millisecondsPerUnit);
+    const time = startDate.getTime() + days * this.millisecondsPerUnit;
+    if (
+      time > Constants.MaxSafeTimestamp ||
+      time < Constants.MinSafeTimestamp
+    ) {
+      throw new Error(
+        'Invalid number of days: expected a result within the representable date range.',
+      );
+    }
+    return new Date(time);
   }
 }

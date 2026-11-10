@@ -162,6 +162,8 @@ describe('DayConverter', () => {
         ${'string start'}                    | ${1}                                | ${'2023-05-01' as unknown as Date}
         ${'plain object start'}              | ${1}                                | ${{} as unknown as Date}
         ${'object with getTime'}             | ${1}                                | ${{ getTime: () => 0 } as unknown as Date}
+        ${'one past the maximum span'}       | ${1e8 + 1}                          | ${epoch}
+        ${'one day past the maximum date'}   | ${1}                                | ${new Date(8.64e15)}
       `(
         'throws for $label',
         ({ days, start }: { days: number; start: Date }) => {

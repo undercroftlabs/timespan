@@ -101,4 +101,6 @@ export default {
   MonthsPerYear: 12,
   QuadricentennialDivisor: 400,
   SecondsPerMinute: 60,
+  MaxSafeTimestamp: 8.64e15,
+  MinSafeTimestamp: -8.64e15,
 };
