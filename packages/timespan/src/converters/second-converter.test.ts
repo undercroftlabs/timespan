@@ -1,4 +1,4 @@
-import { SecondConverter } from '../src/converters/second-converter';
+import { SecondConverter } from './second-converter';
 
 describe('SecondConverter', () => {
   let secondConverter: SecondConverter;

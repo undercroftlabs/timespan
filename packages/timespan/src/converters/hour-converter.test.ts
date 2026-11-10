@@ -1,4 +1,4 @@
-import { HourConverter } from '../src/converters/hour-converter';
+import { HourConverter } from './hour-converter';
 
 describe('HourConverter', () => {
   let hourConverter: HourConverter;

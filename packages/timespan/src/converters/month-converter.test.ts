@@ -1,4 +1,4 @@
-import { MonthConverter } from '../src/converters/month-converter';
+import { MonthConverter } from './month-converter';
 
 describe('MonthConverter', () => {
   let monthConverter: MonthConverter;

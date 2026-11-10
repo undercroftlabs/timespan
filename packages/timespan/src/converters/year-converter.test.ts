@@ -1,4 +1,4 @@
-import { YearConverter } from '../src/converters/year-converter';
+import { YearConverter } from './year-converter';
 
 describe('YearConverter', () => {
   let yearConverter: YearConverter;

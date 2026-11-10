@@ -1,4 +1,4 @@
-import { WeekConverter } from '../src/converters/week-converter';
+import { WeekConverter } from './week-converter';
 
 describe('WeekConverter', () => {
   let weekConverter: WeekConverter;
