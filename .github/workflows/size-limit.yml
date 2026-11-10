@@ -30,3 +30,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           directory: packages/timespan
           skip_step: install
+          package_manager: pnpm

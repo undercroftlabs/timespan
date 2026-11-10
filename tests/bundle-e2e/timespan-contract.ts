@@ -118,9 +118,11 @@ export async function expectPublicApiContract(page: Page): Promise<void> {
   });
   expect(result.invalidUnitMessage).toBe('Invalid unit');
   expect(result.invalidRangeMessage).toBe(
-    'Start date cannot be greater than end date.',
+    'Invalid date range: expected the start date to be less than or equal to the end date.',
   );
-  expect(result.invalidDateMessage).toBe('Invalid date input.');
+  expect(result.invalidDateMessage).toBe(
+    'Invalid date: expected a valid Date.',
+  );
 }
 
 /**
