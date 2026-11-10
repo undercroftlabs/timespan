@@ -70,21 +70,10 @@ export class MinuteConverter extends DateUnitConverter {
   public add(minutes: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (!Number.isFinite(minutes) || minutes < 0) {
-      throw new Error(
-        'Invalid number of minutes: expected zero or a positive number.',
-      );
-    }
+    this.assertAddAmount(minutes);
 
     const time = startDate.getTime() + minutes * this.millisecondsPerUnit;
-    if (
-      time > Constants.MaxSafeTimestamp ||
-      time < Constants.MinSafeTimestamp
-    ) {
-      throw new Error(
-        'Invalid number of minutes: expected a result within the representable date range.',
-      );
-    }
+    this.assertTimestampInRange(time);
     return new Date(time);
   }
 }

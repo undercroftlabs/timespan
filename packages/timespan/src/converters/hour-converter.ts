@@ -72,21 +72,10 @@ export class HourConverter extends DateUnitConverter {
   public add(hours: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (!Number.isFinite(hours) || hours < 0) {
-      throw new Error(
-        'Invalid number of hours: expected zero or a positive number.',
-      );
-    }
+    this.assertAddAmount(hours);
 
     const time = startDate.getTime() + hours * this.millisecondsPerUnit;
-    if (
-      time > Constants.MaxSafeTimestamp ||
-      time < Constants.MinSafeTimestamp
-    ) {
-      throw new Error(
-        'Invalid number of hours: expected a result within the representable date range.',
-      );
-    }
+    this.assertTimestampInRange(time);
     return new Date(time);
   }
 }

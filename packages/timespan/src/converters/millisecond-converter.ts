@@ -1,6 +1,5 @@
 import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
-import Constants from '../constants';
 import { MillisecondUnit } from '../types';
 import { DateUnitConverter } from './date-unit-converter';
 
@@ -69,21 +68,10 @@ export class MillisecondConverter extends DateUnitConverter {
   public add(milliseconds: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (!Number.isFinite(milliseconds) || milliseconds < 0) {
-      throw new Error(
-        'Invalid number of milliseconds: expected zero or a positive number.',
-      );
-    }
+    this.assertAddAmount(milliseconds);
 
     const time = startDate.getTime() + milliseconds * this.millisecondsPerUnit;
-    if (
-      time > Constants.MaxSafeTimestamp ||
-      time < Constants.MinSafeTimestamp
-    ) {
-      throw new Error(
-        'Invalid number of milliseconds: expected a result within the representable date range.',
-      );
-    }
+    this.assertTimestampInRange(time);
     return new Date(time);
   }
 }

@@ -1,6 +1,5 @@
 import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
-import Constants from '../constants';
 import { SecondUnit } from '../types';
 import { DateUnitConverter } from './date-unit-converter';
 
@@ -69,21 +68,10 @@ export class SecondConverter extends DateUnitConverter {
   public add(seconds: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (!Number.isFinite(seconds) || seconds < 0) {
-      throw new Error(
-        'Invalid number of seconds: expected zero or a positive number.',
-      );
-    }
+    this.assertAddAmount(seconds);
 
     const time = startDate.getTime() + seconds * this.millisecondsPerUnit;
-    if (
-      time > Constants.MaxSafeTimestamp ||
-      time < Constants.MinSafeTimestamp
-    ) {
-      throw new Error(
-        'Invalid number of seconds: expected a result within the representable date range.',
-      );
-    }
+    this.assertTimestampInRange(time);
     return new Date(time);
   }
 }

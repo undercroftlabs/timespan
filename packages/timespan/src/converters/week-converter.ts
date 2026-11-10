@@ -74,21 +74,10 @@ export class WeekConverter extends DateUnitConverter {
   public add(weeks: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (!Number.isFinite(weeks) || weeks < 0) {
-      throw new Error(
-        'Invalid number of weeks: expected zero or a positive number.',
-      );
-    }
+    this.assertAddAmount(weeks);
 
     const time = startDate.getTime() + weeks * this.millisecondsPerUnit;
-    if (
-      time > Constants.MaxSafeTimestamp ||
-      time < Constants.MinSafeTimestamp
-    ) {
-      throw new Error(
-        'Invalid number of weeks: expected a result within the representable date range.',
-      );
-    }
+    this.assertTimestampInRange(time);
     return new Date(time);
   }
 }

@@ -78,11 +78,7 @@ export class MonthConverter extends DateUnitConverter {
   public add(months: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (!Number.isFinite(months) || months < 0) {
-      throw new Error(
-        'Invalid number of months: expected zero or a positive number.',
-      );
-    }
+    this.assertAddAmount(months);
 
     const newDate = new Date(startDate.getTime());
     const originalDay = newDate.getUTCDate();
@@ -105,16 +101,7 @@ export class MonthConverter extends DateUnitConverter {
       originalSeconds,
       originalMilliseconds,
     );
-    const time = newDate.getTime();
-    if (
-      !Number.isFinite(time) ||
-      time > Constants.MaxSafeTimestamp ||
-      time < Constants.MinSafeTimestamp
-    ) {
-      throw new Error(
-        'Invalid number of months: expected a result within the representable date range.',
-      );
-    }
+    this.assertTimestampInRange(newDate.getTime());
     return newDate;
   }
 }
