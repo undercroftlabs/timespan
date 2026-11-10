@@ -67,7 +67,7 @@ export class DayConverter extends DateUnitConverter {
   public add(days: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (!Number.isSafeInteger(days) || days < 0) {
+    if (!Number.isFinite(days) || days < 0) {
       throw new Error(
         'Invalid number of days: expected zero or a positive number.',
       );

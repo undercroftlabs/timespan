@@ -95,6 +95,8 @@ describe('DayConverter', () => {
         ${'negative zero days'}             | ${-0}    | ${new Date(0)}                          | ${new Date(0)}
         ${'one day from the epoch'}         | ${1}     | ${new Date(0)}                          | ${new Date(dayMs)}
         ${'five days in May'}               | ${5}     | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-05-06T00:00:00.000Z')}
+        ${'half a day'}                     | ${0.5}   | ${new Date(0)}                          | ${new Date(dayMs / 2)}
+        ${'one and a half days'}            | ${1.5}   | ${new Date(0)}                          | ${new Date(dayMs * 1.5)}
         ${'thirty days'}                    | ${30}    | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-05-31T00:00:00.000Z')}
         ${'across a common February'}       | ${28}    | ${new Date('2021-02-01T00:00:00.000Z')} | ${new Date('2021-03-01T00:00:00.000Z')}
         ${'across a leap February'}         | ${29}    | ${new Date('2020-02-01T00:00:00.000Z')} | ${new Date('2020-03-01T00:00:00.000Z')}
@@ -141,8 +143,6 @@ describe('DayConverter', () => {
         ${'negative fraction'}               | ${-1.5}                             | ${epoch}
         ${'large negative amount'}           | ${-10_000}                          | ${epoch}
         ${'negative Infinity amount'}        | ${Number.NEGATIVE_INFINITY}         | ${epoch}
-        ${'half a day'}                      | ${0.5}                              | ${epoch}
-        ${'one and a half days'}             | ${1.5}                              | ${epoch}
         ${'NaN amount'}                      | ${Number.NaN}                       | ${epoch}
         ${'Infinity amount'}                 | ${Number.POSITIVE_INFINITY}         | ${epoch}
         ${'string amount'}                   | ${'5' as unknown as number}         | ${epoch}
