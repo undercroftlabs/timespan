@@ -74,7 +74,7 @@ export class WeekConverter extends DateUnitConverter {
   public add(weeks: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (weeks < 0) {
+    if (!Number.isFinite(weeks) || weeks < 0) {
       throw new Error(
         'Invalid number of weeks: expected zero or a positive number.',
       );
