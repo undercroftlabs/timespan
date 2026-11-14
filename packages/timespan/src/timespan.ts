@@ -324,12 +324,12 @@ export class Timespan {
    * Directives use `%[flags][width][.precision]specifier`. `%%` is a literal
    * percent. Uppercase specifiers are totals (`%D` days) and lowercase
    * specifiers are timeframe components (`%d` days). `%f` is fractional seconds.
-   * The format string must be at most 75 characters, and width and precision
-   * must be below 1,000,000.
+   * Width and precision must be below 1,000,000. The format string itself has
+   * no length limit.
    * @param formatString - The format string to use.
    * @param timespan - The timespan to format.
    * @returns The formatted text.
-   * @throws {Error} `Invalid input string: expected at most 75 characters.`
+   * @throws {Error} `Invalid format string: expected a string.`
    * @throws {Error} `Invalid format string: expected a valid format string.`
    * @example
    * Timespan.format('%D days', timespan);
@@ -557,7 +557,7 @@ export class Timespan {
    * this method.
    * @param formatString - The format string to use.
    * @returns The formatted text.
-   * @throws {Error} `Invalid input string: expected at most 75 characters.`
+   * @throws {Error} `Invalid format string: expected a string.`
    * @throws {Error} `Invalid format string: expected a valid format string.`
    * @example
    * timespan.format('%h:%02m:%02s');

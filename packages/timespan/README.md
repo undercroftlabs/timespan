@@ -214,7 +214,7 @@ Timespan.compareTo(timespan1, timespan2);
 
 `format` inserts numeric time values into a caller-supplied string. Literal text is copied unchanged, and `%%` is a literal percent. `Timespan.format` calls the instance method.
 
-A directive has the form `%[flags][width][.precision]specifier`. Flags are `0` (zero pad), `-` (left align), `+` (show a plus), and a space (show a leading space). Width is the minimum field length. Precision is the minimum number of digits, except for `%f`, where it is the number of fractional-second digits. The default for `%f` is 3. Values are truncated, not rounded. The format string can be at most 75 characters, and a width or precision of 1,000,000 or more is rejected.
+A directive has the form `%[flags][width][.precision]specifier`. Flags are `0` (zero pad), `-` (left align), `+` (show a plus), and a space (show a leading space). Width is the minimum field length. Precision is the minimum number of digits, except for `%f`, where it is the number of fractional-second digits. The default for `%f` is 3. Values are truncated, not rounded. A width or precision of 1,000,000 or more is rejected. The format string itself has no length limit.
 
 Uppercase specifiers are totals. Lowercase specifiers are the components from `toTimeframe()`.
 
