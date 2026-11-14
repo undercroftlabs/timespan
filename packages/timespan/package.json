@@ -72,6 +72,7 @@
     "test:dist:types": "attw --pack . --entrypoints .",
     "test:dist:load": "pnpm --filter @undercroft/timespan-bundle-e2e test:load",
     "test": "vitest run",
+    "bench": "vitest bench --run",
     "test:cov": "vitest run --coverage",
     "test:ci": "vitest run --coverage --reporter=default --reporter=junit",
     "sandbox": "node ./sandbox.ts",

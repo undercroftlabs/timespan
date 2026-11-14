@@ -1,0 +1,20 @@
+{
+  "library": "@undercroft/timespan",
+  "packageVersion": "1.2.0",
+  "recordVersion": "1.2.1",
+  "recordedAt": "2026-11-14T19:01:38.167Z",
+  "gitCommit": "c8787113af67912b9d7176e0f839e08713f5918d",
+  "gitDirty": true,
+  "node": "v26.13.0",
+  "vitest": "4.1.12",
+  "cpu": {
+    "model": "Intel(R) Core(TM) i7-9850H CPU @ 2.60GHz",
+    "cores": 12
+  },
+  "os": {
+    "type": "Linux",
+    "release": "7.2.13-200.fc44.x86_64",
+    "arch": "x64"
+  },
+  "target": "typescript-source"
+}
