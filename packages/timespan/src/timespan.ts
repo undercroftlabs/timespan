@@ -2,7 +2,11 @@ import { TimeFrame } from './types/timeframe';
 import { TimeUnit } from './types';
 import { calculateTimeFrame, timeFrameToString } from './utils';
 import { getConverter } from './unit-conversion-map';
-import * as Assertions from './assertions';
+import { assertValidDate } from './assertions/assert-valid-date';
+import { assertValidDateRange } from './assertions/assert-valid-date-range';
+import { assertValidTimeUnit } from './assertions/assert-valid-time-unit';
+import { assertAllowedCharacters } from './assertions/assert-allowed-characters';
+import { assertMaxInputLength } from './assertions/assert-max-input-length';
 import Constants from './constants';
 
 /**
@@ -39,9 +43,9 @@ export class Timespan {
    * @param end - The end date of the timespan.
    */
   constructor(start: Date, end: Date) {
-    Assertions.assertValidDate(start);
-    Assertions.assertValidDate(end);
-    Assertions.assertValidDateRange(start, end);
+    assertValidDate(start);
+    assertValidDate(end);
+    assertValidDateRange(start, end);
     this.startDate = new Date(start.getTime());
     this.endDate = new Date(end.getTime());
     this.timeFrame = calculateTimeFrame(this.startDate, this.endDate);
@@ -79,9 +83,9 @@ export class Timespan {
     startDate?: Date,
   ): Timespan => {
     const start = startDate ? startDate : new Date();
-    Assertions.assertValidDate(start);
-    Assertions.assertMaxInputLength(input);
-    Assertions.assertAllowedCharacters(input);
+    assertValidDate(start);
+    assertMaxInputLength(input);
+    assertAllowedCharacters(input);
 
     const timeframe: TimeFrame = {
       years: 0,
@@ -119,7 +123,7 @@ export class Timespan {
     while (match) {
       const rawValue = match[Constants.InputRegexValueIndex];
       const unit: string = match[Constants.InputRegexUnitIndex];
-      Assertions.assertValidTimeUnit(unit);
+      assertValidTimeUnit(unit);
       if (rawValue.length === 0) {
         throw new Error('Invalid input string');
       }
@@ -187,14 +191,14 @@ export class Timespan {
     startDate?: Date,
   ): Timespan => {
     const start = startDate || new Date();
-    Assertions.assertValidDate(start);
-    Assertions.assertValidTimeUnit(unit);
+    assertValidDate(start);
+    assertValidTimeUnit(unit);
     if (amount < 0) {
       throw new Error(`Invalid unit input ${amount}.`);
     }
     const converter = getConverter(unit);
     const endDate = converter.add(amount, start);
-    Assertions.assertValidDateRange(start, endDate);
+    assertValidDateRange(start, endDate);
     return new Timespan(start, endDate);
   };
 
@@ -327,7 +331,7 @@ export class Timespan {
    * @returns The duration in the specified time unit.
    */
   public toUnit = (unit: TimeUnit): number => {
-    Assertions.assertValidTimeUnit(unit);
+    assertValidTimeUnit(unit);
     const converter = getConverter(unit);
     return converter.between(this.startDate, this.endDate);
   };

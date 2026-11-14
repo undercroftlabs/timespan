@@ -8,7 +8,7 @@ import { SecondConverter } from './converters/second-converter';
 import { WeekConverter } from './converters/week-converter';
 import { YearConverter } from './converters/year-converter';
 import { TimeUnit } from './types';
-import { assertValidTimeUnit } from './assertions';
+import { assertValidTimeUnit } from './assertions/assert-valid-time-unit';
 
 const converters: DateUnitConverter[] = [
   new YearConverter(),
