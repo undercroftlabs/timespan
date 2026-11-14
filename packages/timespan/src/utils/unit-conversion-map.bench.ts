@@ -1,6 +1,6 @@
 import { bench, describe } from 'vitest';
 
-import { TimeUnit } from '../types';
+import { TimeUnit } from '../types/time-unit';
 import { getConverter, getTimeUnits } from './unit-conversion-map';
 
 const rejectionMessage = 'Invalid time unit: expected a recognized time unit.';

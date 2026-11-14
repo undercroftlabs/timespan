@@ -1,4 +1,4 @@
-import { TimeUnit } from '../types';
+import { TimeUnit } from '../types/time-unit';
 import { TimeFrame } from '../types/timeframe';
 import { getConverter } from './unit-conversion-map';
 

@@ -210,6 +210,75 @@ Timespan.equals(timespan1, timespan2);
 Timespan.compareTo(timespan1, timespan2);
 ```
 
+# Formatting a Timespan
+
+`format` inserts numeric time values into a caller-supplied string. Literal text is copied unchanged, and `%%` is a literal percent. `Timespan.format` calls the instance method.
+
+A directive has the form `%[flags][width][.precision]specifier`. Flags are `0` (zero pad), `-` (left align), `+` (show a plus), and a space (show a leading space). Width is the minimum field length. Precision is the minimum number of digits, except for `%f`, where it is the number of fractional-second digits. The default for `%f` is 3. Values are truncated, not rounded. A width or precision of 1,000,000 or more is rejected. The format string itself has no length limit.
+
+Uppercase specifiers are totals. Lowercase specifiers are the components from `toTimeframe()`.
+
+| Specifier | Meaning                                           |
+| --------- | ------------------------------------------------- |
+| `%Y` `%y` | Total years, year component                       |
+| `%B` `%b` | Total months, month component                     |
+| `%W` `%w` | Total weeks, week component                       |
+| `%D` `%d` | Total days, day component                         |
+| `%H` `%h` | Total hours, hour component                       |
+| `%M` `%m` | Total minutes, minute component                   |
+| `%S` `%s` | Total seconds, second component                   |
+| `%L` `%l` | Total milliseconds, millisecond component         |
+| `%f`      | Fractional seconds from the millisecond component |
+
+```js
+import { Timespan } from '@undercroft/timespan';
+
+const start = new Date('2023-06-01T00:00:00.000Z');
+const timespan = new Timespan(start, new Date(start.getTime() + 1_483_506_123));
+
+timespan.format('%D days'); // '17 days'
+timespan.format('Time remaining: %h:%02m:%02s'); // 'Time remaining: 4:05:06'
+Timespan.format('%s.%f seconds', timespan); // '6.123 seconds'
+```
+
+# JSON
+
+A timespan serializes as a `TimespanJson` object. That type is exported from `@undercroft/timespan`. `$type` is `'Timespan'`, and `start` and `end` are the instants as strings. `toJSON` writes ISO strings and returns a `TimespanJson`. `JSON.stringify` calls `toJSON` automatically. `Timespan.stringify` is `JSON.stringify` for one timespan.
+
+`fromJSON` reads that object and returns a new timespan. `parse` does the same, and only for a JSON document whose root is one timespan. A document whose root is an array, a wrapper object, or any other value is rejected. It does not walk nested values.
+
+Use `JSON.parse(text, Timespan.reviver)` when timespans are nested inside a larger document. The reviver turns each object with `$type: 'Timespan'` into a timespan and leaves every other value unchanged. An object that claims to be a timespan but cannot be reconstructed throws.
+
+`isTimespanJSON` checks the serialized shape: `$type` is `'Timespan'`, and `start` and `end` are strings. It does not parse the dates or compare them, so a true result does not guarantee that `fromJSON` will succeed. A `Timespan` instance returns false until you call `toJSON`.
+
+`fromJSON` and `parse` throw `TypeError` for a value that is not Timespan JSON. They throw if a date string cannot be parsed, or if the start is after the end. `parse` also throws `SyntaxError` when the text is not JSON.
+
+```ts
+import { Timespan, type TimespanJson } from '@undercroft/timespan';
+
+const timespan = new Timespan(
+  new Date('2023-01-01T00:00:00.000Z'),
+  new Date('2023-01-15T00:00:00.000Z'),
+);
+const json: TimespanJson = timespan.toJSON();
+// {
+//   $type: 'Timespan',
+//   start: '2023-01-01T00:00:00.000Z',
+//   end: '2023-01-15T00:00:00.000Z',
+// }
+
+const text = Timespan.stringify(timespan);
+const restored = Timespan.parse(text);
+
+const payload = JSON.parse(
+  JSON.stringify({ label: 'kept', span: timespan }),
+  Timespan.reviver,
+);
+
+Timespan.isTimespanJSON(timespan.toJSON()); // true
+Timespan.isTimespanJSON(timespan); // false
+```
+
 Please refer to the source code for more details on the available methods and their usage.
 
 ## Contributing

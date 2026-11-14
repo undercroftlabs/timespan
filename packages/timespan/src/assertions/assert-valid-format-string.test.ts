@@ -1,8 +1,6 @@
-import Constants from '../constants';
 import { assertValidFormatString } from './assert-valid-format-string';
 
-const maxLength = Constants.MaxInputStringLength;
-const invalidLength = `Invalid input string: expected at most ${maxLength} characters.`;
+const invalidType = 'Invalid format string: expected a string.';
 const invalidFormat = 'Invalid format string: expected a valid format string.';
 
 /**
@@ -96,11 +94,11 @@ describe('assertValidFormatString', () => {
       ${'field between the two documented limits'} | ${'%999999h'}
       ${'precision between the two limits'}        | ${'%.999999f'}
       ${'both fields just below the ceiling'}      | ${'%999999.999999h'}
-      ${'exactly the maximum length'}              | ${`${'a'.repeat(maxLength - 2)}%D`}
-      ${'whitespace at the maximum length'}        | ${' '.repeat(maxLength)}
+      ${'a sentence longer than 75 characters'}    | ${`${'Remaining time: '.repeat(8)}%D days.`}
+      ${'a long literal around one specifier'}     | ${`%D${'a'.repeat(500)}`}
+      ${'an emoji sequence'}                       | ${String.fromCodePoint(0x1f44d).repeat(38)}
       ${'one emoji'}                               | ${`%D${String.fromCodePoint(0x1f44d)}`}
     `('accepts $label', ({ value }: { value: string }) => {
-      expect(value.length).toBeLessThanOrEqual(maxLength);
       expect(assertValidFormatString(value)).toBeUndefined();
     });
   });
@@ -109,37 +107,32 @@ describe('assertValidFormatString', () => {
     const bigintValue = Function('return 1n')();
 
     test.each`
-      label                                   | value
-      ${'one past the maximum'}               | ${'a'.repeat(maxLength + 1)}
-      ${'far past the maximum'}               | ${'a'.repeat(maxLength * 2)}
-      ${'valid directive past the maximum'}   | ${`%D${'a'.repeat(maxLength)}`}
-      ${'invalid directive past the maximum'} | ${`%Q${'a'.repeat(maxLength)}`}
-      ${'emoji sequence past the limit'}      | ${String.fromCodePoint(0x1f44d).repeat(38)}
-      ${'null'}                               | ${null}
-      ${'undefined'}                          | ${undefined}
-      ${'zero'}                               | ${0}
-      ${'negative zero'}                      | ${-0}
-      ${'positive number'}                    | ${1}
-      ${'negative number'}                    | ${-1}
-      ${'decimal number'}                     | ${1.5}
-      ${'NaN'}                                | ${Number.NaN}
-      ${'Infinity'}                           | ${Number.POSITIVE_INFINITY}
-      ${'bigint'}                             | ${bigintValue}
-      ${'true'}                               | ${true}
-      ${'false'}                              | ${false}
-      ${'plain object'}                       | ${{}}
-      ${'object with a short length'}         | ${{ length: 1 }}
-      ${'array'}                              | ${[]}
-      ${'array of a format string'}           | ${['%D']}
-      ${'String object'}                      | ${new String('%D')}
-      ${'date'}                               | ${new Date(0)}
-      ${'symbol'}                             | ${Symbol('%D')}
-      ${'function'}                           | ${() => '%D'}
+      label                           | value
+      ${'null'}                       | ${null}
+      ${'undefined'}                  | ${undefined}
+      ${'zero'}                       | ${0}
+      ${'negative zero'}              | ${-0}
+      ${'positive number'}            | ${1}
+      ${'negative number'}            | ${-1}
+      ${'decimal number'}             | ${1.5}
+      ${'NaN'}                        | ${Number.NaN}
+      ${'Infinity'}                   | ${Number.POSITIVE_INFINITY}
+      ${'bigint'}                     | ${bigintValue}
+      ${'true'}                       | ${true}
+      ${'false'}                      | ${false}
+      ${'plain object'}               | ${{}}
+      ${'object with a short length'} | ${{ length: 1 }}
+      ${'array'}                      | ${[]}
+      ${'array of a format string'}   | ${['%D']}
+      ${'String object'}              | ${new String('%D')}
+      ${'date'}                       | ${new Date(0)}
+      ${'symbol'}                     | ${Symbol('%D')}
+      ${'function'}                   | ${() => '%D'}
     `(
-      'throws "Invalid input string: expected at most 75 characters." for $label',
+      'throws "Invalid format string: expected a string." for $label',
       ({ value }: { value: unknown }) => {
         expect(() => assertValidFormatString(value)).toThrow(
-          new Error(invalidLength),
+          new Error(invalidType),
         );
       },
     );
@@ -192,10 +185,10 @@ describe('assertValidFormatString', () => {
       ${'precision digit run past the ceiling'}     | ${`%.${'9'.repeat(20)}f`}
       ${'fullwidth digit is not a width'}           | ${'%\uFF11h'}
       ${'percent then an emoji'}                    | ${`%${String.fromCodePoint(0x1f44d)}`}
+      ${'unknown specifier in a long string'}       | ${`%Q${'a'.repeat(500)}`}
     `(
       'throws "Invalid format string: expected a valid format string." for $label',
       ({ value }: { value: string }) => {
-        expect(value.length).toBeLessThanOrEqual(maxLength);
         expect(() => assertValidFormatString(value)).toThrow(
           new Error(invalidFormat),
         );
@@ -207,9 +200,10 @@ describe('assertValidFormatString', () => {
     expect(() => assertValidFormatString('%Q')).toThrow(
       new Error(invalidFormat),
     );
-    expect(() => assertValidFormatString('a'.repeat(maxLength + 1))).toThrow(
-      new Error(invalidLength),
-    );
+    expect(() => assertValidFormatString(null)).toThrow(new Error(invalidType));
+    expect(
+      assertValidFormatString(`${'Remaining time: '.repeat(8)}%D days.`),
+    ).toBeUndefined();
     expect(assertValidFormatString('%D days')).toBeUndefined();
     expect(
       assertValidFormatString('Time remaining: %h:%02m:%02s'),

@@ -1,17 +1,15 @@
 import { bench, describe } from 'vitest';
 
-import Constants from '../constants';
 import { assertValidFormatString } from './assert-valid-format-string';
 
-const invalidLength = `Invalid input string: expected at most ${Constants.MaxInputStringLength} characters.`;
+const invalidType = 'Invalid format string: expected a string.';
 const invalidFormat = 'Invalid format string: expected a valid format string.';
 
 const emptyString = '';
 const literalText = 'No substitutions here.';
 const workedExample = 'Time remaining: %h:%02m:%02s';
 const everySpecifier = '%Y %y %B %b %W %w %D %d %H %h %M %m %S %s %L %l %f';
-const exactMaximum = `${'a'.repeat(Constants.MaxInputStringLength - 2)}%D`;
-const onePastMaximum = 'a'.repeat(Constants.MaxInputStringLength + 1);
+const longSentence = `${'Remaining time: '.repeat(40)}%D days.`;
 const unknownSpecifier = '%Q';
 const trailingPercent = 'ab%';
 const rejectedWidth = '%1000000h';
@@ -52,19 +50,16 @@ expectAccepted(emptyString);
 expectAccepted(literalText);
 expectAccepted(workedExample);
 expectAccepted(everySpecifier);
-expectAccepted(exactMaximum);
-expectRejected(onePastMaximum, invalidLength);
+expectAccepted(longSentence);
 expectRejected(unknownSpecifier, invalidFormat);
 expectRejected(trailingPercent, invalidFormat);
 expectRejected(rejectedWidth, invalidFormat);
-expectRejected(nullInput, invalidLength);
-expectRejected(undefinedInput, invalidLength);
-expectRejected(numericInput, invalidLength);
+expectRejected(nullInput, invalidType);
+expectRejected(undefinedInput, invalidType);
+expectRejected(numericInput, invalidType);
 
-if (exactMaximum.length !== Constants.MaxInputStringLength) {
-  throw new Error(
-    `Expected a format string of length ${Constants.MaxInputStringLength}.`,
-  );
+if (longSentence.length <= 75) {
+  throw new Error('Expected a format string longer than 75 characters.');
 }
 
 describe('assertValidFormatString', () => {
@@ -84,16 +79,8 @@ describe('assertValidFormatString', () => {
     assertValidFormatString(everySpecifier);
   });
 
-  bench('accepts a string at the maximum length', () => {
-    assertValidFormatString(exactMaximum);
-  });
-
-  bench('rejects one character past the maximum', () => {
-    try {
-      assertValidFormatString(onePastMaximum);
-    } catch {
-      return;
-    }
+  bench('accepts a long sentence', () => {
+    assertValidFormatString(longSentence);
   });
 
   bench('rejects an unknown specifier', () => {

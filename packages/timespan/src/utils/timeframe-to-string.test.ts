@@ -46,12 +46,12 @@ describe('timeFrameToString', () => {
     });
 
     it('uses the canonical years field when an alias is also present', () => {
-      const frame = { years: 1, y: 2 } as TimeFrame;
+      const frame = { years: 1, y: 2 } as unknown as TimeFrame;
       expect(timeFrameToString(frame)).toBe('1y');
     });
 
     it('ignores a unit that is only present as an alias', () => {
-      const frame = { y: 1 } as TimeFrame;
+      const frame = { y: 1 } as unknown as TimeFrame;
       expect(timeFrameToString(frame)).toBe('');
     });
 

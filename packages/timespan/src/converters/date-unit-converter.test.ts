@@ -1,4 +1,4 @@
-import { TimeUnit } from '../types';
+import { TimeUnit } from '../types/time-unit';
 import { DateUnitConverter } from './date-unit-converter';
 
 const maxTimestamp = 8.64e15;

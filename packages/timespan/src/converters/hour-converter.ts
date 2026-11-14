@@ -1,7 +1,7 @@
 import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
-import { HourUnit } from '../types';
+import { HourUnit } from '../types/hour-unit';
 import { DateUnitConverter } from './date-unit-converter';
 
 /**

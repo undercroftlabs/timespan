@@ -66,6 +66,7 @@
   "scripts": {
     "prepublishOnly": "pnpm run test:dist",
     "build": "tsdown",
+    "typecheck": "tsc --noEmit --strict",
     "verify:package": "node ../../tools/verify-package.mjs",
     "package": "pnpm run build && npm pack",
     "test:dist": "pnpm run build && pnpm run test:dist:lint && pnpm run test:dist:types && pnpm run test:dist:load",

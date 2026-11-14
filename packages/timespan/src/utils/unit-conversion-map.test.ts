@@ -1,4 +1,4 @@
-import { TimeUnit } from '../types';
+import { TimeUnit } from '../types/time-unit';
 import { getConverter, getTimeUnits } from './unit-conversion-map';
 
 const invalidTimeUnit = 'Invalid time unit: expected a recognized time unit.';

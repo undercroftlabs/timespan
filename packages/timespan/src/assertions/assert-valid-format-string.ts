@@ -1,9 +1,6 @@
-import Constants from '../constants';
-
 /**
  * Width or precision at or above this value is rejected.
- * 0 through 64 must be accepted. Values in between are accepted when the
- * format string itself stays within `MaxInputStringLength`.
+ * 0 through 64 must be accepted. Values in between are accepted.
  */
 const minimumRejectedField = 1_000_000;
 
@@ -112,7 +109,7 @@ function readDirective(
 
 /**
  * Reports whether every `%` in `formatString` begins a complete directive.
- * @param formatString - Candidate format string. Length is checked by the caller.
+ * @param formatString - Candidate format string.
  * @returns True when the string is empty or contains only literal text and
  * valid directives.
  */
@@ -137,14 +134,14 @@ function isValidFormat(formatString: string): boolean {
 }
 
 /**
- * Asserts that `value` is a format string of at most `MaxInputStringLength`
- * (75) UTF-16 code units. An empty string passes. Directives must match
- * `%[flags][width][.precision]specifier`, and `%%` is a literal percent.
- * Flags are `0`, `-`, `+`, and space. Width and precision must be below
- * 1,000,000. Literal text, including text that resembles a unit name, is kept.
+ * Asserts that `value` is a format string. An empty string passes. Directives
+ * must match `%[flags][width][.precision]specifier`, and `%%` is a literal
+ * percent. Flags are `0`, `-`, `+`, and space. Width and precision must be
+ * below 1,000,000. The string itself has no length limit. Literal text,
+ * including text that resembles a unit name, is kept.
  * @param value - Value to check. `null`, `undefined`, and any other non-string
  * are rejected.
- * @throws {Error} `Invalid input string: expected at most 75 characters.`
+ * @throws {Error} `Invalid format string: expected a string.`
  * @throws {Error} `Invalid format string: expected a valid format string.`
  * @example
  * assertValidFormatString('%D days');
@@ -152,13 +149,8 @@ function isValidFormat(formatString: string): boolean {
 export function assertValidFormatString(
   value: unknown,
 ): asserts value is string {
-  if (
-    typeof value !== 'string' ||
-    value.length > Constants.MaxInputStringLength
-  ) {
-    throw new Error(
-      `Invalid input string: expected at most ${Constants.MaxInputStringLength} characters.`,
-    );
+  if (typeof value !== 'string') {
+    throw new Error('Invalid format string: expected a string.');
   }
 
   if (!isValidFormat(value)) {

@@ -1,6 +1,6 @@
 import { bench, describe } from 'vitest';
 
-import { TimeUnit } from '../types';
+import { TimeUnit } from '../types/time-unit';
 import { DateUnitConverter } from './date-unit-converter';
 
 const rejectionMessage = 'Invalid year: expected a finite integer.';

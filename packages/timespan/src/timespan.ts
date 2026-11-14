@@ -1,5 +1,5 @@
 import { TimeFrame } from './types/timeframe';
-import { TimeUnit } from './types';
+import { TimeUnit } from './types/time-unit';
 import { calculateTimeFrame } from './utils/calculate-time-frame';
 import { timeFrameToString } from './utils/timeframe-to-string';
 import { getConverter } from './utils/unit-conversion-map';
@@ -11,6 +11,9 @@ import { assertMaxInputLength } from './assertions/assert-max-input-length';
 import { assertValidFormatString } from './assertions/assert-valid-format-string';
 import { formatTimespan } from './utils/format-timespan';
 import Constants from './constants';
+import { TimespanJson } from './types/timespan-json';
+import { assertValidTimespanJson } from './assertions/assert-valid-timespan-json';
+import { isTimespanJson } from './type-guards/is-timespan-json';
 
 /**
  * Represents a time span between two dates.
@@ -317,15 +320,129 @@ export class Timespan {
     ts1.compareTo(ts2);
 
   /**
-   * Format the timespan to a string representation.
+   * Format a timespan with a caller-supplied format string.
+   * Directives use `%[flags][width][.precision]specifier`. `%%` is a literal
+   * percent. Uppercase specifiers are totals (`%D` days) and lowercase
+   * specifiers are timeframe components (`%d` days). `%f` is fractional seconds.
+   * Width and precision must be below 1,000,000. The format string itself has
+   * no length limit.
    * @param formatString - The format string to use.
    * @param timespan - The timespan to format.
-   * @returns The string representation of the timespan.
+   * @returns The formatted text.
+   * @throws {Error} `Invalid format string: expected a string.`
+   * @throws {Error} `Invalid format string: expected a valid format string.`
+   * @example
+   * Timespan.format('%D days', timespan);
    */
   public static readonly format = (
     formatString: string,
     timespan: Timespan,
   ): string => timespan.format(formatString);
+
+  /**
+   * Convert a timespan to its JSON object.
+   * The object is `{ $type: 'Timespan', start, end }`, with both instants as
+   * ISO strings. `JSON.stringify` calls the instance method for a timespan value.
+   * @param timespan - The timespan to convert.
+   * @returns The JSON object for the timespan.
+   * @example
+   * Timespan.toJSON(timespan);
+   */
+  public static readonly toJSON = (timespan: Timespan): TimespanJson =>
+    timespan.toJSON();
+
+  /**
+   * Create a timespan from a JSON object.
+   * The object must have `$type: 'Timespan'` and string `start` and `end`
+   * values. The strings must be parseable dates, and the start must not be
+   * after the end. Extra fields are ignored.
+   * @param json - The JSON object to read.
+   * @returns A timespan covering the parsed instants.
+   * @throws {TypeError} `Invalid Timespan JSON.`
+   * @throws {Error} `Invalid date: expected a valid Date.`
+   * @throws {Error} `Invalid date range: expected the start date to be less than or equal to the end date.`
+   * @example
+   * Timespan.fromJSON(timespan.toJSON());
+   */
+  public static readonly fromJSON = (json: unknown): Timespan => {
+    assertValidTimespanJson(json);
+    return new Timespan(new Date(json.start), new Date(json.end));
+  };
+
+  /**
+   * Create a timespan from a JSON string.
+   * The text must be one Timespan JSON object. Use `reviver` when a timespan
+   * is nested inside a larger JSON value.
+   * @param jsonString - JSON text for one timespan.
+   * @returns A timespan covering the parsed instants.
+   * @throws {SyntaxError} When `jsonString` is not JSON.
+   * @throws {TypeError} `Invalid Timespan JSON.`
+   * @throws {Error} `Invalid date: expected a valid Date.`
+   * @throws {Error} `Invalid date range: expected the start date to be less than or equal to the end date.`
+   * @example
+   * Timespan.parse(Timespan.stringify(timespan));
+   */
+  public static readonly parse = (jsonString: string): Timespan => {
+    return Timespan.fromJSON(JSON.parse(jsonString));
+  };
+
+  /**
+   * Revive Timespan JSON objects while parsing a larger JSON value.
+   * Pass this function as the reviver to `JSON.parse`. Objects whose `$type`
+   * is `Timespan` become timespans. Every other value is returned unchanged.
+   * @param _key - Property name supplied by `JSON.parse`. The root key is `''`.
+   * The reviver does not use it.
+   * @param value - The value `JSON.parse` has built for this property.
+   * @returns A timespan when `value` is Timespan JSON, otherwise `value`.
+   * @throws {TypeError} `Invalid Timespan JSON.`
+   * @throws {Error} `Invalid date: expected a valid Date.`
+   * @throws {Error} `Invalid date range: expected the start date to be less than or equal to the end date.`
+   * @example
+   * JSON.parse(text, Timespan.reviver);
+   */
+  public static readonly reviver = (_key: string, value: unknown): unknown => {
+    if (
+      typeof value === 'object' &&
+      value !== null &&
+      !Array.isArray(value) &&
+      '$type' in value &&
+      value.$type === 'Timespan'
+    ) {
+      return Timespan.fromJSON(value);
+    }
+    return value;
+  };
+
+  /**
+   * Convert a timespan to a JSON string.
+   * This is `JSON.stringify` of the timespan, so the text is the object from
+   * `toJSON`.
+   * @param timespan - The timespan to convert.
+   * @returns JSON text for the timespan.
+   * @example
+   * Timespan.stringify(timespan);
+   */
+  public static readonly stringify = (timespan: Timespan): string => {
+    return JSON.stringify(timespan);
+  };
+
+  /**
+   * Report whether a value has the Timespan JSON shape.
+   * This checks the serialized shape, not whether reconstruction will succeed.
+   * `$type` must be `Timespan`, and `start` and `end` must be strings. The
+   * strings are not parsed as dates, and the start is not compared with the
+   * end, so a true result can still make `fromJSON` throw. A `Timespan`
+   * instance itself returns false.
+   * @param value - The value to inspect.
+   * @returns True when `value` matches the Timespan JSON shape.
+   * @example
+   * Timespan.isTimespanJSON(timespan.toJSON());
+   */
+  public static readonly isTimespanJSON = (
+    value: unknown,
+  ): value is TimespanJson => {
+    return isTimespanJson(value);
+  };
 
   /**
    * Convert the timespan to a TimeFrame object.
@@ -435,12 +552,34 @@ export class Timespan {
   };
 
   /**
-   * Format the timespan to a string representation.
+   * Format this timespan with a caller-supplied format string.
+   * See `Timespan.format` for the directive grammar. `Timespan.format` calls
+   * this method.
    * @param formatString - The format string to use.
-   * @returns The string representation of the timespan.
+   * @returns The formatted text.
+   * @throws {Error} `Invalid format string: expected a string.`
+   * @throws {Error} `Invalid format string: expected a valid format string.`
+   * @example
+   * timespan.format('%h:%02m:%02s');
    */
   public format = (formatString: string): string => {
     assertValidFormatString(formatString);
     return formatTimespan(formatString, this);
+  };
+
+  /**
+   * Convert this timespan to its JSON object.
+   * `JSON.stringify` calls this method. The result is
+   * `{ $type: 'Timespan', start, end }`, with both instants as ISO strings.
+   * @returns The JSON object for this timespan.
+   * @example
+   * timespan.toJSON();
+   */
+  public toJSON = (): TimespanJson => {
+    return {
+      $type: 'Timespan',
+      start: this.startDate.toISOString(),
+      end: this.endDate.toISOString(),
+    };
   };
 }
