@@ -1,6 +1,7 @@
 // noinspection DuplicatedCode
 
 import { Timespan } from '../src';
+import { formatTimespan } from './utils/format-timespan';
 
 /**
  * Deterministic mulberry32 PRNG so fuzz runs are reproducible.
@@ -1268,6 +1269,55 @@ describe('Timespan', () => {
           Timespan.fromString(good, startDate).toMilliseconds(),
         );
       }
+    });
+  });
+
+  describe('format', () => {
+    const origin = new Date('2023-06-01T00:00:00.000Z');
+    const timespan = new Timespan(
+      origin,
+      new Date(origin.getTime() + 1_483_506_123),
+    );
+
+    it('returns the formatTimespan result from the instance and static methods', () => {
+      const formatString = '%D days';
+      expect(timespan.format(formatString)).toBe(
+        formatTimespan(formatString, timespan),
+      );
+      expect(Timespan.format(formatString, timespan)).toBe(
+        timespan.format(formatString),
+      );
+    });
+
+    it('delegates the static method to the instance method', () => {
+      const span = new Timespan(origin, new Date(origin.getTime()));
+      const original = span.format;
+      span.format = (formatString: string) => `delegated:${formatString}`;
+      try {
+        expect(Timespan.format('%D days', span)).toBe('delegated:%D days');
+      } finally {
+        span.format = original;
+      }
+    });
+
+    it('does not change the timespan when formatting', () => {
+      const calendar = new Timespan(
+        new Date('2022-01-01T06:24:00Z'),
+        new Date('2023-02-21T10:52:00Z'),
+      );
+      const start = calendar.start.toISOString();
+      const end = calendar.end.toISOString();
+      const text = calendar.toString();
+      const frame = calendar.toTimeframe();
+
+      calendar.format('%Y');
+      Timespan.format('%D', calendar);
+
+      expect(calendar.start.toISOString()).toBe(start);
+      expect(calendar.end.toISOString()).toBe(end);
+      expect(calendar.toString()).toBe(text);
+      expect(calendar.toTimeframe()).toEqual(frame);
+      expect(text).toBe('1y 1M 2w 6d 4h 28m');
     });
   });
 });

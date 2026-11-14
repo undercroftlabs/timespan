@@ -8,6 +8,8 @@ import { assertValidDateRange } from './assertions/assert-valid-date-range';
 import { assertValidTimeUnit } from './assertions/assert-valid-time-unit';
 import { assertAllowedCharacters } from './assertions/assert-allowed-characters';
 import { assertMaxInputLength } from './assertions/assert-max-input-length';
+import { assertValidFormatString } from './assertions/assert-valid-format-string';
+import { formatTimespan } from './utils/format-timespan';
 import Constants from './constants';
 
 /**
@@ -315,6 +317,17 @@ export class Timespan {
     ts1.compareTo(ts2);
 
   /**
+   * Format the timespan to a string representation.
+   * @param formatString - The format string to use.
+   * @param timespan - The timespan to format.
+   * @returns The string representation of the timespan.
+   */
+  public static readonly format = (
+    formatString: string,
+    timespan: Timespan,
+  ): string => timespan.format(formatString);
+
+  /**
    * Convert the timespan to a TimeFrame object.
    * @returns The TimeFrame object representing the timespan.
    */
@@ -419,5 +432,15 @@ export class Timespan {
       return 1;
     }
     return 0;
+  };
+
+  /**
+   * Format the timespan to a string representation.
+   * @param formatString - The format string to use.
+   * @returns The string representation of the timespan.
+   */
+  public format = (formatString: string): string => {
+    assertValidFormatString(formatString);
+    return formatTimespan(formatString, this);
   };
 }
