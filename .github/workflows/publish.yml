@@ -131,8 +131,15 @@ jobs:
       - name: Build the project
         run: pnpm run build
 
-      - name: Publish to npm
-        run: pnpm --filter @undercroft/timespan exec npm publish --access public
+      - name: Validate the npm tarball
+        run: pnpm run verify:package
+
+      - name: Publish the validated tarball
+        run: |
+          set -euo pipefail
+          TARBALL="$(tr -d '\n' < packages/timespan/reports/npm-tarball-name)"
+          test -f "packages/timespan/${TARBALL}"
+          pnpm --filter @undercroft/timespan exec npm publish "${TARBALL}" --access public
 
       - name: Verify npm publication
         env:

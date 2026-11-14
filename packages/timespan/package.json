@@ -66,6 +66,7 @@
   "scripts": {
     "prepublishOnly": "pnpm run test:dist",
     "build": "tsdown",
+    "verify:package": "node ../../tools/verify-package.mjs",
     "package": "pnpm run build && npm pack",
     "test:dist": "pnpm run build && pnpm run test:dist:lint && pnpm run test:dist:types && pnpm run test:dist:load",
     "test:dist:lint": "publint --strict --pack npm",
@@ -85,9 +86,10 @@
     "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^4.0.0",
     "publint": "^0.3.25",
+    "publish-gauge": "1.0.2",
     "size-limit": "^14.3.0",
     "tsdown": "^0.23.0",
-    "vitest": "^4.0.0",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^4.0.0"
   }
 }

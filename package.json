@@ -9,6 +9,7 @@
   "scripts": {
     "postinstall": "husky",
     "build": "pnpm --filter @undercroft/timespan build",
+    "verify:package": "pnpm --filter @undercroft/timespan verify:package",
     "lint": "oxlint . && oxfmt --check",
     "lint:fix": "oxlint . && oxfmt",
     "test": "pnpm --filter @undercroft/timespan test",
@@ -26,7 +27,7 @@
     "sandbox": "pnpm --filter @undercroft/timespan sandbox",
     "size": "pnpm --filter @undercroft/timespan size",
     "node:versions": "node tools/supported-node-versions.mjs",
-    "verify": "pnpm run build && pnpm run lint && pnpm run test"
+    "verify": "pnpm run lint && pnpm run test && pnpm run build && pnpm run verify:package"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",

@@ -7,9 +7,10 @@ Tagged GitHub Actions releases publish `@undercroft/timespan` with **npm Trusted
 1. Push a version tag matching `v*` (for example `v1.2.0`).
 2. `publish.yml` validates the tag format and that it matches `packages/timespan/package.json` (`v1.2.0` ↔ `1.2.0`).
 3. Vitest unit tests, distribution tests, and Playwright browser tests run against **that tagged commit**. Browser tests use the official Playwright Docker image that matches `pnpm-lock.yaml`.
-4. The `publish` job (environment `npm-publish`) publishes with OIDC.
-5. The workflow checks that the version is visible on the npm registry.
-6. A GitHub Release is created from `changelog.md` **after** npm publish succeeds.
+4. The `publish` job builds once, packs the npm tarball, and validates that exact tarball with publish-gauge. Validation failure stops the job before `npm publish`.
+5. The `publish` job (environment `npm-publish`) publishes that validated tarball with OIDC.
+6. The workflow checks that the version is visible on the npm registry.
+7. A GitHub Release is created from `changelog.md` **after** npm publish succeeds.
 
 ```text
 validate-tag
@@ -20,7 +21,7 @@ validate-tag
                     └── github-release  (contents: write only)
 ```
 
-A failure in unit, distribution, or browser tests blocks `npm publish`. A failed publish blocks GitHub Release creation.
+A failure in unit, distribution, or browser tests blocks `npm publish`. A failed package validation also blocks `npm publish`. A failed publish blocks GitHub Release creation.
 
 ## GitHub environment: `npm-publish`
 
@@ -68,12 +69,26 @@ npm view @undercroft/timespan@<version> --json
 
 Confirm the version exists, then open the package version page on npmjs.com and check the provenance / “Built from” attestation. You can also inspect attestations with `npm audit signatures` for installed copies.
 
+## Local package verification
+
+From the repository root, after a build:
+
+```bash
+pnpm build
+pnpm verify:package
+```
+
+`verify:package` packs `packages/timespan` as it exists and checks that tarball with [publish-gauge](https://mrlouiswright.github.io/publish-gauge/) (`--fail-on low`). Every finding fails the command, including a missing README or LICENSE and low-severity source-map warnings. Reports are written to `packages/timespan/reports/`, which is gitignored.
+
+publish-gauge is the public npm package `publish-gauge`. Installing it does not need a GitHub Packages token. The project site also mentions `@mrlouiswright/publish-gauge` on GitHub Packages; that scoped name is not the package this repository installs.
+
 ## Lifecycle scripts during CI publish
 
 - `postinstall` runs `husky`. GitHub Actions sets `CI=true`, so Husky does not install local git hooks.
-- `prepublishOnly` runs `test:dist` (publint, attw, and a load of the built CommonJS and ESM files). That dist check also runs as an explicit job; the extra `prepublishOnly` run is a last-line safety net on the exact files about to be packed.
+- Distribution tests still run in the `dist-tests` job before publish. That job runs publint, attw, and a load of the built CommonJS and ESM files.
+- The publish job packs one tarball and publishes that file. `npm publish <tarball>` does not run `prepublishOnly`, so the validated bytes cannot be replaced by a later build. `prepublishOnly` remains `test:dist` for a directory publish outside this workflow.
 
-`files` in `package.json` is `["dist"]`, so the tarball contains the built JavaScript, UMD, and TypeScript declarations. Husky and the rest of the workspace stay out of the published package.
+`files` in `package.json` is `["dist"]`. npm also ships `package.json`, and a `README.md` or `LICENSE` when those files are already in the package directory. The library README lives in `packages/timespan`. The workspace `LICENSE` stays at the repository root and is not packed. Husky and the rest of the workspace stay out of the published package.
 
 ## Recovery from partial success
 

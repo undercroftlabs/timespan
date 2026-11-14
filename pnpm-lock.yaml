@@ -53,6 +53,9 @@ importers:
       publint:
         specifier: ^0.3.25
         version: 0.3.25
+      publish-gauge:
+        specifier: 1.0.2
+        version: 1.0.2
       size-limit:
         specifier: ^14.3.0
         version: 14.3.0
@@ -1801,6 +1804,11 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  publish-gauge@1.0.2:
+    resolution: {integrity: sha512-6Wa44XxNAfSkYGzpgPCYD5RCjhZy3ubH1GLCIvc8NYGSJ1abtPJ79oKpHtMwXxZzIRN6IyUPeUodVeXzthjqIw==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   quansync@1.0.0:
     resolution: {integrity: sha512-5xZacEEufv3HSTPQuchrvV6soaiACMFnq1H8wkVioctoH3TRha9Sz66lOxRwPK/qZj7HPiSveih9yAyh98gvqA==}
 
@@ -3524,6 +3532,8 @@ snapshots:
       package-manager-detector: 1.9.0
       picocolors: 1.1.1
       sade: 1.8.1
+
+  publish-gauge@1.0.2: {}
 
   quansync@1.0.0: {}
 
