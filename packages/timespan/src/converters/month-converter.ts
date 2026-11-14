@@ -126,21 +126,16 @@ export class MonthConverter extends DateUnitConverter {
   }
 
   /**
-   * Day count of the month containing `date`. The UTC last-day lookup is used
-   * while that day exists; otherwise the Gregorian length is used so a shorter
-   * day in the same month is not cleared by an unrepresentable last day.
+   * Gregorian length of the month containing `date`.
+   * A `Date.UTC` last-day lookup would be invalid when that day is past the
+   * representable range, and would clear a shorter day in the same month.
    * @param date - Date already moved onto the target month.
    * @returns The last calendar day of that month.
    */
   private lastDayOfMonth(date: Date): number {
-    const year = date.getUTCFullYear();
     const month = date.getUTCMonth();
-    const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-    if (Number.isFinite(lastDay)) {
-      return lastDay;
-    }
     if (month === 1) {
-      return this.isLeapYear(year) ? 29 : 28;
+      return this.isLeapYear(date.getUTCFullYear()) ? 29 : 28;
     }
     return MonthConverter.daysPerMonth[month];
   }
