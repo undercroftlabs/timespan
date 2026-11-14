@@ -1,6 +1,6 @@
 import { TimeUnit } from '../types';
 import { TimeFrame } from '../types/timeframe';
-import { getConverter } from '../unit-conversion-map';
+import { getConverter } from './unit-conversion-map';
 
 /**
  * Timeframe fields in display order. Aliases such as `y` are not fields.

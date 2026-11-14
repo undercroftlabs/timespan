@@ -1,5 +1,5 @@
 import { TimeUnit } from '../types';
-import { getTimeUnits } from '../unit-conversion-map';
+import { getTimeUnits } from '../utils/unit-conversion-map';
 
 /**
  * Asserts that `unit` is an alias in the time unit conversion table.

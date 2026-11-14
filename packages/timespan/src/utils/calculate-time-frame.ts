@@ -2,7 +2,7 @@ import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { TimeFrame } from '../types/timeframe';
-import { getConverter } from '../unit-conversion-map';
+import { getConverter } from './unit-conversion-map';
 
 /**
  * Calculate the TimeFrame representation of the timespan.

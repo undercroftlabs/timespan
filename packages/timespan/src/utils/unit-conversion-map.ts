@@ -1,14 +1,14 @@
-import { DateUnitConverter } from './converters/date-unit-converter';
-import { DayConverter } from './converters/day-converter';
-import { HourConverter } from './converters/hour-converter';
-import { MillisecondConverter } from './converters/millisecond-converter';
-import { MinuteConverter } from './converters/minute-converter';
-import { MonthConverter } from './converters/month-converter';
-import { SecondConverter } from './converters/second-converter';
-import { WeekConverter } from './converters/week-converter';
-import { YearConverter } from './converters/year-converter';
-import { TimeUnit } from './types';
-import { assertValidTimeUnit } from './assertions/assert-valid-time-unit';
+import { DateUnitConverter } from '../converters/date-unit-converter';
+import { DayConverter } from '../converters/day-converter';
+import { HourConverter } from '../converters/hour-converter';
+import { MillisecondConverter } from '../converters/millisecond-converter';
+import { MinuteConverter } from '../converters/minute-converter';
+import { MonthConverter } from '../converters/month-converter';
+import { SecondConverter } from '../converters/second-converter';
+import { WeekConverter } from '../converters/week-converter';
+import { YearConverter } from '../converters/year-converter';
+import { TimeUnit } from '../types';
+import { assertValidTimeUnit } from '../assertions/assert-valid-time-unit';
 
 const converters: DateUnitConverter[] = [
   new YearConverter(),

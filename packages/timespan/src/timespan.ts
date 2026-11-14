@@ -2,7 +2,7 @@ import { TimeFrame } from './types/timeframe';
 import { TimeUnit } from './types';
 import { calculateTimeFrame } from './utils/calculate-time-frame';
 import { timeFrameToString } from './utils/timeframe-to-string';
-import { getConverter } from './unit-conversion-map';
+import { getConverter } from './utils/unit-conversion-map';
 import { assertValidDate } from './assertions/assert-valid-date';
 import { assertValidDateRange } from './assertions/assert-valid-date-range';
 import { assertValidTimeUnit } from './assertions/assert-valid-time-unit';

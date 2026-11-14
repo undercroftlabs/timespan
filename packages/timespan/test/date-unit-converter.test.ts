@@ -1,4 +1,4 @@
-import { getConverter } from '../src/unit-conversion-map';
+import { getConverter } from '../src/utils/unit-conversion-map';
 import { TimeUnit } from '../src/types';
 
 describe('DateUnitConversionMap', () => {
