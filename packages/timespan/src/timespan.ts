@@ -446,7 +446,7 @@ export class Timespan {
 
   /**
    * Convert the timespan to a TimeFrame object.
-   * @returns The TimeFrame object representing the timespan.s
+   * @returns The TimeFrame object representing the timespan.
    */
   public toTimeframe = (): TimeFrame => ({ ...this.timeFrame });
 
