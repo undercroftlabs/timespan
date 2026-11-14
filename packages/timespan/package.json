@@ -1,6 +1,6 @@
 {
   "name": "@undercroft/timespan",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Zero-dependency TypeScript library for parsing duration strings and calculating intervals between dates.",
   "type": "commonjs",
   "main": "dist/index.js",
