@@ -42,11 +42,11 @@ const timeUnits: TimeUnit[] = (() => {
 })();
 
 /**
- * Get the time unit available in the conversion table.
- * @returns The available time units.
+ * Get the time units available in the conversion table.
+ * @returns A copy of the available time units.
  */
 export function getTimeUnits(): TimeUnit[] {
-  return timeUnits;
+  return [...timeUnits];
 }
 
 /**
