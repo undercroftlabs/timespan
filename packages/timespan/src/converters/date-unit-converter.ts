@@ -47,6 +47,45 @@ export abstract class DateUnitConverter {
   public abstract add(value: number, startDate: Date): Date;
 
   /**
+   * Rejects amounts that are not a finite number of zero or more units.
+   * @param amount - Proposed unit count. `-0` is accepted.
+   * @throws {Error} `Invalid number of <plural>: expected zero or a positive number.`
+   */
+  protected assertAddAmount(amount: number): void {
+    if (!Number.isFinite(amount) || amount < 0) {
+      throw new Error(
+        `Invalid number of ${this.plural}: expected zero or a positive number.`,
+      );
+    }
+  }
+
+  /**
+   * Reports whether `time` is a finite timestamp Date can represent.
+   * @param time - Epoch milliseconds to check.
+   * @returns True when `time` is inside the representable date range.
+   */
+  protected isTimestampInRange(time: number): boolean {
+    return (
+      Number.isFinite(time) &&
+      time <= Constants.MaxSafeTimestamp &&
+      time >= Constants.MinSafeTimestamp
+    );
+  }
+
+  /**
+   * Rejects a timestamp that Date cannot represent.
+   * @param time - Resulting epoch milliseconds.
+   * @throws {Error} `Invalid number of <plural>: expected a result within the representable date range.`
+   */
+  protected assertTimestampInRange(time: number): void {
+    if (!this.isTimestampInRange(time)) {
+      throw new Error(
+        `Invalid number of ${this.plural}: expected a result within the representable date range.`,
+      );
+    }
+  }
+
+  /**
    * Checks if the given year is a leap year.
    * @param year - The year.
    * @returns True if the year is a leap year, false otherwise.

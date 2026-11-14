@@ -1,5 +1,7 @@
-import { DateUnitConverter } from './date-unit-converter';
+import { assertValidDate } from '../assertions/assert-valid-date';
+import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import { MillisecondUnit } from '../types';
+import { DateUnitConverter } from './date-unit-converter';
 
 /**
  * Represents a converter for the millisecond unit.
@@ -44,7 +46,16 @@ export class MillisecondConverter extends DateUnitConverter {
    * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
-    return endDate.getTime() - startDate.getTime();
+    assertValidDateRange(startDate, endDate);
+
+    const startMillis = startDate.getTime();
+    const endMillis = endDate.getTime();
+
+    const millisecondCount = Math.floor(
+      (endMillis - startMillis) / this.millisecondsPerUnit,
+    );
+
+    return Math.floor(millisecondCount);
   }
 
   /**
@@ -55,6 +66,12 @@ export class MillisecondConverter extends DateUnitConverter {
    * @throws {Error} if the input date is invalid or if the number of milliseconds is negative.
    */
   public add(milliseconds: number, startDate: Date): Date {
-    return new Date(startDate.getTime() + milliseconds);
+    assertValidDate(startDate);
+
+    this.assertAddAmount(milliseconds);
+
+    const time = startDate.getTime() + milliseconds * this.millisecondsPerUnit;
+    this.assertTimestampInRange(time);
+    return new Date(time);
   }
 }

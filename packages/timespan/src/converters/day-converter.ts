@@ -67,21 +67,10 @@ export class DayConverter extends DateUnitConverter {
   public add(days: number, startDate: Date): Date {
     assertValidDate(startDate);
 
-    if (!Number.isFinite(days) || days < 0) {
-      throw new Error(
-        'Invalid number of days: expected zero or a positive number.',
-      );
-    }
+    this.assertAddAmount(days);
 
     const time = startDate.getTime() + days * this.millisecondsPerUnit;
-    if (
-      time > Constants.MaxSafeTimestamp ||
-      time < Constants.MinSafeTimestamp
-    ) {
-      throw new Error(
-        'Invalid number of days: expected a result within the representable date range.',
-      );
-    }
+    this.assertTimestampInRange(time);
     return new Date(time);
   }
 }

@@ -25,8 +25,9 @@ jobs:
       - name: Build the project
         run: pnpm run build
       - name: Run size-limit
-        uses: andresz1/size-limit-action@v1
+        uses: andresz1/size-limit-action@v1.8.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           directory: packages/timespan
           skip_step: install
+          package_manager: pnpm

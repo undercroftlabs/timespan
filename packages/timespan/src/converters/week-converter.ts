@@ -1,6 +1,8 @@
-import { DateUnitConverter } from './date-unit-converter';
+import { assertValidDate } from '../assertions/assert-valid-date';
+import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { WeekUnit } from '../types';
+import { DateUnitConverter } from './date-unit-converter';
 
 /**
  * Represents a converter for the week unit.
@@ -50,9 +52,16 @@ export class WeekConverter extends DateUnitConverter {
    * @throws {Error} if the input dates are invalid or if the start date is greater than the end date.
    */
   public between(startDate: Date, endDate: Date): number {
-    return Math.floor(
-      (endDate.getTime() - startDate.getTime()) / this.millisecondsPerUnit,
+    assertValidDateRange(startDate, endDate);
+
+    const startMillis = startDate.getTime();
+    const endMillis = endDate.getTime();
+
+    const weekCount = Math.floor(
+      (endMillis - startMillis) / this.millisecondsPerUnit,
     );
+
+    return Math.floor(weekCount);
   }
 
   /**
@@ -63,8 +72,12 @@ export class WeekConverter extends DateUnitConverter {
    * @throws {Error} if the input date is invalid or if the number of weeks is negative.
    */
   public add(weeks: number, startDate: Date): Date {
-    const weeksInMilliseconds = weeks * this.millisecondsPerUnit;
-    const addedMilliseconds = startDate.getTime() + weeksInMilliseconds;
-    return new Date(addedMilliseconds);
+    assertValidDate(startDate);
+
+    this.assertAddAmount(weeks);
+
+    const time = startDate.getTime() + weeks * this.millisecondsPerUnit;
+    this.assertTimestampInRange(time);
+    return new Date(time);
   }
 }
