@@ -243,7 +243,7 @@ Timespan.format('%s.%f seconds', timespan); // '6.123 seconds'
 
 # JSON
 
-A timespan serializes as an object with `$type` set to `'Timespan'` and `start` and `end` set to ISO strings. `toJSON` returns that object, and `JSON.stringify` calls it automatically. `Timespan.stringify` is `JSON.stringify` for one timespan.
+A timespan serializes as a `TimespanJson` object. That type is exported from `@undercroft/timespan`. `$type` is `'Timespan'`, and `start` and `end` are the instants as strings. `toJSON` writes ISO strings and returns a `TimespanJson`. `JSON.stringify` calls `toJSON` automatically. `Timespan.stringify` is `JSON.stringify` for one timespan.
 
 `fromJSON` reads that object and returns a new timespan. `parse` does the same, and only for a JSON document whose root is one timespan. A document whose root is an array, a wrapper object, or any other value is rejected. It does not walk nested values.
 
@@ -253,15 +253,14 @@ Use `JSON.parse(text, Timespan.reviver)` when timespans are nested inside a larg
 
 `fromJSON` and `parse` throw `TypeError` for a value that is not Timespan JSON. They throw if a date string cannot be parsed, or if the start is after the end. `parse` also throws `SyntaxError` when the text is not JSON.
 
-```js
-import { Timespan } from '@undercroft/timespan';
+```ts
+import { Timespan, type TimespanJson } from '@undercroft/timespan';
 
 const timespan = new Timespan(
   new Date('2023-01-01T00:00:00.000Z'),
   new Date('2023-01-15T00:00:00.000Z'),
 );
-
-timespan.toJSON();
+const json: TimespanJson = timespan.toJSON();
 // {
 //   $type: 'Timespan',
 //   start: '2023-01-01T00:00:00.000Z',
