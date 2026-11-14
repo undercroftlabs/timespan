@@ -4,5 +4,5 @@
     "rootDir": ".",
     "types": ["vitest/globals"]
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["src/**/*"]
 }

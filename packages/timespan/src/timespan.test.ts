@@ -2,6 +2,22 @@
 
 import { Timespan } from '../src';
 
+/**
+ * Deterministic mulberry32 PRNG so fuzz runs are reproducible.
+ * @param seed - Initial 32-bit seed.
+ * @returns A function that yields the next value in the range `[0, 1)`.
+ */
+function mulberry32(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 describe('Timespan', () => {
   const start = new Date('2022-01-01T06:24:00Z');
   const end = new Date('2023-02-21T10:52:00Z');
@@ -12,6 +28,43 @@ describe('Timespan', () => {
       const endDate = new Date('2023-05-31');
       expect(() => new Timespan(startDate, endDate)).toThrow(
         'Invalid date range: expected the start date to be less than or equal to the end date.',
+      );
+    });
+
+    it('should allow a zero-length span', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const timespan = new Timespan(startDate, new Date(startDate));
+      expect(timespan.toMilliseconds()).toBe(0);
+      expect(timespan.toString()).toBe('');
+      expect(timespan.toTimeframe()).toEqual({
+        years: 0,
+        months: 0,
+        weeks: 0,
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0,
+      });
+    });
+
+    it('should represent a 1ms span', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const timespan = new Timespan(
+        startDate,
+        new Date(startDate.getTime() + 1),
+      );
+      expect(timespan.toMilliseconds()).toBe(1);
+      expect(timespan.toString()).toBe('1ms');
+    });
+
+    it('should throw an error for an invalid Date', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => new Timespan(new Date('not a date'), startDate)).toThrow(
+        'Invalid date: expected a valid Date.',
+      );
+      expect(() => new Timespan(startDate, new Date(Number.NaN))).toThrow(
+        'Invalid date: expected a valid Date.',
       );
     });
   });
@@ -80,6 +133,106 @@ describe('Timespan', () => {
       expect(() => Timespan.fromUnits(-5, 'year', startDate)).toThrow(
         'Invalid unit input -5.',
       );
+    });
+
+    it('should create a zero span from zero units', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(Timespan.fromDays(0, startDate).toMilliseconds()).toBe(0);
+      expect(Timespan.fromMilliseconds(0, startDate).toMilliseconds()).toBe(0);
+    });
+
+    it('should support fractional fixed-length units', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(Timespan.fromHours(1.5, startDate).toMilliseconds()).toBe(
+        5_400_000,
+      );
+      expect(Timespan.fromDays(1.5, startDate).toHours()).toBe(36);
+      expect(Timespan.fromMinutes(0.25, startDate).toSeconds()).toBe(15);
+    });
+
+    it('should floor unit conversions to whole units', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const halfWeek = Timespan.fromWeeks(0.5, startDate);
+      expect(halfWeek.toMilliseconds()).toBe(302_400_000);
+      expect(halfWeek.toDays()).toBe(3);
+    });
+
+    it('should truncate a fractional month to none', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const timespan = Timespan.fromMonths(0.5, startDate);
+      expect(timespan.end.toISOString()).toBe(startDate.toISOString());
+    });
+
+    it('should round-trip a large day count', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(Timespan.fromDays(365_000, startDate).toDays()).toBe(365_000);
+    });
+
+    it('should throw an error for a negative amount in every factory', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromMilliseconds(-1, startDate)).toThrow(
+        'Invalid unit input -1.',
+      );
+      expect(() => Timespan.fromSeconds(-1, startDate)).toThrow(
+        'Invalid unit input -1.',
+      );
+      expect(() => Timespan.fromMinutes(-1, startDate)).toThrow(
+        'Invalid unit input -1.',
+      );
+      expect(() => Timespan.fromHours(-1, startDate)).toThrow(
+        'Invalid unit input -1.',
+      );
+      expect(() => Timespan.fromDays(-1, startDate)).toThrow(
+        'Invalid unit input -1.',
+      );
+      expect(() => Timespan.fromWeeks(-1, startDate)).toThrow(
+        'Invalid unit input -1.',
+      );
+      expect(() => Timespan.fromMonths(-1, startDate)).toThrow(
+        'Invalid unit input -1.',
+      );
+      expect(() => Timespan.fromYears(-1, startDate)).toThrow(
+        'Invalid unit input -1.',
+      );
+    });
+
+    it('should throw an error for an invalid unit passed to fromUnits or toUnit', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() =>
+        Timespan.fromUnits(1, 'fortnights' as unknown as 'days', startDate),
+      ).toThrow('Invalid time unit: expected a recognized time unit.');
+      const timespan = Timespan.fromDays(1, startDate);
+      expect(() => timespan.toUnit('fortnights' as unknown as 'days')).toThrow(
+        'Invalid time unit: expected a recognized time unit.',
+      );
+    });
+
+    it('should agree across factories for equivalent spans', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const weeks = Timespan.fromWeeks(2, startDate);
+      const days = Timespan.fromDays(14, startDate);
+      const hours = Timespan.fromHours(336, startDate);
+      const minutes = Timespan.fromMinutes(20_160, startDate);
+      expect(weeks.toMilliseconds()).toBe(days.toMilliseconds());
+      expect(days.toMilliseconds()).toBe(hours.toMilliseconds());
+      expect(hours.toMilliseconds()).toBe(minutes.toMilliseconds());
+    });
+
+    it('should floor a sub-unit remainder', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const timespan = Timespan.fromMilliseconds(90_061, startDate);
+      expect(timespan.toSeconds()).toBe(90);
+      expect(timespan.toMinutes()).toBe(1);
+      expect(timespan.toTimeframe()).toEqual({
+        years: 0,
+        months: 0,
+        weeks: 0,
+        days: 0,
+        hours: 0,
+        minutes: 1,
+        seconds: 30,
+        milliseconds: 61,
+      });
     });
   });
 
@@ -337,6 +490,7 @@ describe('Timespan', () => {
 
     it('should throw an error when the input has no unit', () => {
       expect(() => Timespan.fromString('5')).toThrow('Invalid unit');
+      expect(() => Timespan.fromString('42')).toThrow('Invalid unit');
     });
 
     it('should parse a valid string again after a parse throws', () => {
@@ -391,6 +545,144 @@ describe('Timespan', () => {
     it('should throw an error for input that contains invalid character "Hello\\nWorld"', () => {
       expect(() => Timespan.fromString('Hello\nWorld')).toThrow(
         'Invalid time unit: expected a recognized time unit.',
+      );
+    });
+
+    it('should parse units with no separating space', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(Timespan.fromString('1h30m', startDate).toMinutes()).toBe(90);
+    });
+
+    it('should tolerate runs of spaces, tabs, and newlines between units', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(
+        Timespan.fromString('  1h\t30m\n15s  ', startDate).toSeconds(),
+      ).toBe(5415);
+    });
+
+    it('should distinguish months (M) from minutes (m)', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(Timespan.fromString('1M', startDate).end.toISOString()).toBe(
+        '2023-07-15T12:00:00.000Z',
+      );
+      expect(Timespan.fromString('1m', startDate).toMinutes()).toBe(1);
+    });
+
+    it('should throw an error for an empty string', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromString('', startDate)).toThrow(
+        'Invalid input string: expected letters, digits, and whitespace only.',
+      );
+    });
+
+    it('should throw an error for a whitespace-only string', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromString('   ', startDate)).toThrow(
+        'Invalid unit',
+      );
+    });
+
+    it('should throw an error for an unknown unit abbreviation', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromString('1x', startDate)).toThrow(
+        'Invalid time unit: expected a recognized time unit.',
+      );
+      expect(() => Timespan.fromString('1fortnight', startDate)).toThrow(
+        'Invalid time unit: expected a recognized time unit.',
+      );
+    });
+
+    it('should reject unit abbreviations that differ only by case', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromString('1H', startDate)).toThrow(
+        'Invalid time unit: expected a recognized time unit.',
+      );
+      expect(() => Timespan.fromString('1MS', startDate)).toThrow(
+        'Invalid time unit: expected a recognized time unit.',
+      );
+    });
+
+    it('should throw an error for a signed value', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromString('-1h', startDate)).toThrow(
+        'Invalid input string: expected letters, digits, and whitespace only.',
+      );
+      expect(() => Timespan.fromString('+1h', startDate)).toThrow(
+        'Invalid input string: expected letters, digits, and whitespace only.',
+      );
+    });
+
+    it('should accept an input of exactly the maximum length', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const input = `1h${' '.repeat(73)}`;
+      expect(input.length).toBe(75);
+      expect(Timespan.fromString(input, startDate).toHours()).toBe(1);
+    });
+
+    it('should reject an input one character over the maximum length', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const input = `${'1h '.repeat(25)} `;
+      expect(input.length).toBe(76);
+      expect(() => Timespan.fromString(input, startDate)).toThrow(
+        'Invalid input string: expected at most 75 characters.',
+      );
+    });
+
+    it('should parse the largest 10-digit value', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(
+        Timespan.fromString('9999999999ms', startDate).toMilliseconds(),
+      ).toBe(9_999_999_999);
+    });
+
+    it('should throw an error for an 11-digit value', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromString('99999999999ms', startDate)).toThrow(
+        'Invalid input string',
+      );
+    });
+
+    it('should throw an error for a bare unit with no value', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromString('h', startDate)).toThrow(
+        'Invalid input string',
+      );
+    });
+
+    it('should throw an error when a unit is repeated', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromString('1h 2h', startDate)).toThrow(
+        'Duplicate date unit: h.',
+      );
+      expect(() => Timespan.fromString('30m 30m', startDate)).toThrow(
+        'Duplicate date unit: m.',
+      );
+      expect(() => Timespan.fromString('1h 30m 2hours', startDate)).toThrow(
+        'Duplicate date unit: hours.',
+      );
+    });
+
+    it('should reject a fractional value in a string', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromString('1.5h', startDate)).toThrow(
+        'Invalid input string: expected letters, digits, and whitespace only.',
+      );
+      expect(() => Timespan.fromString('0.5d', startDate)).toThrow(
+        'Invalid input string: expected letters, digits, and whitespace only.',
+      );
+    });
+
+    it('should produce a zero span for an all-zero input', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const timespan = Timespan.fromString('0d 0h 0m', startDate);
+      expect(timespan.toMilliseconds()).toBe(0);
+      expect(timespan.end.getTime()).toBe(startDate.getTime());
+    });
+
+    it('should throw an error when a huge year value overflows the Date range', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(() => Timespan.fromString('9999999999y', startDate)).toThrow(
+        'Invalid number of years: expected a result within the representable date range.',
       );
     });
   });
@@ -632,6 +924,33 @@ describe('Timespan', () => {
       );
       expect(Timespan.equals(timespan1, timespan2, 'range')).toBe(false);
     });
+
+    it('should treat equal durations on different dates as equal by duration', () => {
+      const timespan1 = Timespan.fromDays(
+        2,
+        new Date('2023-01-01T00:00:00.000Z'),
+      );
+      const timespan2 = Timespan.fromDays(
+        2,
+        new Date('2024-05-05T00:00:00.000Z'),
+      );
+      expect(timespan1.equals(timespan2)).toBe(true);
+      expect(Timespan.equals(timespan1, timespan2)).toBe(true);
+    });
+
+    it('should treat equal durations on different dates as different by range', () => {
+      const timespan1 = Timespan.fromDays(
+        2,
+        new Date('2023-01-01T00:00:00.000Z'),
+      );
+      const timespan2 = Timespan.fromDays(
+        2,
+        new Date('2024-05-05T00:00:00.000Z'),
+      );
+      expect(timespan1.equals(timespan2, 'range')).toBe(false);
+      expect(timespan1.equals(timespan1, 'range')).toBe(true);
+      expect(Timespan.equals(timespan1, timespan2, 'range')).toBe(false);
+    });
   });
 
   describe('compareTo', () => {
@@ -679,6 +998,276 @@ describe('Timespan', () => {
         new Date('2023-02-22T10:52:00Z'),
       );
       expect(Timespan.compareTo(timespan2, timespan1)).toBe(1);
+    });
+
+    it('should stay antisymmetric for random durations', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const rand = mulberry32(42);
+      for (let i = 0; i < 50; i++) {
+        const left = Timespan.fromMilliseconds(
+          Math.floor(rand() * 1e9),
+          startDate,
+        );
+        const right = Timespan.fromMilliseconds(
+          Math.floor(rand() * 1e9),
+          startDate,
+        );
+        expect(left.compareTo(right) + right.compareTo(left)).toBe(0);
+        expect(left.equals(right)).toBe(left.compareTo(right) === 0);
+      }
+    });
+  });
+
+  describe('calendar arithmetic', () => {
+    it('should not report a full year for a 1-day span crossing New Year', () => {
+      const timespan = new Timespan(
+        new Date('2022-12-31T00:00:00.000Z'),
+        new Date('2023-01-01T00:00:00.000Z'),
+      );
+      expect(timespan.toDays()).toBe(1);
+      expect(timespan.toYears()).toBe(0);
+      expect(timespan.toString()).toBe('1d');
+      for (const value of Object.values(timespan.toTimeframe())) {
+        expect(value).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it('should count a year only once the anniversary is reached', () => {
+      const startDate = new Date('2022-06-15T00:00:00.000Z');
+      expect(
+        new Timespan(startDate, new Date('2023-06-14T00:00:00.000Z')).toYears(),
+      ).toBe(0);
+      expect(
+        new Timespan(startDate, new Date('2023-06-15T00:00:00.000Z')).toYears(),
+      ).toBe(1);
+    });
+
+    it('should count a month only once the full month has elapsed', () => {
+      const startDate = new Date('2023-01-15T12:00:00.000Z');
+      expect(
+        new Timespan(
+          startDate,
+          new Date('2023-02-15T11:00:00.000Z'),
+        ).toMonths(),
+      ).toBe(0);
+      expect(
+        new Timespan(
+          startDate,
+          new Date('2023-02-15T12:00:00.000Z'),
+        ).toMonths(),
+      ).toBe(1);
+    });
+
+    it('should clamp month addition at the end of a non-leap February', () => {
+      expect(
+        Timespan.fromMonths(
+          1,
+          new Date('2023-01-31T00:00:00.000Z'),
+        ).end.toISOString(),
+      ).toBe('2023-02-28T00:00:00.000Z');
+      expect(
+        Timespan.fromString(
+          '1M',
+          new Date('2023-01-31T00:00:00.000Z'),
+        ).end.toISOString(),
+      ).toBe('2023-02-28T00:00:00.000Z');
+    });
+
+    it('should clamp month addition at the end of a leap February', () => {
+      expect(
+        Timespan.fromMonths(
+          1,
+          new Date('2024-01-31T00:00:00.000Z'),
+        ).end.toISOString(),
+      ).toBe('2024-02-29T00:00:00.000Z');
+    });
+
+    it('should clamp month addition into a 30-day month', () => {
+      expect(
+        Timespan.fromMonths(
+          1,
+          new Date('2023-03-31T00:00:00.000Z'),
+        ).end.toISOString(),
+      ).toBe('2023-04-30T00:00:00.000Z');
+    });
+
+    it('should land on the same day when added months do not cross a short month', () => {
+      expect(
+        Timespan.fromMonths(
+          2,
+          new Date('2023-01-31T00:00:00.000Z'),
+        ).end.toISOString(),
+      ).toBe('2023-03-31T00:00:00.000Z');
+    });
+
+    it('should clamp a year added to February 29', () => {
+      const startDate = new Date('2020-02-29T00:00:00.000Z');
+      expect(Timespan.fromYears(1, startDate).end.toISOString()).toBe(
+        '2021-02-28T00:00:00.000Z',
+      );
+      expect(Timespan.fromString('1y', startDate).end.toISOString()).toBe(
+        '2021-02-28T00:00:00.000Z',
+      );
+    });
+
+    it('should count two days from February 28 in 2000 and one day in 2100', () => {
+      const leap = new Timespan(
+        new Date('2000-02-28T00:00:00.000Z'),
+        new Date('2000-03-01T00:00:00.000Z'),
+      );
+      expect(leap.toDays()).toBe(2);
+      const common = new Timespan(
+        new Date('2100-02-28T00:00:00.000Z'),
+        new Date('2100-03-01T00:00:00.000Z'),
+      );
+      expect(common.toDays()).toBe(1);
+    });
+
+    it('should decompose 366 days across a non-leap year boundary as 1y 1d', () => {
+      const startDate = new Date('2023-01-01T00:00:00.000Z');
+      const timespan = new Timespan(
+        startDate,
+        new Date(startDate.getTime() + 366 * 86_400_000),
+      );
+      expect(timespan.toString()).toBe('1y 1d');
+    });
+
+    it('should decompose exactly 8 days as 1w 1d', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(Timespan.fromDays(8, startDate).toString()).toBe('1w 1d');
+    });
+
+    it('should decompose exactly 7 days as 1w', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(Timespan.fromDays(7, startDate).toString()).toBe('1w');
+    });
+  });
+
+  describe('fuzz', () => {
+    const millisecondsPerUnit = {
+      weeks: 604_800_000,
+      days: 86_400_000,
+      hours: 3_600_000,
+      minutes: 60_000,
+      seconds: 1000,
+    };
+
+    it('should preserve total milliseconds and floor every fixed unit', () => {
+      const rand = mulberry32(20261103);
+      for (let i = 0; i < 250; i++) {
+        const startDate = new Date(
+          Date.UTC(2021 + Math.floor(rand() * 3), 5, 15) +
+            Math.floor(rand() * 86_400_000),
+        );
+        const offset = Math.floor(rand() * 27 * 86_400_000);
+        const timespan = new Timespan(
+          startDate,
+          new Date(startDate.getTime() + offset),
+        );
+        expect(timespan.toMilliseconds()).toBe(offset);
+        expect(timespan.toSeconds()).toBe(
+          Math.floor(offset / millisecondsPerUnit.seconds),
+        );
+        expect(timespan.toMinutes()).toBe(
+          Math.floor(offset / millisecondsPerUnit.minutes),
+        );
+        expect(timespan.toHours()).toBe(
+          Math.floor(offset / millisecondsPerUnit.hours),
+        );
+        expect(timespan.toDays()).toBe(
+          Math.floor(offset / millisecondsPerUnit.days),
+        );
+        expect(timespan.toWeeks()).toBe(
+          Math.floor(offset / millisecondsPerUnit.weeks),
+        );
+      }
+    });
+
+    it('should decompose into a timeframe that recomposes to the same duration', () => {
+      const rand = mulberry32(20261103);
+      for (let i = 0; i < 250; i++) {
+        const startDate = new Date(
+          Date.UTC(2021 + Math.floor(rand() * 3), 5, 15) +
+            Math.floor(rand() * 86_400_000),
+        );
+        const offset = Math.floor(rand() * 27 * 86_400_000);
+        const timespan = new Timespan(
+          startDate,
+          new Date(startDate.getTime() + offset),
+        );
+        const timeframe = timespan.toTimeframe();
+        expect(timeframe.years).toBe(0);
+        expect(timeframe.months).toBe(0);
+        const recomposed =
+          timeframe.weeks * millisecondsPerUnit.weeks +
+          timeframe.days * millisecondsPerUnit.days +
+          timeframe.hours * millisecondsPerUnit.hours +
+          timeframe.minutes * millisecondsPerUnit.minutes +
+          timeframe.seconds * millisecondsPerUnit.seconds +
+          timeframe.milliseconds;
+        expect(recomposed).toBe(offset);
+      }
+    });
+
+    it('should round-trip through toString and fromString', () => {
+      const rand = mulberry32(20261103);
+      for (let i = 0; i < 250; i++) {
+        const startDate = new Date(
+          Date.UTC(2021 + Math.floor(rand() * 3), 5, 15) +
+            Math.floor(rand() * 86_400_000),
+        );
+        const offset = 1 + Math.floor(rand() * 27 * 86_400_000);
+        const timespan = new Timespan(
+          startDate,
+          new Date(startDate.getTime() + offset),
+        );
+        const parsed = Timespan.fromString(timespan.toString(), startDate);
+        expect(parsed.toMilliseconds()).toBe(offset);
+      }
+    });
+
+    it('should parse generated strings deterministically', () => {
+      const units = ['y', 'M', 'w', 'd', 'h', 'm', 's', 'ms'];
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const rand = mulberry32(777);
+      for (let i = 0; i < 200; i++) {
+        const parts: string[] = [];
+        const used = new Set<number>();
+        const count = 1 + Math.floor(rand() * 4);
+        for (let j = 0; j < count; j++) {
+          const index = Math.floor(rand() * units.length);
+          if (used.has(index)) {
+            continue;
+          }
+          used.add(index);
+          parts.push(`${1 + Math.floor(rand() * 50)}${units[index]}`);
+        }
+        const input = parts.join(' ');
+        const first = Timespan.fromString(input, startDate);
+        const second = Timespan.fromString(input, startDate);
+        expect(first.end.getTime()).toBe(second.end.getTime());
+        expect(first.end.getTime()).toBeGreaterThan(startDate.getTime());
+        expect(first.toMilliseconds()).toBe(
+          first.end.getTime() - startDate.getTime(),
+        );
+      }
+    });
+
+    it('should survive interleaved failures without corrupting later parses', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const rand = mulberry32(31337);
+      for (let i = 0; i < 100; i++) {
+        const good = `${1 + Math.floor(rand() * 90)}d`;
+        expect(Timespan.fromString(good, startDate).toDays()).toBeGreaterThan(
+          0,
+        );
+        expect(() => Timespan.fromString('1h 2bogus', startDate)).toThrow(
+          'Invalid time unit: expected a recognized time unit.',
+        );
+        expect(Timespan.fromString(good, startDate).toMilliseconds()).toBe(
+          Timespan.fromString(good, startDate).toMilliseconds(),
+        );
+      }
     });
   });
 });
