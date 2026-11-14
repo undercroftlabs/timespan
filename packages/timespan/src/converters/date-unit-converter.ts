@@ -87,10 +87,14 @@ export abstract class DateUnitConverter {
 
   /**
    * Checks if the given year is a leap year.
-   * @param year - The year.
+   * @param year - The year. Must be a finite integer. `-0` is year zero.
    * @returns True if the year is a leap year, false otherwise.
+   * @throws {Error} `Invalid year: expected a finite integer.`
    */
   public isLeapYear(year: number): boolean {
+    if (!Number.isInteger(year)) {
+      throw new Error('Invalid year: expected a finite integer.');
+    }
     return (
       (DateUnitConverter.isDivisibleByLeapYearDivisor(year) &&
         !DateUnitConverter.isDivisibleByCenturyDivisor(year)) ||
