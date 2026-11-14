@@ -5,8 +5,8 @@ Tagged GitHub Actions releases publish `@undercroft/timespan` with **npm Trusted
 ## Expected sequence
 
 1. Push a version tag matching `v*` (for example `v1.2.0`).
-2. `publish.yml` validates the tag format and that it matches `package.json` (`v1.2.0` ↔ `1.2.0`).
-3. Jest unit tests, distribution tests, and Playwright browser tests run against **that tagged commit**. Browser tests use the official Playwright Docker image that matches `package-lock.json`.
+2. `publish.yml` validates the tag format and that it matches `packages/timespan/package.json` (`v1.2.0` ↔ `1.2.0`).
+3. Vitest unit tests, distribution tests, and Playwright browser tests run against **that tagged commit**. Browser tests use the official Playwright Docker image that matches `pnpm-lock.yaml`.
 4. The `publish` job (environment `npm-publish`) publishes with OIDC.
 5. The workflow checks that the version is visible on the npm registry.
 6. A GitHub Release is created from `changelog.md` **after** npm publish succeeds.
@@ -58,7 +58,7 @@ permissions:
 
 The GitHub Release job requests `contents: write` and does **not** receive `id-token: write`.
 
-Trusted Publishing requires Node.js 22.14+ and npm 11.5.1+. The publish job uses the newest even LTS listed in `package.json` `engines.node` and checks the npm CLI version.
+Trusted Publishing requires Node.js 22.14+ and npm 11.5.1+. The publish job runs on Node 26 and checks the npm CLI version.
 
 Provenance attestations are generated automatically for public packages from this public repository. After a successful publish:
 
@@ -71,10 +71,9 @@ Confirm the version exists, then open the package version page on npmjs.com and 
 ## Lifecycle scripts during CI publish
 
 - `postinstall` runs `husky`. GitHub Actions sets `CI=true`, so Husky does not install local git hooks.
-- `prepublishOnly` runs `pinst --disable` (so the published tarball does not run Husky for consumers) and `test:dist` (consumer layout check). That dist check also runs as an explicit job; the extra `prepublishOnly` run is a last-line safety net on the exact files about to be packed.
-- `postpublish` runs `pinst --enable` in the runner workspace only. It is not committed.
+- `prepublishOnly` runs `test:dist` (publint, attw, and a load of the built CommonJS and ESM files). That dist check also runs as an explicit job; the extra `prepublishOnly` run is a last-line safety net on the exact files about to be packed.
 
-`files` in `package.json` is `["dist"]`, so the tarball contains the built JavaScript, UMD, and TypeScript declarations.
+`files` in `package.json` is `["dist"]`, so the tarball contains the built JavaScript, UMD, and TypeScript declarations. Husky and the rest of the workspace stay out of the published package.
 
 ## Recovery from partial success
 

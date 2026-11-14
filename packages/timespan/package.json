@@ -1,0 +1,92 @@
+{
+  "name": "@undercroft/timespan",
+  "version": "1.2.0",
+  "description": "Zero-dependency TypeScript library for parsing duration strings and calculating intervals between dates.",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./umd": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.umd.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": "^22.0.0 || ^24.0.0 || ^26.0.0"
+  },
+  "author": "Michael Goodwin <mikejg101@icloud.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/undercroftlabs/timespan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/undercroftlabs/timespan.git"
+  },
+  "keywords": [
+    "timespan",
+    "duration",
+    "date",
+    "time",
+    "datetime",
+    "timeframe",
+    "interval",
+    "javascript",
+    "typescript",
+    "time parser",
+    "time formatter",
+    "human-readable",
+    "date math",
+    "date utilities",
+    "date calculation",
+    "library",
+    "esm",
+    "umd",
+    "node",
+    "browser",
+    "undercroft"
+  ],
+  "bugs": {
+    "url": "https://github.com/undercroftlabs/timespan/issues"
+  },
+  "scripts": {
+    "prepublishOnly": "pnpm run test:dist",
+    "build": "tsdown",
+    "package": "pnpm run build && npm pack",
+    "test:dist": "pnpm run build && pnpm run test:dist:lint && pnpm run test:dist:types && pnpm run test:dist:load",
+    "test:dist:lint": "publint --strict --pack npm",
+    "test:dist:types": "attw --pack . --entrypoints .",
+    "test:dist:load": "pnpm --filter @undercroft/timespan-bundle-e2e test:load",
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
+    "test:ci": "vitest run --coverage --reporter=default --reporter=junit",
+    "sandbox": "node ./sandbox.ts",
+    "size": "size-limit"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@codecov/rollup-plugin": "^2.0.1",
+    "@size-limit/preset-small-lib": "^14.3.0",
+    "@types/node": "^26.6.6",
+    "@vitest/coverage-v8": "^4.0.0",
+    "publint": "^0.3.25",
+    "size-limit": "^14.3.0",
+    "tsdown": "^0.23.0",
+    "vitest": "^4.0.0",
+    "typescript": "catalog:"
+  }
+}

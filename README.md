@@ -37,7 +37,7 @@ supported.
 
 # Test Coverage & CI
 
-- Full unit test coverage with Jest
+- Full unit test coverage with Vitest
 - Automatically tested on Ubuntu and Windows
 - Browser distribution tests (UMD and ESM) with Playwright on Chromium, Firefox, and WebKit
 - Bundle size tracked via Size Limit

@@ -1,0 +1,12 @@
+packages:
+  - 'packages/*'
+  - 'tests/*'
+
+preferWorkspacePackages: true
+
+catalog:
+  typescript: ^7.0.2
+
+allowBuilds:
+  esbuild: true
+  '@parcel/watcher': true

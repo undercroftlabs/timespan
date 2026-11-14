@@ -23,7 +23,7 @@ jobs:
       tag: ${{ steps.check.outputs.tag }}
     steps:
       - name: Checkout tagged commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validate tag format and package.json version
         id: check
@@ -35,7 +35,7 @@ jobs:
             exit 1
           fi
           VERSION="${TAG#v}"
-          PKG_VERSION="$(node -p "require('./package.json').version")"
+          PKG_VERSION="$(node -p "require('./packages/timespan/package.json').version")"
           if [[ "$VERSION" != "$PKG_VERSION" ]]; then
             echo "Tag $TAG does not match package.json version $PKG_VERSION."
             exit 1
@@ -45,21 +45,20 @@ jobs:
           echo "Publishing $TAG from commit ${GITHUB_SHA}"
 
   unit-tests:
-    name: Jest unit tests
+    name: Unit tests
     needs: validate-tag
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - id: node
-        run: node tools/supported-node-versions.cjs --github-output
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: ${{ steps.node.outputs.latest }}.x
-          cache: npm
-      - run: npm ci
-      - run: npm test
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
 
   dist-tests:
     name: Distribution tests
@@ -68,15 +67,14 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - id: node
-        run: node tools/supported-node-versions.cjs --github-output
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: ${{ steps.node.outputs.latest }}.x
-          cache: npm
-      - run: npm ci
-      - run: npm run test:dist
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run test:dist
 
   browser-tests:
     needs: validate-tag
@@ -98,17 +96,16 @@ jobs:
       id-token: write
     steps:
       - name: Checkout tagged commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Resolve latest supported Node LTS
-        id: node
-        run: node tools/supported-node-versions.cjs --github-output
+      - uses: pnpm/action-setup@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: ${{ steps.node.outputs.latest }}.x
+          node-version: 26
           registry-url: 'https://registry.npmjs.org'
+          cache: pnpm
 
       - name: Ensure npm supports Trusted Publishing
         run: |
@@ -129,20 +126,20 @@ jobs:
           "
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build the project
-        run: npm run build
+        run: pnpm run build
 
       - name: Publish to npm
-        run: npm publish --access public
+        run: pnpm --filter @undercroft/timespan exec npm publish --access public
 
       - name: Verify npm publication
         env:
           VERSION: ${{ needs.validate-tag.outputs.version }}
         run: |
           set -euo pipefail
-          PACKAGE_NAME="$(node -p "require('./package.json').name")"
+          PACKAGE_NAME="$(node -p "require('./packages/timespan/package.json').name")"
           for attempt in 1 2 3 4 5 6; do
             PUBLISHED="$(npm view "${PACKAGE_NAME}@${VERSION}" version 2>/dev/null || true)"
             if [[ "$PUBLISHED" == "$VERSION" ]]; then
@@ -165,7 +162,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout tagged commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Create GitHub Release
         env:
