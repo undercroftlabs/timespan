@@ -22,7 +22,8 @@
     "test:browser:docker": "bash tests/bundle-e2e/run-in-docker.sh",
     "sandbox": "pnpm --filter @undercroft/timespan sandbox",
     "size": "pnpm --filter @undercroft/timespan size",
-    "node:versions": "node tools/supported-node-versions.mjs"
+    "node:versions": "node tools/supported-node-versions.mjs",
+    "verify": "pnpm run build && pnpm run lint && pnpm run test"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
