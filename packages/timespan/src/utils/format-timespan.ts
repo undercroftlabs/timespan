@@ -7,7 +7,7 @@ import { Timespan } from '../timespan';
  */
 const minimumRejectedField = 1_000_000;
 
-const specifiers = new Set([
+const specifierCharacters = [
   'Y',
   'B',
   'W',
@@ -25,7 +25,20 @@ const specifiers = new Set([
   's',
   'l',
   'f',
-]);
+] as const;
+
+type Specifier = (typeof specifierCharacters)[number];
+
+const specifiers: ReadonlySet<string> = new Set(specifierCharacters);
+
+/**
+ * Reports whether `character` is a supported time-unit specifier.
+ * @param character - One UTF-16 code unit.
+ * @returns True when `character` is a known specifier.
+ */
+function isSpecifier(character: string): character is Specifier {
+  return specifiers.has(character);
+}
 
 interface Flags {
   zero: boolean;
@@ -38,7 +51,7 @@ interface Directive {
   flags: Flags;
   width: number | undefined;
   precision: number | undefined;
-  specifier: string;
+  specifier: Specifier;
   end: number;
 }
 
@@ -157,7 +170,7 @@ function readDirective(formatString: string, start: number): Directive {
   }
 
   const specifier = formatString.charAt(index);
-  if (!specifiers.has(specifier)) {
+  if (!isSpecifier(specifier)) {
     throw invalidDirective(formatString, start);
   }
 
@@ -172,7 +185,7 @@ function readDirective(formatString: string, start: number): Directive {
  * @returns The nonnegative numeric value for the specifier.
  */
 function resolveValue(
-  specifier: string,
+  specifier: Specifier,
   timespan: Timespan,
   frame: TimeFrame,
 ): number {
@@ -210,8 +223,6 @@ function resolveValue(
     case 'l':
     case 'f':
       return frame.milliseconds;
-    default:
-      return 0;
   }
 }
 

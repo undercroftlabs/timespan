@@ -27,7 +27,7 @@
     "sandbox": "pnpm --filter @undercroft/timespan sandbox",
     "size": "pnpm --filter @undercroft/timespan size",
     "node:versions": "node tools/supported-node-versions.mjs",
-    "verify": "pnpm run lint && pnpm run test && pnpm run build && pnpm run verify:package"
+    "verify": "pnpm run lint && pnpm run test:cov && pnpm run build && pnpm run verify:package"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
