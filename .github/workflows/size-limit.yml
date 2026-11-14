@@ -6,7 +6,6 @@ on:
       - 'release/**'
 permissions:
   contents: read
-  pull-requests: write
 jobs:
   size-limit:
     runs-on: ubuntu-latest
@@ -24,10 +23,6 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build the project
         run: pnpm run build
-      - name: Run size-limit
-        uses: andresz1/size-limit-action@v1.8.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          directory: packages/timespan
-          skip_step: install
-          package_manager: pnpm
+      - name: Check bundle sizes
+        working-directory: packages/timespan
+        run: pnpm exec size-limit
