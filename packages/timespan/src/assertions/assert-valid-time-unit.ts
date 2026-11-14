@@ -1,4 +1,4 @@
-import { TimeUnit } from '../types';
+import { TimeUnit } from '../types/time-unit';
 import { getTimeUnits } from '../utils/unit-conversion-map';
 
 /**

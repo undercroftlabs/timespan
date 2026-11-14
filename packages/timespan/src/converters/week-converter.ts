@@ -1,7 +1,7 @@
 import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
-import { WeekUnit } from '../types';
+import { WeekUnit } from '../types/week-unit';
 import { DateUnitConverter } from './date-unit-converter';
 
 /**

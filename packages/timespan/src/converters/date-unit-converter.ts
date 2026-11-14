@@ -1,5 +1,5 @@
 import Constants from '../constants';
-import { TimeUnit } from '../types';
+import { TimeUnit } from '../types/time-unit';
 
 /**
  * Represents a converter for a specific date unit.

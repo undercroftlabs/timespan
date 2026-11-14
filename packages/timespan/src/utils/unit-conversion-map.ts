@@ -7,7 +7,7 @@ import { MonthConverter } from '../converters/month-converter';
 import { SecondConverter } from '../converters/second-converter';
 import { WeekConverter } from '../converters/week-converter';
 import { YearConverter } from '../converters/year-converter';
-import { TimeUnit } from '../types';
+import { TimeUnit } from '../types/time-unit';
 import { assertValidTimeUnit } from '../assertions/assert-valid-time-unit';
 
 const converters: DateUnitConverter[] = [

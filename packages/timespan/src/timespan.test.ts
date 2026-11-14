@@ -1320,4 +1320,743 @@ describe('Timespan', () => {
       expect(text).toBe('1y 1M 2w 6d 4h 28m');
     });
   });
+
+  describe('toJSON', () => {
+    const start = new Date('2022-01-01T06:24:00.000Z');
+    const end = new Date('2023-02-21T10:52:00.123Z');
+    const timespan = new Timespan(start, end);
+    const expected = {
+      $type: 'Timespan',
+      start: '2022-01-01T06:24:00.000Z',
+      end: '2023-02-21T10:52:00.123Z',
+    };
+
+    it('returns the type and both instants as ISO strings', () => {
+      expect(timespan.toJSON()).toEqual(expected);
+    });
+
+    it('returns the same value from the static method', () => {
+      expect(Timespan.toJSON(timespan)).toEqual(timespan.toJSON());
+      expect(Timespan.toJSON(timespan)).toEqual(expected);
+    });
+
+    it('delegates the static method to the instance method', () => {
+      const span = new Timespan(start, end);
+      const original = span.toJSON;
+      span.toJSON = () => ({
+        $type: 'Timespan',
+        start: 'delegated-start',
+        end: 'delegated-end',
+      });
+      try {
+        expect(Timespan.toJSON(span)).toEqual({
+          $type: 'Timespan',
+          start: 'delegated-start',
+          end: 'delegated-end',
+        });
+      } finally {
+        span.toJSON = original;
+      }
+    });
+
+    it('is the value JSON.stringify uses for a timespan', () => {
+      expect(JSON.parse(JSON.stringify(timespan))).toEqual(expected);
+      expect(JSON.parse(JSON.stringify({ span: timespan }))).toEqual({
+        span: expected,
+      });
+    });
+
+    it('returns a new object on each call', () => {
+      const first = timespan.toJSON();
+      const second = timespan.toJSON();
+      first.start = 'changed';
+      first.end = 'changed';
+      expect(first).not.toBe(second);
+      expect(second).toEqual(expected);
+      expect(timespan.toJSON()).toEqual(expected);
+    });
+
+    it('does not change the timespan', () => {
+      const startInstant = timespan.start.toISOString();
+      const endInstant = timespan.end.toISOString();
+      const text = timespan.toString();
+      const frame = timespan.toTimeframe();
+
+      timespan.toJSON();
+      Timespan.toJSON(timespan);
+
+      expect(timespan.start.toISOString()).toBe(startInstant);
+      expect(timespan.end.toISOString()).toBe(endInstant);
+      expect(timespan.toString()).toBe(text);
+      expect(timespan.toTimeframe()).toEqual(frame);
+      expect(text).toBe('1y 1M 2w 6d 4h 28m 123ms');
+    });
+
+    it('keeps a zero-length span and a pre-epoch instant', () => {
+      const epoch = new Date(0);
+      const zero = new Timespan(epoch, new Date(epoch.getTime()));
+      const beforeEpoch = new Timespan(new Date(-1), epoch);
+
+      expect(zero.toJSON()).toEqual({
+        $type: 'Timespan',
+        start: '1970-01-01T00:00:00.000Z',
+        end: '1970-01-01T00:00:00.000Z',
+      });
+      expect(Timespan.toJSON(beforeEpoch)).toEqual({
+        $type: 'Timespan',
+        start: '1969-12-31T23:59:59.999Z',
+        end: '1970-01-01T00:00:00.000Z',
+      });
+    });
+  });
+
+  describe('fromJSON', () => {
+    const start = new Date('2022-01-01T06:24:00.000Z');
+    const end = new Date('2023-02-21T10:52:00.123Z');
+    const timespan = new Timespan(start, end);
+    const json = {
+      $type: 'Timespan' as const,
+      start: '2022-01-01T06:24:00.000Z',
+      end: '2023-02-21T10:52:00.123Z',
+    };
+
+    /**
+     * Asserts that `restored` is the same range as `original`.
+     * @param restored - Timespan produced by `fromJSON`.
+     * @param original - Timespan that produced the JSON.
+     * @returns Nothing.
+     */
+    function expectSameRange(restored: Timespan, original: Timespan): void {
+      expect(restored).not.toBe(original);
+      expect(restored.start.toISOString()).toBe(original.start.toISOString());
+      expect(restored.end.toISOString()).toBe(original.end.toISOString());
+      expect(restored.toString()).toBe(original.toString());
+      expect(restored.toTimeframe()).toEqual(original.toTimeframe());
+      expect(restored.equals(original, 'range')).toBe(true);
+    }
+
+    it('builds a timespan from the start and end strings', () => {
+      const restored = Timespan.fromJSON(json);
+      expectSameRange(restored, timespan);
+      expect(restored.toJSON()).toEqual(json);
+    });
+
+    it('ignores extra fields and does not change the supplied object', () => {
+      const supplied = { ...json, label: 'kept', milliseconds: 1 };
+      const snapshot = { ...supplied };
+      const restored = Timespan.fromJSON(supplied);
+
+      expectSameRange(restored, timespan);
+      expect(supplied).toEqual(snapshot);
+    });
+
+    it('round-trips toJSON through fromJSON', () => {
+      expectSameRange(Timespan.fromJSON(timespan.toJSON()), timespan);
+      expectSameRange(Timespan.fromJSON(Timespan.toJSON(timespan)), timespan);
+      expect(Timespan.fromJSON(timespan.toJSON()).toJSON()).toEqual(
+        timespan.toJSON(),
+      );
+    });
+
+    it('round-trips JSON.stringify through JSON.parse and fromJSON', () => {
+      const parsed: unknown = JSON.parse(JSON.stringify(timespan));
+      const restored = Timespan.fromJSON(parsed);
+
+      expectSameRange(restored, timespan);
+      expect(JSON.parse(JSON.stringify(restored))).toEqual(timespan.toJSON());
+    });
+
+    it('round-trips a zero-length span and a pre-epoch instant', () => {
+      const epoch = new Date(0);
+      const zero = new Timespan(epoch, new Date(epoch.getTime()));
+      const beforeEpoch = new Timespan(new Date(-1), epoch);
+
+      expectSameRange(Timespan.fromJSON(zero.toJSON()), zero);
+      expectSameRange(Timespan.fromJSON(beforeEpoch.toJSON()), beforeEpoch);
+    });
+
+    describe('rejected values', () => {
+      const invalidJson = 'Invalid Timespan JSON.';
+      const invalidDate = 'Invalid date: expected a valid Date.';
+      const invalidDateRange =
+        'Invalid date range: expected the start date to be less than or equal to the end date.';
+
+      test.each`
+        label              | value
+        ${'null'}          | ${null}
+        ${'undefined'}     | ${undefined}
+        ${'json text'}     | ${JSON.stringify(json)}
+        ${'array'}         | ${[json]}
+        ${'missing type'}  | ${{ start: json.start, end: json.end }}
+        ${'wrong type'}    | ${{ ...json, $type: 'timespan' }}
+        ${'missing start'} | ${{ $type: 'Timespan', end: json.end }}
+        ${'numeric end'}   | ${{ ...json, end: 0 }}
+      `(
+        'throws "Invalid Timespan JSON." for $label',
+        ({ value }: { value: unknown }) => {
+          expect(() => Timespan.fromJSON(value)).toThrow(
+            new TypeError(invalidJson),
+          );
+        },
+      );
+
+      test.each`
+        label            | value
+        ${'bad start'}   | ${{ $type: 'Timespan', start: 'not-a-date', end: json.end }}
+        ${'bad end'}     | ${{ $type: 'Timespan', start: json.start, end: 'not-a-date' }}
+        ${'empty start'} | ${{ $type: 'Timespan', start: '', end: json.end }}
+      `(
+        'throws "Invalid date: expected a valid Date." for $label',
+        ({ value }: { value: unknown }) => {
+          expect(() => Timespan.fromJSON(value)).toThrow(
+            new Error(invalidDate),
+          );
+        },
+      );
+
+      it('throws when the start is after the end', () => {
+        expect(() =>
+          Timespan.fromJSON({
+            $type: 'Timespan',
+            start: json.end,
+            end: json.start,
+          }),
+        ).toThrow(new Error(invalidDateRange));
+      });
+    });
+  });
+
+  describe('parse', () => {
+    const start = new Date('2022-01-01T06:24:00.000Z');
+    const end = new Date('2023-02-21T10:52:00.123Z');
+    const timespan = new Timespan(start, end);
+    const jsonText = JSON.stringify(timespan);
+
+    /**
+     * Asserts that `restored` is the same range as `original`.
+     * @param restored - Timespan produced by `parse`.
+     * @param original - Timespan that produced the JSON text.
+     * @returns Nothing.
+     */
+    function expectSameRange(restored: Timespan, original: Timespan): void {
+      expect(restored).toBeInstanceOf(Timespan);
+      expect(restored).not.toBe(original);
+      expect(restored.start.toISOString()).toBe(original.start.toISOString());
+      expect(restored.end.toISOString()).toBe(original.end.toISOString());
+      expect(restored.toString()).toBe(original.toString());
+      expect(restored.toTimeframe()).toEqual(original.toTimeframe());
+      expect(restored.equals(original, 'range')).toBe(true);
+    }
+
+    it('parses the JSON text of a timespan', () => {
+      const restored = Timespan.parse(jsonText);
+      expectSameRange(restored, timespan);
+      expect(restored.toJSON()).toEqual(timespan.toJSON());
+    });
+
+    it('parses text with surrounding whitespace', () => {
+      expectSameRange(Timespan.parse(`\n  ${jsonText}\n`), timespan);
+    });
+
+    it('round-trips a zero-length span and a pre-epoch instant', () => {
+      const epoch = new Date(0);
+      const zero = new Timespan(epoch, new Date(epoch.getTime()));
+      const beforeEpoch = new Timespan(new Date(-1), epoch);
+
+      expectSameRange(Timespan.parse(JSON.stringify(zero)), zero);
+      expectSameRange(Timespan.parse(JSON.stringify(beforeEpoch)), beforeEpoch);
+    });
+
+    it('throws when the text is not JSON', () => {
+      expect(() => Timespan.parse('')).toThrow(SyntaxError);
+      expect(() => Timespan.parse('{')).toThrow(SyntaxError);
+      expect(() => Timespan.parse('not json')).toThrow(SyntaxError);
+    });
+
+    it('throws when the parsed value is not Timespan JSON', () => {
+      expect(() => Timespan.parse('null')).toThrow(
+        new TypeError('Invalid Timespan JSON.'),
+      );
+      expect(() => Timespan.parse(JSON.stringify({ span: timespan }))).toThrow(
+        new TypeError('Invalid Timespan JSON.'),
+      );
+    });
+
+    it('throws when a date string cannot be parsed', () => {
+      expect(() =>
+        Timespan.parse(
+          JSON.stringify({
+            $type: 'Timespan',
+            start: 'not-a-date',
+            end: end.toISOString(),
+          }),
+        ),
+      ).toThrow(new Error('Invalid date: expected a valid Date.'));
+    });
+
+    it('throws when the start is after the end', () => {
+      expect(() =>
+        Timespan.parse(
+          JSON.stringify({
+            $type: 'Timespan',
+            start: end.toISOString(),
+            end: start.toISOString(),
+          }),
+        ),
+      ).toThrow(
+        new Error(
+          'Invalid date range: expected the start date to be less than or equal to the end date.',
+        ),
+      );
+    });
+  });
+
+  describe('reviver', () => {
+    const start = new Date('2022-01-01T06:24:00.000Z');
+    const end = new Date('2023-02-21T10:52:00.123Z');
+    const timespan = new Timespan(start, end);
+
+    /**
+     * Asserts that `restored` is the same range as `original`.
+     * @param restored - Value produced by the reviver.
+     * @param original - Timespan that produced the JSON.
+     * @returns Nothing.
+     */
+    function expectRevivedTimespan(
+      restored: unknown,
+      original: Timespan,
+    ): void {
+      expect(restored).toBeInstanceOf(Timespan);
+      const span = restored as Timespan;
+      expect(span.start.toISOString()).toBe(original.start.toISOString());
+      expect(span.end.toISOString()).toBe(original.end.toISOString());
+      expect(span.toString()).toBe(original.toString());
+      expect(span.equals(original, 'range')).toBe(true);
+    }
+
+    it('revives a timespan object and ignores the key', () => {
+      expectRevivedTimespan(Timespan.reviver('', timespan.toJSON()), timespan);
+      expectRevivedTimespan(
+        Timespan.reviver('span', timespan.toJSON()),
+        timespan,
+      );
+    });
+
+    it('leaves values that are not Timespan objects unchanged', () => {
+      expect(Timespan.reviver('type', 'Timespan')).toBe('Timespan');
+      expect(Timespan.reviver('count', 2)).toBe(2);
+      expect(Timespan.reviver('flag', true)).toBe(true);
+      expect(Timespan.reviver('empty', null)).toBeNull();
+      expect(Timespan.reviver('items', [])).toEqual([]);
+      expect(
+        Timespan.reviver('other', {
+          $type: 'Other',
+          start: start.toISOString(),
+          end: end.toISOString(),
+        }),
+      ).toEqual({
+        $type: 'Other',
+        start: start.toISOString(),
+        end: end.toISOString(),
+      });
+      expect(
+        Timespan.reviver('legacy', {
+          type: 'Timespan',
+          start: start.toISOString(),
+          end: end.toISOString(),
+        }),
+      ).toEqual({
+        type: 'Timespan',
+        start: start.toISOString(),
+        end: end.toISOString(),
+      });
+    });
+
+    it('revives timespans inside objects and arrays during JSON.parse', () => {
+      const epoch = new Date(0);
+      const zero = new Timespan(epoch, new Date(epoch.getTime()));
+      const payload = {
+        label: 'kept',
+        count: 2,
+        flag: true,
+        empty: null,
+        span: timespan,
+        items: [timespan, zero],
+      };
+      const revived = JSON.parse(JSON.stringify(payload), Timespan.reviver) as {
+        label: string;
+        count: number;
+        flag: boolean;
+        empty: null;
+        span: Timespan;
+        items: Timespan[];
+      };
+
+      expect(revived.label).toBe('kept');
+      expect(revived.count).toBe(2);
+      expect(revived.flag).toBe(true);
+      expect(revived.empty).toBeNull();
+      expectRevivedTimespan(revived.span, timespan);
+      expectRevivedTimespan(revived.items[0], timespan);
+      expectRevivedTimespan(revived.items[1], zero);
+    });
+
+    it('revives a top-level timespan during JSON.parse', () => {
+      const revived: unknown = JSON.parse(
+        JSON.stringify(timespan),
+        Timespan.reviver,
+      );
+      expectRevivedTimespan(revived, timespan);
+    });
+
+    it('throws when a Timespan object has an invalid date', () => {
+      expect(() =>
+        JSON.parse(
+          JSON.stringify({
+            span: {
+              $type: 'Timespan',
+              start: 'not-a-date',
+              end: end.toISOString(),
+            },
+          }),
+          Timespan.reviver,
+        ),
+      ).toThrow(new Error('Invalid date: expected a valid Date.'));
+    });
+  });
+
+  describe('stringify', () => {
+    const start = new Date('2022-01-01T06:24:00.000Z');
+    const end = new Date('2023-02-21T10:52:00.123Z');
+    const timespan = new Timespan(start, end);
+
+    it('returns the JSON text of toJSON', () => {
+      expect(Timespan.stringify(timespan)).toBe(
+        JSON.stringify(timespan.toJSON()),
+      );
+      expect(JSON.parse(Timespan.stringify(timespan))).toEqual(
+        timespan.toJSON(),
+      );
+    });
+
+    it('round-trips through parse', () => {
+      const restored = Timespan.parse(Timespan.stringify(timespan));
+      expect(restored).not.toBe(timespan);
+      expect(restored.equals(timespan, 'range')).toBe(true);
+      expect(restored.toJSON()).toEqual(timespan.toJSON());
+    });
+
+    it('stringifies a zero-length span and a pre-epoch instant', () => {
+      const epoch = new Date(0);
+      const zero = new Timespan(epoch, new Date(epoch.getTime()));
+      const beforeEpoch = new Timespan(new Date(-1), epoch);
+
+      expect(JSON.parse(Timespan.stringify(zero))).toEqual(zero.toJSON());
+      expect(JSON.parse(Timespan.stringify(beforeEpoch))).toEqual(
+        beforeEpoch.toJSON(),
+      );
+    });
+
+    it('does not change the timespan', () => {
+      const startInstant = timespan.start.toISOString();
+      const endInstant = timespan.end.toISOString();
+      const text = timespan.toString();
+
+      Timespan.stringify(timespan);
+
+      expect(timespan.start.toISOString()).toBe(startInstant);
+      expect(timespan.end.toISOString()).toBe(endInstant);
+      expect(timespan.toString()).toBe(text);
+    });
+  });
+
+  describe('isTimespanJSON', () => {
+    const json = {
+      $type: 'Timespan' as const,
+      start: '2022-01-01T06:24:00.000Z',
+      end: '2023-02-21T10:52:00.123Z',
+    };
+
+    it('accepts the object produced by toJSON', () => {
+      const timespan = new Timespan(new Date(json.start), new Date(json.end));
+      expect(Timespan.isTimespanJSON(timespan.toJSON())).toBe(true);
+      expect(
+        Timespan.isTimespanJSON(JSON.parse(Timespan.stringify(timespan))),
+      ).toBe(true);
+    });
+
+    it('accepts any strings, extra fields, and a reversed range', () => {
+      expect(
+        Timespan.isTimespanJSON({ ...json, label: 'kept', milliseconds: 1 }),
+      ).toBe(true);
+      expect(
+        Timespan.isTimespanJSON({ $type: 'Timespan', start: '', end: '' }),
+      ).toBe(true);
+      expect(
+        Timespan.isTimespanJSON({
+          $type: 'Timespan',
+          start: 'not-a-date',
+          end: 'also-not-a-date',
+        }),
+      ).toBe(true);
+      expect(
+        Timespan.isTimespanJSON({
+          $type: 'Timespan',
+          start: json.end,
+          end: json.start,
+        }),
+      ).toBe(true);
+    });
+
+    it('rejects values that are not Timespan JSON', () => {
+      const timespan = new Timespan(new Date(json.start), new Date(json.end));
+      expect(Timespan.isTimespanJSON(timespan)).toBe(false);
+      expect(Timespan.isTimespanJSON(null)).toBe(false);
+      expect(Timespan.isTimespanJSON(undefined)).toBe(false);
+      expect(Timespan.isTimespanJSON(JSON.stringify(json))).toBe(false);
+      expect(Timespan.isTimespanJSON([json])).toBe(false);
+      expect(
+        Timespan.isTimespanJSON({ start: json.start, end: json.end }),
+      ).toBe(false);
+      expect(Timespan.isTimespanJSON({ ...json, $type: 'timespan' })).toBe(
+        false,
+      );
+      expect(Timespan.isTimespanJSON({ ...json, start: 0 })).toBe(false);
+      expect(
+        Timespan.isTimespanJSON({
+          type: 'Timespan',
+          start: json.start,
+          end: json.end,
+        }),
+      ).toBe(false);
+    });
+
+    it('does not throw or change the supplied object', () => {
+      const supplied = { ...json };
+      expect(Timespan.isTimespanJSON(supplied)).toBe(true);
+      expect(supplied).toEqual(json);
+      expect(Timespan.isTimespanJSON(null)).toBe(false);
+    });
+  });
+});
+
+describe('Timespan JSON Interoperability', () => {
+  const start = new Date('2022-01-01T06:24:00.000Z');
+  const end = new Date('2023-02-21T10:52:00.123Z');
+  const timespan = new Timespan(start, end);
+  const json = {
+    $type: 'Timespan',
+    start: '2022-01-01T06:24:00.000Z',
+    end: '2023-02-21T10:52:00.123Z',
+  };
+
+  /**
+   * Asserts that native JSON parsing rebuilt `original`.
+   * @param restored - Value returned by `JSON.parse`.
+   * @param original - Timespan that was serialized.
+   * @returns Nothing.
+   */
+  function expectReconstructed(restored: unknown, original: Timespan): void {
+    expect(restored).toBeInstanceOf(Timespan);
+    const span = restored as Timespan;
+    expect(span).not.toBe(original);
+    expect(span.start.getTime()).toBe(original.start.getTime());
+    expect(span.end.getTime()).toBe(original.end.getTime());
+    expect(span.start.toISOString()).toBe(original.start.toISOString());
+    expect(span.end.toISOString()).toBe(original.end.toISOString());
+    expect(span.equals(original, 'range')).toBe(true);
+    expect(span.toJSON()).toEqual(original.toJSON());
+  }
+
+  describe('JSON.stringify()', () => {
+    it('serializes a timespan as its JSON object', () => {
+      expect(JSON.stringify(timespan)).toBe(JSON.stringify(json));
+      expect(JSON.parse(JSON.stringify(timespan))).toEqual(json);
+    });
+
+    it('serializes a timespan property as a plain object', () => {
+      expect(JSON.parse(JSON.stringify({ span: timespan }))).toEqual({
+        span: json,
+      });
+    });
+
+    it('serializes a zero-length span and a pre-epoch instant', () => {
+      const epoch = new Date(0);
+      const zero = new Timespan(epoch, new Date(epoch.getTime()));
+      const beforeEpoch = new Timespan(new Date(-1), epoch);
+
+      expect(JSON.parse(JSON.stringify(zero))).toEqual({
+        $type: 'Timespan',
+        start: '1970-01-01T00:00:00.000Z',
+        end: '1970-01-01T00:00:00.000Z',
+      });
+      expect(JSON.parse(JSON.stringify(beforeEpoch))).toEqual({
+        $type: 'Timespan',
+        start: '1969-12-31T23:59:59.999Z',
+        end: '1970-01-01T00:00:00.000Z',
+      });
+    });
+  });
+
+  describe('JSON.parse()', () => {
+    const text = JSON.stringify(timespan);
+
+    it('returns a plain object when no reviver is supplied', () => {
+      const parsed: unknown = JSON.parse(text);
+
+      expect(parsed).not.toBeInstanceOf(Timespan);
+      expect(parsed).toEqual(json);
+    });
+
+    it('returns a Timespan when the reviver is supplied', () => {
+      expectReconstructed(JSON.parse(text, Timespan.reviver), timespan);
+    });
+
+    it('leaves values that are not Timespan objects unchanged', () => {
+      const parsed: unknown = JSON.parse(
+        JSON.stringify({
+          label: 'kept',
+          count: 2,
+          flag: true,
+          empty: null,
+          other: { type: 'Timespan', start: json.start, end: json.end },
+        }),
+        Timespan.reviver,
+      );
+
+      expect(parsed).toEqual({
+        label: 'kept',
+        count: 2,
+        flag: true,
+        empty: null,
+        other: { type: 'Timespan', start: json.start, end: json.end },
+      });
+    });
+  });
+
+  describe('Round-trip Serialization', () => {
+    it('reconstructs the instance and the original dates', () => {
+      const restored: unknown = JSON.parse(
+        JSON.stringify(timespan),
+        Timespan.reviver,
+      );
+
+      expectReconstructed(restored, timespan);
+      expect(timespan.start.getTime()).toBe(start.getTime());
+      expect(timespan.end.getTime()).toBe(end.getTime());
+    });
+
+    it('does not change the original timespan', () => {
+      const startInstant = timespan.start.getTime();
+      const endInstant = timespan.end.getTime();
+      const text = timespan.toString();
+
+      JSON.parse(JSON.stringify(timespan), Timespan.reviver);
+
+      expect(timespan.start.getTime()).toBe(startInstant);
+      expect(timespan.end.getTime()).toBe(endInstant);
+      expect(timespan.toString()).toBe(text);
+    });
+
+    it('round-trips a zero-length span and a pre-epoch instant', () => {
+      const epoch = new Date(0);
+      const zero = new Timespan(epoch, new Date(epoch.getTime()));
+      const beforeEpoch = new Timespan(new Date(-1), epoch);
+
+      expectReconstructed(
+        JSON.parse(JSON.stringify(zero), Timespan.reviver),
+        zero,
+      );
+      expectReconstructed(
+        JSON.parse(JSON.stringify(beforeEpoch), Timespan.reviver),
+        beforeEpoch,
+      );
+    });
+  });
+
+  describe('Nested Serialization', () => {
+    it('revives timespans inside an object and an array', () => {
+      const epoch = new Date(0);
+      const zero = new Timespan(epoch, new Date(epoch.getTime()));
+      const revived = JSON.parse(
+        JSON.stringify({
+          label: 'kept',
+          span: timespan,
+          items: [timespan, zero, null, 'plain'],
+        }),
+        Timespan.reviver,
+      ) as {
+        label: string;
+        span: Timespan;
+        items: [Timespan, Timespan, null, string];
+      };
+
+      expect(revived.label).toBe('kept');
+      expectReconstructed(revived.span, timespan);
+      expectReconstructed(revived.items[0], timespan);
+      expectReconstructed(revived.items[1], zero);
+      expect(revived.items[2]).toBeNull();
+      expect(revived.items[3]).toBe('plain');
+    });
+
+    it('revives a timespan nested under another object', () => {
+      const revived = JSON.parse(
+        JSON.stringify({ group: { span: timespan } }),
+        Timespan.reviver,
+      ) as { group: { span: Timespan } };
+
+      expect(revived.group).not.toBeInstanceOf(Timespan);
+      expectReconstructed(revived.group.span, timespan);
+    });
+  });
+
+  describe('Invalid JSON Data', () => {
+    it('throws SyntaxError before the reviver sees text that is not JSON', () => {
+      expect(() => JSON.parse('{', Timespan.reviver)).toThrow(SyntaxError);
+      expect(() => JSON.parse('not json', Timespan.reviver)).toThrow(
+        SyntaxError,
+      );
+    });
+
+    it('throws when a recognized timespan is missing a field', () => {
+      expect(() =>
+        JSON.parse(
+          JSON.stringify({ $type: 'Timespan', start: json.start }),
+          Timespan.reviver,
+        ),
+      ).toThrow(new TypeError('Invalid Timespan JSON.'));
+    });
+
+    it('throws when a date string cannot be parsed', () => {
+      expect(() =>
+        JSON.parse(
+          JSON.stringify({
+            span: {
+              $type: 'Timespan',
+              start: 'not-a-date',
+              end: json.end,
+            },
+          }),
+          Timespan.reviver,
+        ),
+      ).toThrow(new Error('Invalid date: expected a valid Date.'));
+    });
+
+    it('throws when the start is after the end', () => {
+      expect(() =>
+        JSON.parse(
+          JSON.stringify({
+            $type: 'Timespan',
+            start: json.end,
+            end: json.start,
+          }),
+          Timespan.reviver,
+        ),
+      ).toThrow(
+        new Error(
+          'Invalid date range: expected the start date to be less than or equal to the end date.',
+        ),
+      );
+    });
+  });
 });

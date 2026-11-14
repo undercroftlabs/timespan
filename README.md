@@ -16,16 +16,17 @@ pnpm install
 
 Run these from the repository root.
 
-| Command               | What it does                                                        |
-| --------------------- | ------------------------------------------------------------------- |
-| `pnpm build`          | Build the library                                                   |
-| `pnpm test`           | Run unit tests                                                      |
-| `pnpm test:cov`       | Run unit tests with coverage                                        |
-| `pnpm test:dist`      | Pack and check the built distribution                               |
-| `pnpm test:browser`   | Run browser tests against the built bundles                         |
-| `pnpm bench`          | Run benchmarks once                                                 |
-| `pnpm verify:package` | Pack the library and fail on every publish-gauge finding            |
-| `pnpm verify`         | Lint, require 100% unit-test coverage, build, and check the package |
+| Command               | What it does                                                                   |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `pnpm build`          | Build the library                                                              |
+| `pnpm typecheck`      | Typecheck with `tsc --noEmit --strict`. The build does not do this             |
+| `pnpm test`           | Run unit tests                                                                 |
+| `pnpm test:cov`       | Run unit tests with coverage                                                   |
+| `pnpm test:dist`      | Pack and check the built distribution                                          |
+| `pnpm test:browser`   | Run browser tests against the built bundles                                    |
+| `pnpm bench`          | Run benchmarks once                                                            |
+| `pnpm verify:package` | Pack the library and fail on every publish-gauge finding                       |
+| `pnpm verify`         | Lint, typecheck, require 100% unit-test coverage, build, and check the package |
 
 `pnpm build` and then `pnpm verify:package` checks the npm tarball without publishing.
 

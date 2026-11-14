@@ -1,6 +1,6 @@
 import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
-import { MillisecondUnit } from '../types';
+import { MillisecondUnit } from '../types/millisecond-unit';
 import { DateUnitConverter } from './date-unit-converter';
 
 /**
