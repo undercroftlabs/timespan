@@ -8,6 +8,10 @@ import { DateUnitConverter } from './date-unit-converter';
  * Represents a converter for the month unit.
  */
 export class MonthConverter extends DateUnitConverter {
+  private static readonly daysPerMonth = [
+    31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
+  ];
+
   /**
    * The default name of the month unit.
    */
@@ -57,12 +61,9 @@ export class MonthConverter extends DateUnitConverter {
     let months =
       (endYear - startYear) * Constants.MonthsPerYear + (endMonth - startMonth);
     // Day-of-month comparison ignores time, so Jan 15 12:00 to Feb 15 11:00
-    // would count as a full month. A month has elapsed only once add()
-    // would land on or before the end.
-    if (
-      months > 0 &&
-      this.add(months, startDate).getTime() > endDate.getTime()
-    ) {
+    // would count as a full month. A month has elapsed only once the
+    // anniversary is representable and lands on or before the end.
+    if (months > 0 && !this.anniversaryHasLanded(months, startDate, endDate)) {
       months--;
     }
     return Math.floor(months);
@@ -80,6 +81,29 @@ export class MonthConverter extends DateUnitConverter {
 
     this.assertAddAmount(months);
 
+    const time = this.timestampAfterAddingMonths(months, startDate);
+    this.assertTimestampInRange(time);
+    return new Date(time);
+  }
+
+  /**
+   * A month has landed when its anniversary is a real timestamp on or before the end.
+   * An anniversary past the representable range has not landed.
+   * @param months - Whole month count from the calendar difference.
+   * @param startDate - Valid range start.
+   * @param endDate - Valid range end.
+   * @returns True when the anniversary is representable and on or before `endDate`.
+   */
+  private anniversaryHasLanded(
+    months: number,
+    startDate: Date,
+    endDate: Date,
+  ): boolean {
+    const time = this.timestampAfterAddingMonths(months, startDate);
+    return this.isTimestampInRange(time) && time <= endDate.getTime();
+  }
+
+  private timestampAfterAddingMonths(months: number, startDate: Date): number {
     const newDate = new Date(startDate.getTime());
     const originalDay = newDate.getUTCDate();
     const originalHours = newDate.getUTCHours();
@@ -91,17 +115,33 @@ export class MonthConverter extends DateUnitConverter {
     // into a later month (Jan 31 + 1 month would otherwise become Mar 3).
     newDate.setUTCDate(1);
     newDate.setUTCMonth(newDate.getUTCMonth() + months);
-    const lastDayOfMonth = new Date(
-      Date.UTC(newDate.getUTCFullYear(), newDate.getUTCMonth() + 1, 0),
-    ).getUTCDate();
-    newDate.setUTCDate(Math.min(originalDay, lastDayOfMonth));
+    newDate.setUTCDate(Math.min(originalDay, this.lastDayOfMonth(newDate)));
     newDate.setUTCHours(
       originalHours,
       originalMinutes,
       originalSeconds,
       originalMilliseconds,
     );
-    this.assertTimestampInRange(newDate.getTime());
-    return newDate;
+    return newDate.getTime();
+  }
+
+  /**
+   * Day count of the month containing `date`. The UTC last-day lookup is used
+   * while that day exists; otherwise the Gregorian length is used so a shorter
+   * day in the same month is not cleared by an unrepresentable last day.
+   * @param date - Date already moved onto the target month.
+   * @returns The last calendar day of that month.
+   */
+  private lastDayOfMonth(date: Date): number {
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth();
+    const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    if (Number.isFinite(lastDay)) {
+      return lastDay;
+    }
+    if (month === 1) {
+      return this.isLeapYear(year) ? 29 : 28;
+    }
+    return MonthConverter.daysPerMonth[month];
   }
 }

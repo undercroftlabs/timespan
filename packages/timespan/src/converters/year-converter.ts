@@ -59,8 +59,9 @@ export class YearConverter extends DateUnitConverter {
 
     let years = endDate.getUTCFullYear() - startDate.getUTCFullYear();
     // Calendar-year subtraction counts a January 1 crossing as a full year.
-    // A year has elapsed only once add() would land on or before the end.
-    if (years > 0 && this.add(years, startDate).getTime() > endDate.getTime()) {
+    // A year has elapsed only once the anniversary is representable and
+    // lands on or before the end.
+    if (years > 0 && !this.anniversaryHasLanded(years, startDate, endDate)) {
       years--;
     }
     return years;
@@ -78,6 +79,29 @@ export class YearConverter extends DateUnitConverter {
 
     this.assertAddAmount(years);
 
+    const time = this.timestampAfterAddingYears(years, startDate);
+    this.assertTimestampInRange(time);
+    return new Date(time);
+  }
+
+  /**
+   * A year has landed when its anniversary is a real timestamp on or before the end.
+   * An anniversary past the representable range has not landed.
+   * @param years - Whole year count from the calendar difference.
+   * @param startDate - Valid range start.
+   * @param endDate - Valid range end.
+   * @returns True when the anniversary is representable and on or before `endDate`.
+   */
+  private anniversaryHasLanded(
+    years: number,
+    startDate: Date,
+    endDate: Date,
+  ): boolean {
+    const time = this.timestampAfterAddingYears(years, startDate);
+    return this.isTimestampInRange(time) && time <= endDate.getTime();
+  }
+
+  private timestampAfterAddingYears(years: number, startDate: Date): number {
     const startYear = startDate.getUTCFullYear();
     const targetYear = startYear + years;
 
@@ -96,7 +120,6 @@ export class YearConverter extends DateUnitConverter {
       dateWithYearsAdded.setUTCDate(YearConverter.february28);
     }
 
-    this.assertTimestampInRange(dateWithYearsAdded.getTime());
-    return dateWithYearsAdded;
+    return dateWithYearsAdded.getTime();
   }
 }

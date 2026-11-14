@@ -60,16 +60,25 @@ export abstract class DateUnitConverter {
   }
 
   /**
+   * Reports whether `time` is a finite timestamp Date can represent.
+   * @param time - Epoch milliseconds to check.
+   * @returns True when `time` is inside the representable date range.
+   */
+  protected isTimestampInRange(time: number): boolean {
+    return (
+      Number.isFinite(time) &&
+      time <= Constants.MaxSafeTimestamp &&
+      time >= Constants.MinSafeTimestamp
+    );
+  }
+
+  /**
    * Rejects a timestamp that Date cannot represent.
    * @param time - Resulting epoch milliseconds.
    * @throws {Error} `Invalid number of <plural>: expected a result within the representable date range.`
    */
   protected assertTimestampInRange(time: number): void {
-    if (
-      !Number.isFinite(time) ||
-      time > Constants.MaxSafeTimestamp ||
-      time < Constants.MinSafeTimestamp
-    ) {
+    if (!this.isTimestampInRange(time)) {
       throw new Error(
         `Invalid number of ${this.plural}: expected a result within the representable date range.`,
       );

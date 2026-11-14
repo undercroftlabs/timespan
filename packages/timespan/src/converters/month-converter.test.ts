@@ -12,27 +12,30 @@ describe('MonthConverter', () => {
   describe('between', () => {
     describe('accepted ranges', () => {
       test.each`
-        label                                          | start                                   | end                                                             | months
-        ${'same instant'}                              | ${new Date(0)}                          | ${new Date(0)}                                                  | ${0}
-        ${'same date object'}                          | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-05-01T00:00:00.000Z')}                         | ${0}
-        ${'one millisecond'}                           | ${new Date(0)}                          | ${new Date(1)}                                                  | ${0}
-        ${'one millisecond short of a calendar month'} | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date(new Date('2023-06-01T00:00:00.000Z').getTime() - 1)} | ${0}
-        ${'exactly one calendar month'}                | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-06-01T00:00:00.000Z')}                         | ${1}
-        ${'one millisecond past a calendar month'}     | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-06-01T00:00:00.001Z')}                         | ${1}
-        ${'May to July on the first'}                  | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-07-01T00:00:00.000Z')}                         | ${2}
-        ${'May first to July fifteenth'}               | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-07-15T00:00:00.000Z')}                         | ${2}
-        ${'January 15 to February 1'}                  | ${new Date('2022-01-15T00:00:00.000Z')} | ${new Date('2022-02-01T00:00:00.000Z')}                         | ${0}
-        ${'one hour short of the anniversary'}         | ${new Date('2023-01-15T12:00:00.000Z')} | ${new Date('2023-02-15T11:00:00.000Z')}                         | ${0}
-        ${'exactly the anniversary'}                   | ${new Date('2023-01-15T12:00:00.000Z')} | ${new Date('2023-02-15T12:00:00.000Z')}                         | ${1}
-        ${'across a common February'}                  | ${new Date('2021-02-01T00:00:00.000Z')} | ${new Date('2021-03-01T00:00:00.000Z')}                         | ${1}
-        ${'across a leap February'}                    | ${new Date('2020-02-01T00:00:00.000Z')} | ${new Date('2020-03-01T00:00:00.000Z')}                         | ${1}
-        ${'February 28 to March 1 in a leap year'}     | ${new Date('2020-02-28T00:00:00.000Z')} | ${new Date('2020-03-01T00:00:00.000Z')}                         | ${0}
-        ${'February 28 to March 1 in a common year'}   | ${new Date('2021-02-28T00:00:00.000Z')} | ${new Date('2021-03-01T00:00:00.000Z')}                         | ${0}
-        ${'across a year boundary'}                    | ${new Date('2023-12-31T00:00:00.000Z')} | ${new Date('2024-01-01T00:00:00.000Z')}                         | ${0}
-        ${'a common year'}                             | ${new Date('2023-01-01T00:00:00.000Z')} | ${new Date('2024-01-01T00:00:00.000Z')}                         | ${12}
-        ${'a leap year'}                               | ${new Date('2024-01-01T00:00:00.000Z')} | ${new Date('2025-01-01T00:00:00.000Z')}                         | ${12}
-        ${'negative timestamps in order'}              | ${new Date('1969-01-01T00:00:00.000Z')} | ${new Date('1970-01-01T00:00:00.000Z')}                         | ${12}
-        ${'date-only ISO form'}                        | ${new Date('2023-05-01')}               | ${new Date('2023-07-01')}                                       | ${2}
+        label                                              | start                                   | end                                                             | months
+        ${'same instant'}                                  | ${new Date(0)}                          | ${new Date(0)}                                                  | ${0}
+        ${'same date object'}                              | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-05-01T00:00:00.000Z')}                         | ${0}
+        ${'one millisecond'}                               | ${new Date(0)}                          | ${new Date(1)}                                                  | ${0}
+        ${'one millisecond short of a calendar month'}     | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date(new Date('2023-06-01T00:00:00.000Z').getTime() - 1)} | ${0}
+        ${'exactly one calendar month'}                    | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-06-01T00:00:00.000Z')}                         | ${1}
+        ${'one millisecond past a calendar month'}         | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-06-01T00:00:00.001Z')}                         | ${1}
+        ${'May to July on the first'}                      | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-07-01T00:00:00.000Z')}                         | ${2}
+        ${'May first to July fifteenth'}                   | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-07-15T00:00:00.000Z')}                         | ${2}
+        ${'January 15 to February 1'}                      | ${new Date('2022-01-15T00:00:00.000Z')} | ${new Date('2022-02-01T00:00:00.000Z')}                         | ${0}
+        ${'one hour short of the anniversary'}             | ${new Date('2023-01-15T12:00:00.000Z')} | ${new Date('2023-02-15T11:00:00.000Z')}                         | ${0}
+        ${'exactly the anniversary'}                       | ${new Date('2023-01-15T12:00:00.000Z')} | ${new Date('2023-02-15T12:00:00.000Z')}                         | ${1}
+        ${'across a common February'}                      | ${new Date('2021-02-01T00:00:00.000Z')} | ${new Date('2021-03-01T00:00:00.000Z')}                         | ${1}
+        ${'across a leap February'}                        | ${new Date('2020-02-01T00:00:00.000Z')} | ${new Date('2020-03-01T00:00:00.000Z')}                         | ${1}
+        ${'February 28 to March 1 in a leap year'}         | ${new Date('2020-02-28T00:00:00.000Z')} | ${new Date('2020-03-01T00:00:00.000Z')}                         | ${0}
+        ${'February 28 to March 1 in a common year'}       | ${new Date('2021-02-28T00:00:00.000Z')} | ${new Date('2021-03-01T00:00:00.000Z')}                         | ${0}
+        ${'across a year boundary'}                        | ${new Date('2023-12-31T00:00:00.000Z')} | ${new Date('2024-01-01T00:00:00.000Z')}                         | ${0}
+        ${'a common year'}                                 | ${new Date('2023-01-01T00:00:00.000Z')} | ${new Date('2024-01-01T00:00:00.000Z')}                         | ${12}
+        ${'a leap year'}                                   | ${new Date('2024-01-01T00:00:00.000Z')} | ${new Date('2025-01-01T00:00:00.000Z')}                         | ${12}
+        ${'negative timestamps in order'}                  | ${new Date('1969-01-01T00:00:00.000Z')} | ${new Date('1970-01-01T00:00:00.000Z')}                         | ${12}
+        ${'date-only ISO form'}                            | ${new Date('2023-05-01')}               | ${new Date('2023-07-01')}                                       | ${2}
+        ${'15 June 2020 through the maximum instant'}      | ${new Date(Date.UTC(2020, 5, 15))}      | ${new Date(maxTimestamp)}                                       | ${3_284_882}
+        ${'13 September 2020 through the maximum instant'} | ${new Date(Date.UTC(2020, 8, 13))}      | ${new Date(maxTimestamp)}                                       | ${3_284_880}
+        ${'31 August 275760 through the maximum instant'}  | ${new Date(Date.UTC(275760, 7, 31))}    | ${new Date(maxTimestamp)}                                       | ${0}
       `(
         'counts $months months for $label',
         ({
@@ -91,19 +94,20 @@ describe('MonthConverter', () => {
   describe('add', () => {
     describe('accepted amounts', () => {
       test.each`
-        label                               | months | start                                   | expected
-        ${'zero months'}                    | ${0}   | ${new Date(0)}                          | ${new Date(0)}
-        ${'negative zero months'}           | ${-0}  | ${new Date(0)}                          | ${new Date(0)}
-        ${'one month from May first'}       | ${1}   | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-06-01T00:00:00.000Z')}
-        ${'three months'}                   | ${3}   | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-08-01T00:00:00.000Z')}
-        ${'across a year boundary'}         | ${4}   | ${new Date('2023-11-01T00:00:00.000Z')} | ${new Date('2024-03-01T00:00:00.000Z')}
-        ${'half a month truncates to none'} | ${0.5} | ${new Date('2023-06-15T12:00:00.000Z')} | ${new Date('2023-06-15T12:00:00.000Z')}
-        ${'clamps into a common February'}  | ${1}   | ${new Date('2023-01-31T00:00:00.000Z')} | ${new Date('2023-02-28T00:00:00.000Z')}
-        ${'clamps into a leap February'}    | ${1}   | ${new Date('2024-01-31T00:00:00.000Z')} | ${new Date('2024-02-29T00:00:00.000Z')}
-        ${'clamps into a thirty-day month'} | ${1}   | ${new Date('2023-03-31T00:00:00.000Z')} | ${new Date('2023-04-30T00:00:00.000Z')}
-        ${'two months from January 31'}     | ${2}   | ${new Date('2023-01-31T00:00:00.000Z')} | ${new Date('2023-03-31T00:00:00.000Z')}
-        ${'preserving the time of day'}     | ${1}   | ${new Date('2023-05-01T15:30:45.123Z')} | ${new Date('2023-06-01T15:30:45.123Z')}
-        ${'from a negative timestamp'}      | ${1}   | ${new Date('1969-12-01T00:00:00.000Z')} | ${new Date('1970-01-01T00:00:00.000Z')}
+        label                                           | months       | start                                   | expected
+        ${'zero months'}                                | ${0}         | ${new Date(0)}                          | ${new Date(0)}
+        ${'negative zero months'}                       | ${-0}        | ${new Date(0)}                          | ${new Date(0)}
+        ${'one month from May first'}                   | ${1}         | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-06-01T00:00:00.000Z')}
+        ${'three months'}                               | ${3}         | ${new Date('2023-05-01T00:00:00.000Z')} | ${new Date('2023-08-01T00:00:00.000Z')}
+        ${'across a year boundary'}                     | ${4}         | ${new Date('2023-11-01T00:00:00.000Z')} | ${new Date('2024-03-01T00:00:00.000Z')}
+        ${'half a month truncates to none'}             | ${0.5}       | ${new Date('2023-06-15T12:00:00.000Z')} | ${new Date('2023-06-15T12:00:00.000Z')}
+        ${'clamps into a common February'}              | ${1}         | ${new Date('2023-01-31T00:00:00.000Z')} | ${new Date('2023-02-28T00:00:00.000Z')}
+        ${'clamps into a leap February'}                | ${1}         | ${new Date('2024-01-31T00:00:00.000Z')} | ${new Date('2024-02-29T00:00:00.000Z')}
+        ${'clamps into a thirty-day month'}             | ${1}         | ${new Date('2023-03-31T00:00:00.000Z')} | ${new Date('2023-04-30T00:00:00.000Z')}
+        ${'two months from January 31'}                 | ${2}         | ${new Date('2023-01-31T00:00:00.000Z')} | ${new Date('2023-03-31T00:00:00.000Z')}
+        ${'preserving the time of day'}                 | ${1}         | ${new Date('2023-05-01T15:30:45.123Z')} | ${new Date('2023-06-01T15:30:45.123Z')}
+        ${'from a negative timestamp'}                  | ${1}         | ${new Date('1969-12-01T00:00:00.000Z')} | ${new Date('1970-01-01T00:00:00.000Z')}
+        ${'13 September 2020 onto the maximum instant'} | ${3_284_880} | ${new Date(Date.UTC(2020, 8, 13))}      | ${new Date(maxTimestamp)}
       `(
         'adds $label',
         ({
