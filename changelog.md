@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] – Unreleased
+
+Formatting, JSON, and more ways to build a timespan. Calendar breakdowns after a clamped month or year are corrected. Successful calculations for ordinary dates are unchanged. Several error messages are not.
+
+### Added
+
+- Instance and static `format`. A directive is `%[flags][width][.precision]specifier`. Flags are `0`, `-`, `+`, and a space. Uppercase specifiers are totals (`%Y`, `%B`, `%W`, `%D`, `%H`, `%M`, `%S`, `%L`). Lowercase specifiers are the `toTimeframe()` components. `%f` is fractional seconds from the millisecond component, 3 digits by default, truncated rather than rounded. `%%` is a literal percent. A width or precision of 1,000,000 or more is rejected. The format string itself has no length limit. An invalid format throws `Invalid format string: expected a valid format string.`
+- JSON save and restore. `toJSON`, which `JSON.stringify` calls, returns `{ $type: 'Timespan', start, end }` with ISO strings. The `TimespanJson` type is exported. `fromJSON` rebuilds one timespan. `stringify` and `parse` do the same for a JSON string. `reviver` restores nested timespans passed to `JSON.parse`. `isTimespanJSON` checks that shape only: it does not parse the dates, a true result does not mean `fromJSON` will succeed, and a `Timespan` instance returns false.
+- `fromObject(partial, start?)` builds a span from any subset of timeframe fields. Omitted and zero units are skipped. Years and months clamp the same way as `fromYears` and `fromMonths`. A non-object throws `Invalid timeframe: expected an object.`
+- Instance and static `clone`. The copy has the same endpoints and does not share `Date` objects with the original.
+- Instance and static `isZero`, true when the duration is zero milliseconds. `toString()` is then an empty string.
+
+### Changed
+
+- Validation errors name the problem. `Invalid date input.` is now `Invalid date: expected a valid Date.` A reversed range throws `Invalid date range: expected the start date to be less than or equal to the end date.` instead of `Start date cannot be greater than end date.` An unknown unit passed to `fromUnits` or `toUnit` throws `Invalid time unit: expected a recognized time unit.` instead of `Invalid date unit: <unit>.` `fromString` rejects disallowed characters with `Invalid input string: expected letters, digits, and whitespace only.` and strings longer than 75 characters with `Invalid input string: expected at most 75 characters.`
+- The package `exports` map sends `import` to the ESM build, `require` to CommonJS, and `@undercroft/timespan/umd` to the browser build. `window.Timespan` is unchanged. Other package subpaths are not exported.
+- Unit factories reject a non-finite amount, or a result outside the representable date range, with `Invalid number of <unit>: ...`. Fractions of fixed-length units, including days, are still accepted. Negative amounts still throw.
+
+### Fixed
+
+- `toTimeframe()` and `toString()` measure the remainder from the clamped month or year anniversary. Advancing the cursor with `setUTCFullYear` or `setUTCMonth` could roll 31 January or 29 February into the next month and leave a negative remainder.
+- Month clamping uses the Gregorian length of the target month, including a 29-day February, including when that month sits at the edge of the representable date range.
+- A month or year anniversary that falls outside the representable date range is not counted as elapsed.
+
+### Documentation
+
+- The README is organized by task. Each task has a short example plus a CodePen playground and preview.
+- The bundle size badge is the 1.2.1 ESM build, minified and Brotli-compressed. The install size badge is the unpacked package size. Neither badge follows the `latest` tag.
+
+---
+
 ## [1.2.0] – 2026-11-04
 
 Correctness release: comparison APIs plus parser and calendar fixes. No new duration units or string formats.
