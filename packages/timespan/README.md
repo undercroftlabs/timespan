@@ -6,15 +6,15 @@ JavaScript.
 
 Works in Typescript too!
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/undercroftlabs/timespan/publish.yml)](https://github.com/undercroftlabs/timespan/actions/workflows/publish.yml)
-[![Issues Status](https://img.shields.io/github/issues/undercroftlabs/timespan)](https://github.com/undercroftlabs/timespan/issues)
-[![Pull Request Status](https://img.shields.io/github/issues-pr-raw/undercroftlabs/timespan)](https://github.com/undercroftlabs/timespan/pulls)
-[![NPM Version Status](https://img.shields.io/npm/v/@undercroft/timespan)](https://www.npmjs.com/package/@undercroft/timespan)
-[![License Status](https://img.shields.io/github/license/undercroftlabs/timespan)](https://github.com/undercroftlabs/timespan/blob/main/LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/undercroftlabs/timespan/test.yml?branch=main)](https://github.com/undercroftlabs/timespan/actions/workflows/test.yml)
+[![NPM Version](https://img.shields.io/npm/v/@undercroft/timespan)](https://www.npmjs.com/package/@undercroft/timespan)
+[![npm downloads](https://img.shields.io/npm/dm/@undercroft/timespan)](https://www.npmjs.com/package/@undercroft/timespan)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/@undercroft/timespan)](https://bundlephobia.com/package/@undercroft/timespan)
 [![Install Size](https://packagephobia.com/badge?p=@undercroft/timespan)](https://packagephobia.com/result?p=@undercroft/timespan)
+[![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](https://www.npmjs.com/package/@undercroft/timespan)
 [![codecov](https://codecov.io/gh/undercroftlabs/timespan/graph/badge.svg?token=XLOYLAS2X1)](https://codecov.io/gh/undercroftlabs/timespan)
 [![Known Vulnerabilities](https://snyk.io/test/npm/@undercroft/timespan/badge.svg)](https://snyk.io/test/npm/@undercroft/timespan)
+[![License](https://img.shields.io/github/license/undercroftlabs/timespan)](https://github.com/undercroftlabs/timespan/blob/main/LICENSE)
 
 # UMD Support
 
@@ -25,9 +25,7 @@ supported.
 
 - jsDelivr: `https://cdn.jsdelivr.net/npm/@undercroft/timespan/dist/index.umd.js`
 - unpkg: `https://unpkg.com/@undercroft/timespan/dist/index.umd.js`
-- Skypack: `https://cdn.skypack.dev/@undercroft/timespan`
 - esm.sh: `https://esm.sh/@undercroft/timespan`
-- jspm: `https://jspm.dev/@undercroft/timespan`
 - esm.run: `https://esm.run/@undercroft/timespan`
 
 # Distribution & Compatibility
