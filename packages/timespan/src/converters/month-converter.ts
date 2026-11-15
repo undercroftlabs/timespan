@@ -3,6 +3,7 @@ import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { MonthUnit } from '../types/month-unit';
 import { DateUnitConverter } from './date-unit-converter';
+import { CanonicalUnit } from '../types/canonical-unit';
 
 /**
  * Represents a converter for the month unit.
@@ -20,7 +21,7 @@ export class MonthConverter extends DateUnitConverter {
   /**
    * The plural name of the month unit.
    */
-  public readonly plural: MonthUnit = 'months';
+  public readonly plural: CanonicalUnit = 'months';
 
   /**
    * The abbreviated name of the month unit.

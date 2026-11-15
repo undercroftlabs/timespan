@@ -2,6 +2,7 @@ import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import { SecondUnit } from '../types/second-unit';
 import { DateUnitConverter } from './date-unit-converter';
+import { CanonicalUnit } from '../types/canonical-unit';
 
 /**
  * Represents a converter for the second unit.
@@ -15,7 +16,7 @@ export class SecondConverter extends DateUnitConverter {
   /**
    * The plural name of the second unit.
    */
-  public readonly plural: SecondUnit = 'seconds';
+  public readonly plural: CanonicalUnit = 'seconds';
 
   /**
    * The abbreviated name of the second unit.

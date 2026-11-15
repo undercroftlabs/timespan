@@ -15,8 +15,11 @@ const invalidDate = new Date(Number.NaN);
 
 function expectFrame(end: Date, expected: Partial<TimeFrame>): void {
   const actual = calculateTimeFrame(start, end);
-  for (const [unit, value] of Object.entries(expected)) {
-    if (actual[unit] !== value) {
+
+  for (const unit of Object.keys(actual) as Array<keyof TimeFrame>) {
+    const value = expected[unit];
+
+    if (value !== undefined && actual[unit] !== value) {
       throw new Error(`expected ${value} ${unit}, received ${actual[unit]}`);
     }
   }

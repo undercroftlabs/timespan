@@ -3,6 +3,7 @@ import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { WeekUnit } from '../types/week-unit';
 import { DateUnitConverter } from './date-unit-converter';
+import { CanonicalUnit } from '../types/canonical-unit';
 
 /**
  * Represents a converter for the week unit.
@@ -16,7 +17,7 @@ export class WeekConverter extends DateUnitConverter {
   /**
    * The plural name of the week unit.
    */
-  public readonly plural: WeekUnit = 'weeks';
+  public readonly plural: CanonicalUnit = 'weeks';
 
   /**
    * The abbreviated name of the week unit.

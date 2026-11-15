@@ -3,6 +3,7 @@ import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { HourUnit } from '../types/hour-unit';
 import { DateUnitConverter } from './date-unit-converter';
+import { CanonicalUnit } from '../types/canonical-unit';
 
 /**
  * Represents a converter for the hour unit.
@@ -16,7 +17,7 @@ export class HourConverter extends DateUnitConverter {
   /**
    * The plural name of the hour unit.
    */
-  public readonly plural: HourUnit = 'hours';
+  public readonly plural: CanonicalUnit = 'hours';
 
   /**
    * The abbreviated name of the hour unit.

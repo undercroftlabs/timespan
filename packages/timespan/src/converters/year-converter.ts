@@ -3,6 +3,7 @@ import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { YearUnit } from '../types/year-unit';
 import { DateUnitConverter } from './date-unit-converter';
+import { CanonicalUnit } from '../types/canonical-unit';
 
 /**
  * Represents a converter for the year unit.
@@ -19,7 +20,7 @@ export class YearConverter extends DateUnitConverter {
   /**
    * The plural name of the year unit.
    */
-  public readonly plural: YearUnit = 'years';
+  public readonly plural: CanonicalUnit = 'years';
 
   /**
    * The abbreviated name of the year unit.

@@ -1,6 +1,7 @@
 // noinspection DuplicatedCode
 
 import { Timespan } from '../src';
+import { TimeFrame } from './types/timeframe';
 import { formatTimespan } from './utils/format-timespan';
 
 /**
@@ -234,6 +235,220 @@ describe('Timespan', () => {
         seconds: 30,
         milliseconds: 61,
       });
+    });
+  });
+
+  describe('fromObject', () => {
+    const startDate = new Date('2023-06-15T12:00:00.000Z');
+
+    it('builds a span from one unit', () => {
+      const timespan = Timespan.fromObject({ days: 2 }, startDate);
+      expect(timespan.start.toISOString()).toBe(startDate.toISOString());
+      expect(timespan.end.toISOString()).toBe(
+        Timespan.fromDays(2, startDate).end.toISOString(),
+      );
+    });
+
+    it('adds fixed-length units from largest to smallest', () => {
+      const timespan = Timespan.fromObject(
+        {
+          weeks: 1,
+          days: 2,
+          hours: 3,
+          minutes: 4,
+          seconds: 5,
+          milliseconds: 6,
+        },
+        startDate,
+      );
+      const elapsed =
+        (7 + 2) * 24 * 60 * 60 * 1000 +
+        3 * 60 * 60 * 1000 +
+        4 * 60 * 1000 +
+        5 * 1000 +
+        6;
+      expect(timespan.toMilliseconds()).toBe(elapsed);
+    });
+
+    it('adds months after years', () => {
+      const afterYear = Timespan.fromYears(1, startDate).end;
+      const expected = Timespan.fromMonths(2, afterYear).end.toISOString();
+      expect(
+        Timespan.fromObject(
+          { years: 1, months: 2 },
+          startDate,
+        ).end.toISOString(),
+      ).toBe(expected);
+    });
+
+    it('treats omitted and zero amounts as no time', () => {
+      const omitted = Timespan.fromObject({}, startDate);
+      const zeros = Timespan.fromObject(
+        {
+          years: 0,
+          months: 0,
+          weeks: 0,
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          milliseconds: 0,
+        },
+        startDate,
+      );
+      expect(omitted.toMilliseconds()).toBe(0);
+      expect(omitted.toString()).toBe('');
+      expect(zeros.end.toISOString()).toBe(startDate.toISOString());
+      expect(
+        Timespan.fromObject({ years: 0, hours: 1 }, startDate).toMilliseconds(),
+      ).toBe(Timespan.fromHours(1, startDate).toMilliseconds());
+    });
+
+    it('uses the current date when the start is omitted', () => {
+      const before = Date.now();
+      const timespan = Timespan.fromObject({ hours: 2 });
+      const after = Date.now();
+      expect(timespan.start.getTime()).toBeGreaterThanOrEqual(before);
+      expect(timespan.start.getTime()).toBeLessThanOrEqual(after);
+      expect(timespan.toHours()).toBe(2);
+    });
+
+    it('truncates a fractional month to none', () => {
+      expect(
+        Timespan.fromObject({ months: 0.5 }, startDate).end.toISOString(),
+      ).toBe(startDate.toISOString());
+    });
+
+    it('does not change the supplied object or start date', () => {
+      const suppliedStart = new Date(startDate.getTime());
+      const input = { days: 3, hours: 1 };
+      const snapshot = { ...input };
+      const timespan = Timespan.fromObject(input, suppliedStart);
+
+      expect(input).toEqual(snapshot);
+      expect(suppliedStart.toISOString()).toBe(startDate.toISOString());
+
+      suppliedStart.setUTCFullYear(1999);
+
+      expect(timespan.start.toISOString()).toBe(startDate.toISOString());
+      expect(timespan.end.toISOString()).toBe('2023-06-18T13:00:00.000Z');
+    });
+
+    it('ignores keys that are not canonical units', () => {
+      const input = { days: 1, y: 9 };
+      expect(Timespan.fromObject(input, startDate).toMilliseconds()).toBe(
+        Timespan.fromDays(1, startDate).toMilliseconds(),
+      );
+    });
+
+    it('throws when the start date is invalid', () => {
+      expect(() =>
+        Timespan.fromObject({ days: 1 }, new Date(Number.NaN)),
+      ).toThrow('Invalid date: expected a valid Date.');
+    });
+
+    it('throws when an amount is negative or not finite', () => {
+      expect(() => Timespan.fromObject({ days: -1 }, startDate)).toThrow(
+        'Invalid number of days: expected zero or a positive number.',
+      );
+      expect(() =>
+        Timespan.fromObject({ hours: Number.NaN }, startDate),
+      ).toThrow('Invalid number of hours: expected zero or a positive number.');
+      expect(() =>
+        Timespan.fromObject({ years: Number.POSITIVE_INFINITY }, startDate),
+      ).toThrow('Invalid number of years: expected zero or a positive number.');
+    });
+
+    test.each`
+      label          | value
+      ${'null'}      | ${null}
+      ${'undefined'} | ${undefined}
+      ${'an array'}  | ${[]}
+      ${'a number'}  | ${1}
+      ${'a string'}  | ${'1 day'}
+      ${'a boolean'} | ${true}
+    `(
+      'throws when the timeframe is $label',
+      ({ value }: { value: unknown }) => {
+        expect(() =>
+          Timespan.fromObject(value as Partial<TimeFrame>, startDate),
+        ).toThrow(TypeError);
+      },
+    );
+
+    test.each`
+      label          | days
+      ${'a string'}  | ${'1'}
+      ${'a boolean'} | ${true}
+      ${'an object'} | ${{}}
+      ${'an array'}  | ${[]}
+      ${'null'}      | ${null}
+    `('throws when days is $label', ({ days }: { days: unknown }) => {
+      expect(() =>
+        Timespan.fromObject(
+          { days } as unknown as Partial<TimeFrame>,
+          startDate,
+        ),
+      ).toThrow('Invalid number of days: expected zero or a positive number.');
+    });
+
+    it('accepts a span that ends on the maximum representable instant', () => {
+      const timespan = Timespan.fromObject(
+        { milliseconds: 8.64e15 },
+        new Date(0),
+      );
+      expect(timespan.end.getTime()).toBe(8.64e15);
+    });
+
+    it('throws when the result passes the representable date range', () => {
+      expect(() =>
+        Timespan.fromObject({ milliseconds: 8.64e15 + 1 }, new Date(0)),
+      ).toThrow(
+        'Invalid number of milliseconds: expected a result within the representable date range.',
+      );
+      expect(() => Timespan.fromObject({ days: 1 }, new Date(8.64e15))).toThrow(
+        'Invalid number of days: expected a result within the representable date range.',
+      );
+    });
+
+    it('clamps a month ending on the 31st', () => {
+      expect(
+        Timespan.fromObject(
+          { months: 1 },
+          new Date('2023-01-31T00:00:00.000Z'),
+        ).end.toISOString(),
+      ).toBe('2023-02-28T00:00:00.000Z');
+      expect(
+        Timespan.fromObject(
+          { months: 1 },
+          new Date('2024-01-31T00:00:00.000Z'),
+        ).end.toISOString(),
+      ).toBe('2024-02-29T00:00:00.000Z');
+      expect(
+        Timespan.fromObject(
+          { months: 1 },
+          new Date('2023-03-31T00:00:00.000Z'),
+        ).end.toISOString(),
+      ).toBe('2023-04-30T00:00:00.000Z');
+    });
+
+    it('adds a day after clamping the month', () => {
+      expect(
+        Timespan.fromObject(
+          { months: 1, days: 1 },
+          new Date('2023-01-31T00:00:00.000Z'),
+        ).end.toISOString(),
+      ).toBe('2023-03-01T00:00:00.000Z');
+    });
+
+    it('clamps a leap day into a common year and keeps a later leap day', () => {
+      const leapDay = new Date('2020-02-29T00:00:00.000Z');
+      expect(Timespan.fromObject({ years: 1 }, leapDay).end.toISOString()).toBe(
+        '2021-02-28T00:00:00.000Z',
+      );
+      expect(Timespan.fromObject({ years: 4 }, leapDay).end.toISOString()).toBe(
+        '2024-02-29T00:00:00.000Z',
+      );
     });
   });
 
@@ -1899,6 +2114,96 @@ describe('Timespan', () => {
       expect(timespan.start.toISOString()).toBe(startInstant);
       expect(timespan.end.toISOString()).toBe(endInstant);
       expect(timespan.toString()).toBe(text);
+    });
+  });
+
+  describe('clone', () => {
+    const start = new Date('2022-01-01T06:24:00.000Z');
+    const end = new Date('2023-02-21T10:52:00.123Z');
+    const timespan = new Timespan(start, end);
+
+    /**
+     * Asserts that `cloned` is a distinct timespan with the same range.
+     * @param cloned - Timespan produced by `clone`.
+     * @param original - Timespan that was cloned.
+     * @returns Nothing.
+     */
+    function expectSameRange(cloned: Timespan, original: Timespan): void {
+      expect(cloned).toBeInstanceOf(Timespan);
+      expect(cloned).not.toBe(original);
+      expect(cloned.start.toISOString()).toBe(original.start.toISOString());
+      expect(cloned.end.toISOString()).toBe(original.end.toISOString());
+      expect(cloned.toString()).toBe(original.toString());
+      expect(cloned.toTimeframe()).toEqual(original.toTimeframe());
+      expect(cloned.toJSON()).toEqual(original.toJSON());
+      expect(cloned.equals(original, 'range')).toBe(true);
+      expect(cloned.equals(original)).toBe(true);
+    }
+
+    it('returns a new timespan with the same range', () => {
+      expectSameRange(timespan.clone(), timespan);
+    });
+
+    it('returns the same range from the static method', () => {
+      const cloned = Timespan.clone(timespan);
+      expectSameRange(cloned, timespan);
+      expect(cloned.toJSON()).toEqual(timespan.clone().toJSON());
+    });
+
+    it('delegates the static method to the instance method', () => {
+      const span = new Timespan(start, end);
+      const replacement = new Timespan(new Date(0), new Date(1));
+      const original = span.clone;
+      span.clone = () => replacement;
+      try {
+        expect(Timespan.clone(span)).toBe(replacement);
+      } finally {
+        span.clone = original;
+      }
+    });
+
+    it('does not change the original timespan', () => {
+      const startInstant = timespan.start.toISOString();
+      const endInstant = timespan.end.toISOString();
+      const text = timespan.toString();
+      const frame = timespan.toTimeframe();
+
+      timespan.clone();
+      Timespan.clone(timespan);
+
+      expect(timespan.start.toISOString()).toBe(startInstant);
+      expect(timespan.end.toISOString()).toBe(endInstant);
+      expect(timespan.toString()).toBe(text);
+      expect(timespan.toTimeframe()).toEqual(frame);
+    });
+
+    it('does not let a caller change the clone through its dates', () => {
+      const cloned = timespan.clone();
+
+      cloned.start.setUTCFullYear(1999);
+      cloned.end.setUTCFullYear(1999);
+
+      expect(cloned.start.toISOString()).toBe(start.toISOString());
+      expect(cloned.end.toISOString()).toBe(end.toISOString());
+      expect(timespan.start.toISOString()).toBe(start.toISOString());
+      expect(timespan.end.toISOString()).toBe(end.toISOString());
+    });
+
+    it('returns a distinct timespan on each call', () => {
+      const first = timespan.clone();
+      const second = timespan.clone();
+      expect(first).not.toBe(second);
+      expect(first.clone()).not.toBe(first);
+      expectSameRange(first, second);
+    });
+
+    it('clones a zero-length span and a pre-epoch instant', () => {
+      const epoch = new Date(0);
+      const zero = new Timespan(epoch, new Date(epoch.getTime()));
+      const beforeEpoch = new Timespan(new Date(-1), epoch);
+
+      expectSameRange(zero.clone(), zero);
+      expectSameRange(Timespan.clone(beforeEpoch), beforeEpoch);
     });
   });
 });
