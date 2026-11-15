@@ -14,6 +14,7 @@ import Constants from './constants';
 import { TimespanJson } from './types/timespan-json';
 import { assertValidTimespanJson } from './assertions/assert-valid-timespan-json';
 import { isTimespanJson } from './type-guards/is-timespan-json';
+import { CanonicalUnit } from './types/canonical-unit';
 
 /**
  * Represents a time span between two dates.
@@ -152,16 +153,7 @@ export class Timespan {
 
     // Apply units through the converters so year/month addition clamps the
     // same way as fromYears / fromMonths instead of overflowing via Date setters.
-    const units: Array<
-      | 'years'
-      | 'months'
-      | 'weeks'
-      | 'days'
-      | 'hours'
-      | 'minutes'
-      | 'seconds'
-      | 'milliseconds'
-    > = [
+    const units = [
       'years',
       'months',
       'weeks',
@@ -170,7 +162,8 @@ export class Timespan {
       'minutes',
       'seconds',
       'milliseconds',
-    ];
+    ] as const satisfies readonly CanonicalUnit[];
+
     let endDate = new Date(start);
     for (const unit of units) {
       const amount = timeframe[unit];
@@ -442,6 +435,42 @@ export class Timespan {
     value: unknown,
   ): value is TimespanJson => {
     return isTimespanJson(value);
+  };
+
+  public static readonly fromObject = (
+    input: Partial<TimeFrame>,
+    startDate: Date = new Date(),
+  ): Timespan => {
+    if (typeof input !== 'object' || input === null || Array.isArray(input)) {
+      throw new TypeError('Invalid timeframe: expected an object.');
+    }
+
+    assertValidDate(startDate);
+    let endDate = new Date(startDate);
+    // Apply units through the converters so year/month addition clamps the
+    // same way as fromYears / fromMonths instead of overflowing via Date setters.
+    const units = [
+      'years',
+      'months',
+      'weeks',
+      'days',
+      'hours',
+      'minutes',
+      'seconds',
+      'milliseconds',
+    ] as const satisfies readonly CanonicalUnit[];
+
+    for (const unit of units) {
+      const amount = input[unit];
+
+      if (amount === undefined || amount === 0) {
+        continue;
+      }
+
+      endDate = getConverter(unit).add(amount, endDate);
+    }
+
+    return new Timespan(startDate, endDate);
   };
 
   /**

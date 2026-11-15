@@ -3,6 +3,7 @@ import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { MinuteUnit } from '../types/minute-unit';
 import { DateUnitConverter } from './date-unit-converter';
+import { CanonicalUnit } from '../types/canonical-unit';
 
 /**
  * Represents a converter for the minute unit.
@@ -16,7 +17,7 @@ export class MinuteConverter extends DateUnitConverter {
   /**
    * The plural name of the minute unit.
    */
-  public readonly plural: MinuteUnit = 'minutes';
+  public readonly plural: CanonicalUnit = 'minutes';
 
   /**
    * The abbreviated name of the minute unit.

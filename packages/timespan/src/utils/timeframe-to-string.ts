@@ -1,11 +1,11 @@
-import { TimeUnit } from '../types/time-unit';
 import { TimeFrame } from '../types/timeframe';
 import { getConverter } from './unit-conversion-map';
+import { CanonicalUnit } from '../types/canonical-unit';
 
 /**
  * Timeframe fields in display order. Aliases such as `y` are not fields.
  */
-const canonicalUnits: readonly TimeUnit[] = [
+const canonicalUnits: readonly CanonicalUnit[] = [
   'years',
   'months',
   'weeks',

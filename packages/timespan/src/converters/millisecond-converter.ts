@@ -2,6 +2,7 @@ import { assertValidDate } from '../assertions/assert-valid-date';
 import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import { MillisecondUnit } from '../types/millisecond-unit';
 import { DateUnitConverter } from './date-unit-converter';
+import { CanonicalUnit } from '../types/canonical-unit';
 
 /**
  * Represents a converter for the millisecond unit.
@@ -15,7 +16,7 @@ export class MillisecondConverter extends DateUnitConverter {
   /**
    * The plural name of the millisecond unit.
    */
-  public readonly plural: MillisecondUnit = 'milliseconds';
+  public readonly plural: CanonicalUnit = 'milliseconds';
 
   /**
    * The abbreviated name of the millisecond unit.

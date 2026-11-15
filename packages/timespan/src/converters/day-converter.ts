@@ -3,6 +3,7 @@ import { assertValidDateRange } from '../assertions/assert-valid-date-range';
 import Constants from '../constants';
 import { DayUnit } from '../types/day-unit';
 import { DateUnitConverter } from './date-unit-converter';
+import { CanonicalUnit } from '../types/canonical-unit';
 
 /**
  * Represents a converter for the day unit.
@@ -16,7 +17,7 @@ export class DayConverter extends DateUnitConverter {
   /**
    * The plural name of the day unit.
    */
-  public readonly plural: DayUnit = 'days';
+  public readonly plural: CanonicalUnit = 'days';
 
   /**
    * The abbreviated name of the day unit.
