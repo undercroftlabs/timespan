@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.3.0] – Unreleased
+## [1.3.0] – 2026-11-15
 
 Formatting, JSON, and more ways to build a timespan. Calendar breakdowns after a clamped month or year are corrected. Successful calculations for ordinary dates are unchanged. Several error messages are not.
 
