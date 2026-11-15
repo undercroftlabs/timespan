@@ -2054,6 +2054,69 @@ describe('Timespan', () => {
     });
   });
 
+  describe('isZero', () => {
+    const origin = new Date('2023-06-15T12:00:00.000Z');
+
+    it('returns true when the start and end are the same instant', () => {
+      const timespan = new Timespan(origin, new Date(origin.getTime()));
+      expect(timespan.isZero()).toBe(true);
+      expect(Timespan.isZero(timespan)).toBe(true);
+      expect(timespan.toMilliseconds()).toBe(0);
+    });
+
+    it('returns true for a zero amount from a factory', () => {
+      expect(Timespan.fromMilliseconds(0, origin).isZero()).toBe(true);
+      expect(Timespan.isZero(Timespan.fromDays(0, origin))).toBe(true);
+      expect(Timespan.fromString('0d', origin).isZero()).toBe(true);
+    });
+
+    it('returns false when the duration is one millisecond', () => {
+      const timespan = new Timespan(origin, new Date(origin.getTime() + 1));
+      expect(timespan.isZero()).toBe(false);
+      expect(Timespan.isZero(timespan)).toBe(false);
+    });
+
+    it('returns false for a nonzero calendar span', () => {
+      const timespan = new Timespan(
+        new Date('2022-01-01T06:24:00.000Z'),
+        new Date('2023-02-21T10:52:00.123Z'),
+      );
+      expect(timespan.isZero()).toBe(false);
+      expect(Timespan.isZero(timespan)).toBe(timespan.isZero());
+    });
+
+    it('returns false for a pre-epoch span of one millisecond', () => {
+      const timespan = new Timespan(new Date(-1), new Date(0));
+      expect(timespan.isZero()).toBe(false);
+      expect(Timespan.isZero(timespan)).toBe(false);
+    });
+
+    it('delegates the static method to the instance method', () => {
+      const timespan = new Timespan(origin, new Date(origin.getTime()));
+      const original = timespan.isZero;
+      timespan.isZero = () => false;
+      try {
+        expect(Timespan.isZero(timespan)).toBe(false);
+      } finally {
+        timespan.isZero = original;
+      }
+    });
+
+    it('does not change the timespan', () => {
+      const timespan = new Timespan(origin, new Date(origin.getTime() + 1));
+      const startInstant = timespan.start.toISOString();
+      const endInstant = timespan.end.toISOString();
+      const text = timespan.toString();
+
+      timespan.isZero();
+      Timespan.isZero(timespan);
+
+      expect(timespan.start.toISOString()).toBe(startInstant);
+      expect(timespan.end.toISOString()).toBe(endInstant);
+      expect(timespan.toString()).toBe(text);
+    });
+  });
+
   describe('clone', () => {
     const start = new Date('2022-01-01T06:24:00.000Z');
     const end = new Date('2023-02-21T10:52:00.123Z');
