@@ -445,6 +445,14 @@ export class Timespan {
   };
 
   /**
+   * Check if a timespan has a zero duration.
+   * @param timespan - The timespan to check.
+   * @returns True if the timespan has a zero duration, false otherwise.
+   */
+  public static readonly isZero = (timespan: Timespan): boolean =>
+    timespan.isZero();
+
+  /**
    * Convert the timespan to a TimeFrame object.
    * @returns The TimeFrame object representing the timespan.
    */
@@ -582,4 +590,10 @@ export class Timespan {
       end: this.endDate.toISOString(),
     };
   };
+
+  /**
+   * Check if this timespan has a zero duration.
+   * @returns True if the timespan has a zero duration, false otherwise.
+   */
+  public isZero = (): boolean => this.toMilliseconds() === 0;
 }
