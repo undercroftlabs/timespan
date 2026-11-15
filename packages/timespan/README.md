@@ -67,8 +67,7 @@ import { Timespan } from '@undercroft/timespan';
 
 ## Usage in Browser
 
-```angular2html
-
+```html
 <script src="https://cdn.jsdelivr.net/npm/@undercroft/timespan/dist/index.umd.js"></script>
 ```
 
@@ -81,136 +80,119 @@ Then use it like this.
 </script>
 ```
 
-# Creating Timespans
+# Tasks
 
-To create a `Timespan` object, we can use the `fromString` method or directly instantiate it with start and end dates.
+Each task below has a short example, a playground you can edit, and a demo of the finished pen. The pens use `@undercroft/timespan@1.2.1`.
 
-# Creating a Timespan from a String
+## Getting started
 
-```javascript
-import { Timespan } from '@undercroft/timespan';
-
-const input = '3d 5h 30m'; // Example input string representing a timespan
-const timespan = Timespan.fromString(input);
-
-console.log(timespan.toString()); // Output: '3d 5h 30m'
-console.log(timespan.toHours()); // Output: 77.5
-```
-
-In the example above, we create a `Timespan` object from an input string using the `fromString` method. The input string
-specifies a timespan of 3 days, 5 hours, and 30 minutes. We then output the string representation of the timespan using
-`toString()` and calculate the total duration in hours using `toHours()`.
-
-# Creating a Timespan with Start and End Dates
+Create a timespan from two instants and read it back. `toString()` prints the calendar breakdown, so fourteen days is `2w`. `toMilliseconds()` is the exact length. `isZero()` is true when both endpoints are the same instant, and `toString()` is then an empty string.
 
 ```javascript
 import { Timespan } from '@undercroft/timespan';
 
-const start = new Date('2023-01-01');
-const end = new Date('2023-01-15');
+const start = new Date('2024-03-01T00:00:00.000Z');
+const end = new Date('2024-03-15T00:00:00.000Z');
 const timespan = new Timespan(start, end);
 
-console.log(timespan.toDays()); // Output: 14
+timespan.start.toISOString(); // '2024-03-01T00:00:00.000Z'
+timespan.end.toISOString(); // '2024-03-15T00:00:00.000Z'
+timespan.toString(); // '2w'
+timespan.toTimeframe();
+// { years: 0, months: 0, weeks: 2, days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }
+timespan.toMilliseconds(); // 1209600000
+timespan.isZero(); // false
+Timespan.isZero(timespan); // false
 ```
 
-In this example, we create a `Timespan` object by providing the start and end dates directly. We then calculate the
-total duration in days using `toDays()`.
+[Try the Playground](https://codepen.io/editor/undercroft/pen/01a1e09b-ce82-7875-a13c-b162d95bffe3) · [View the Demo](https://codepen.io/editor/undercroft/pen/01a1e09b-ce82-7875-a13c-b162d95bffe3?panel=false&show=preview)
 
-# Retrieving Timespan Information
+## Parsing durations
 
-The Timespan class provides various methods to retrieve information about a timespan.
+`Timespan.fromString` reads a duration such as `3d 5h 30m`. Values are whole numbers. Units can be short or written out. A capital `M` means months, and `m` means minutes. Pass a start instant when the span should not begin at the current time. Totals such as `toHours()` count whole units, so 3 days, 5 hours, and 30 minutes is 77 hours and 4650 minutes.
 
-```js
+```javascript
 import { Timespan } from '@undercroft/timespan';
 
-const start = new Date('2023-01-01');
-const end = new Date('2023-01-15');
-const timespan = new Timespan(start, end);
+const start = new Date('2024-01-15T09:00:00.000Z');
+const timespan = Timespan.fromString('3d 5h 30m', start);
 
-// Output: 2023-01-01T00:00:00.000Z
-console.log(timespan.start);
+timespan.toString(); // '3d 5h 30m'
+timespan.toMinutes(); // 4650
+timespan.toHours(); // 77
 
-// Output: 2023-01-15T00:00:00.000Z
-console.log(timespan.end);
-
-// Output: { years: 0, months: 0, weeks: 2, days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }
-console.log(timespan.toTimeframe());
-
-// Output: 1209600000
-console.log(timespan.toMilliseconds());
+Timespan.fromString('2years 1month 3weeks 4days', start).toString(); // '2y 1M 3w 4d'
 ```
 
-In the example above, we retrieve the start and end dates of the timespan using the start and end properties. We also
-obtain the timespan represented as a TimeFrame object using `toTimeframe()`, which provides the individual components of
-the timespan such as years, months, weeks, days, hours, minutes, seconds, and milliseconds. Lastly, we calculate the
-total duration in milliseconds using `toMilliseconds()`.
+[Try the Playground](https://codepen.io/editor/undercroft/pen/01a1e09c-0e4a-7c2d-9c36-d0ddac4ac7f5) · [View the Demo](https://codepen.io/editor/undercroft/pen/01a1e09c-0e4a-7c2d-9c36-d0ddac4ac7f5?panel=false&show=preview)
 
-# Converting Timespans
+## Building durations
 
-The Timespan class provides convenient methods to convert a timespan to different units of time.
+Named factories such as `fromHours` take an amount and an optional start date. The current time is used when the start is omitted. Those factories accept fractions of fixed-length units. `fromUnits` accepts the same amounts, including short names such as `mins`. `fromObject` applies every unit in a timeframe literal. `fromString` accepts integers only, so `1.5h` is rejected there.
 
-```js
+```javascript
 import { Timespan } from '@undercroft/timespan';
 
-const start = new Date('2023-01-01');
-const end = new Date('2023-01-15');
-const timespan = new Timespan(start, end);
+const start = new Date('2024-01-15T09:00:00.000Z');
 
-console.log(timespan.toHours()); // Output: 336
-console.log(timespan.toWeeks()); // Output: 2
-console.log(timespan.toMonths()); // Output: 0
-console.log(timespan.toYears()); // Output: 0
+Timespan.fromHours(1.5, start).toString(); // '1h 30m'
+Timespan.fromUnits(90, 'mins', start).toString(); // '1h 30m'
+Timespan.fromMonths(1, new Date('2024-01-31T00:00:00.000Z')).end.toISOString();
+// '2024-02-29T00:00:00.000Z'
+
+Timespan.fromObject({ days: 3, hours: 4, minutes: 30 }, start).toString(); // '3d 4h 30m'
+
+Timespan.fromMilliseconds(5000, start);
+Timespan.fromSeconds(120, start);
+Timespan.fromMinutes(60, start);
+Timespan.fromDays(7, start);
+Timespan.fromWeeks(4, start);
+Timespan.fromYears(2, start);
 ```
 
-In this example, we convert the timespan to various units such as hours, weeks, months, and years using the respective
-conversion methods.
+[Try the Playground](https://codepen.io/editor/undercroft/pen/01a1e08b-72ca-7f73-b680-da7a353a68f8) · [View the Demo](https://codepen.io/editor/undercroft/pen/01a1e08b-72ca-7f73-b680-da7a353a68f8?panel=false&show=preview)
 
-# More Examples of Creating TimeSpans
+## Working with date ranges
 
-You can create a Timespan object using the static factory methods on the class. Each factory takes an amount and an
-optional start date (the current date is used when omitted).
+Pass the kickoff and the launch to `new Timespan(start, end)`. The start must be the same instant as the end, or earlier. `start` and `end` return those instants. `toString()` prints the calendar breakdown, and the total methods count the whole interval.
 
-```js
+```javascript
 import { Timespan } from '@undercroft/timespan';
 
-Timespan.fromMilliseconds(5000);
-Timespan.fromSeconds(120);
-Timespan.fromMinutes(60);
-Timespan.fromHours(24);
-Timespan.fromDays(7);
-Timespan.fromWeeks(4);
-Timespan.fromMonths(6);
-Timespan.fromYears(2);
-Timespan.fromUnits(90, 'minutes');
+const timespan = new Timespan(
+  new Date('2024-01-08T00:00:00.000Z'),
+  new Date('2024-06-21T00:00:00.000Z'),
+);
+
+timespan.toString(); // '5M 1w 6d'
+timespan.toDays(); // 165
+timespan.toMonths(); // 5
 ```
 
-`fromString` accepts integer unit values only (for example `3d 5h 30m`). Repeated units and fractional values such as
-`1.5h` throw; use a factory like `fromHours` for fractions of fixed-length units.
+[Try the Playground](https://codepen.io/editor/undercroft/pen/01a1e09d-0e43-7c5d-b32e-76e4ddbf02a7) · [View the Demo](https://codepen.io/editor/undercroft/pen/01a1e09d-0e43-7c5d-b32e-76e4ddbf02a7?panel=false&show=preview)
 
-# Comparing Timespans
+## Converting units
 
-Use `equals` and `compareTo` to compare timespans. There are no `add` or `subtract` methods.
+`toDays()` and the other `to*` methods count the whole span in one unit. `toTimeframe()` splits that same span from the largest unit. Ninety days from 15 January 2024 is 90 total days, and also 2 months, 4 weeks, and 2 days in the breakdown. Totals are whole units. `toUnit` accepts the same names as the factories, including short forms such as `hr`. Months and years follow the calendar from the start instant.
 
-`equals` defaults to comparing total duration. Pass `'range'` to compare start and end instants instead.
-`compareTo` orders by duration and returns `-1`, `0`, or `1`. Static wrappers `Timespan.equals` and `Timespan.compareTo`
-call the same logic.
-
-```js
+```javascript
 import { Timespan } from '@undercroft/timespan';
 
-const timespan1 = Timespan.fromHours(12);
-const timespan2 = Timespan.fromDays(2);
+const timespan = Timespan.fromDays(90, new Date('2024-01-15T00:00:00.000Z'));
 
-const areEqual = timespan1.equals(timespan2);
-const sameDuration = Timespan.fromHours(24).equals(Timespan.fromDays(1));
-const sameRange = timespan1.equals(timespan2, 'range');
-const comparisonResult = timespan1.compareTo(timespan2);
-
-Timespan.equals(timespan1, timespan2);
-Timespan.compareTo(timespan1, timespan2);
+timespan.toString(); // '2M 4w 2d'
+timespan.toDays(); // 90
+timespan.toHours(); // 2160
+timespan.toWeeks(); // 12
+timespan.toMonths(); // 2
+timespan.toUnit('hr'); // 2160
+timespan.toTimeframe();
+// { years: 0, months: 2, weeks: 4, days: 2, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }
 ```
 
-# Formatting a Timespan
+[Try the Playground](https://codepen.io/editor/undercroft/pen/01a1e099-2028-71e0-8951-1215bde29c44) · [View the Demo](https://codepen.io/editor/undercroft/pen/01a1e099-2028-71e0-8951-1215bde29c44?panel=false&show=preview)
+
+## Formatting durations
 
 `format` inserts numeric time values into a caller-supplied string. Literal text is copied unchanged, and `%%` is a literal percent. `Timespan.format` calls the instance method.
 
@@ -230,7 +212,7 @@ Uppercase specifiers are totals. Lowercase specifiers are the components from `t
 | `%L` `%l` | Total milliseconds, millisecond component         |
 | `%f`      | Fractional seconds from the millisecond component |
 
-```js
+```javascript
 import { Timespan } from '@undercroft/timespan';
 
 const start = new Date('2023-06-01T00:00:00.000Z');
@@ -241,7 +223,41 @@ timespan.format('Time remaining: %h:%02m:%02s'); // 'Time remaining: 4:05:06'
 Timespan.format('%s.%f seconds', timespan); // '6.123 seconds'
 ```
 
-# JSON
+[Try the Playground](https://codepen.io/editor/undercroft/pen/01a1e09b-70c4-7c03-8888-4f4c63a2e2ea) · [View the Demo](https://codepen.io/editor/undercroft/pen/01a1e09b-70c4-7c03-8888-4f4c63a2e2ea?panel=false&show=preview)
+
+## Comparing durations
+
+`compareTo` orders spans by duration and returns `-1`, `0`, or `1`. `equals` compares duration unless you pass `'range'`, which also requires the same start and end. Two operations can take the same time on different days. Static `Timespan.equals` and `Timespan.compareTo` call the same logic.
+
+```javascript
+import { Timespan } from '@undercroft/timespan';
+
+const migration = new Timespan(
+  new Date('2024-04-01T08:00:00.000Z'),
+  new Date('2024-04-01T10:30:00.000Z'),
+);
+const reportExport = new Timespan(
+  new Date('2024-04-02T13:00:00.000Z'),
+  new Date('2024-04-02T14:15:00.000Z'),
+);
+
+migration.compareTo(reportExport); // 1
+migration.equals(reportExport); // false
+Timespan.compareTo(migration, reportExport); // 1
+
+const sameLength = new Timespan(
+  new Date('2024-04-01T08:00:00.000Z'),
+  new Date('2024-04-01T09:15:00.000Z'),
+);
+
+sameLength.equals(reportExport); // true
+sameLength.equals(reportExport, 'range'); // false
+Timespan.equals(sameLength, reportExport, 'range'); // false
+```
+
+[Try the Playground](https://codepen.io/editor/undercroft/pen/01a1e097-4a29-718f-8d0d-cfc73999bcf2) · [View the Demo](https://codepen.io/editor/undercroft/pen/01a1e097-4a29-718f-8d0d-cfc73999bcf2?panel=false&show=preview)
+
+## Saving and restoring
 
 A timespan serializes as a `TimespanJson` object. That type is exported from `@undercroft/timespan`. `$type` is `'Timespan'`, and `start` and `end` are the instants as strings. `toJSON` writes ISO strings and returns a `TimespanJson`. `JSON.stringify` calls `toJSON` automatically. `Timespan.stringify` is `JSON.stringify` for one timespan.
 
@@ -253,33 +269,61 @@ Use `JSON.parse(text, Timespan.reviver)` when timespans are nested inside a larg
 
 `fromJSON` and `parse` throw `TypeError` for a value that is not Timespan JSON. They throw if a date string cannot be parsed, or if the start is after the end. `parse` also throws `SyntaxError` when the text is not JSON.
 
-```ts
-import { Timespan, type TimespanJson } from '@undercroft/timespan';
+```javascript
+import { Timespan } from '@undercroft/timespan';
 
 const timespan = new Timespan(
-  new Date('2023-01-01T00:00:00.000Z'),
-  new Date('2023-01-15T00:00:00.000Z'),
+  new Date('2024-05-01T15:00:00.000Z'),
+  new Date('2024-05-03T18:30:00.000Z'),
 );
-const json: TimespanJson = timespan.toJSON();
+
+const json = timespan.toJSON();
 // {
 //   $type: 'Timespan',
-//   start: '2023-01-01T00:00:00.000Z',
-//   end: '2023-01-15T00:00:00.000Z',
+//   start: '2024-05-01T15:00:00.000Z',
+//   end: '2024-05-03T18:30:00.000Z',
 // }
 
-const text = Timespan.stringify(timespan);
-const restored = Timespan.parse(text);
+Timespan.isTimespanJSON(json); // true
+Timespan.isTimespanJSON(timespan); // false
+
+const restored = Timespan.parse(Timespan.stringify(timespan));
+restored.equals(Timespan.fromJSON(json), 'range'); // true
 
 const payload = JSON.parse(
-  JSON.stringify({ label: 'kept', span: timespan }),
+  JSON.stringify({ label: 'on-call shift', span: timespan }),
   Timespan.reviver,
 );
 
-Timespan.isTimespanJSON(timespan.toJSON()); // true
-Timespan.isTimespanJSON(timespan); // false
+payload.label; // 'on-call shift'
+payload.span.equals(timespan, 'range'); // true
 ```
 
-Please refer to the source code for more details on the available methods and their usage.
+[Try the Playground](https://codepen.io/editor/undercroft/pen/01a1e09c-6b7e-7c45-a4dd-986a37a1f97e) · [View the Demo](https://codepen.io/editor/undercroft/pen/01a1e09c-6b7e-7c45-a4dd-986a37a1f97e?panel=false&show=preview)
+
+## Copying timespans
+
+`clone` returns a new timespan with the same endpoints. `start` and `end` also return new `Date` objects, so changing a date you read does not move the original span or its copy.
+
+```javascript
+import { Timespan } from '@undercroft/timespan';
+
+const original = new Timespan(
+  new Date('2024-07-01T00:00:00.000Z'),
+  new Date('2024-07-10T00:00:00.000Z'),
+);
+const copy = original.clone();
+
+copy === original; // false
+copy.equals(original, 'range'); // true
+Timespan.clone(original).equals(original, 'range'); // true
+
+const readStart = original.start;
+readStart.setUTCFullYear(1990);
+original.start.toISOString(); // '2024-07-01T00:00:00.000Z'
+```
+
+[Try the Playground](https://codepen.io/editor/undercroft/pen/01a1e09a-f5f0-723d-a97f-90acc7ffd1bc) · [View the Demo](https://codepen.io/editor/undercroft/pen/01a1e09a-f5f0-723d-a97f-90acc7ffd1bc?panel=false&show=preview)
 
 ## Contributing
 

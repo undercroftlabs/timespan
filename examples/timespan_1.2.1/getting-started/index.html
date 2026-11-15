@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inspect a duration</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="collection">@undercroft/timespan@1.2.1</p>
+        <h1>Inspect a duration</h1>
+        <p class="task">
+          A timespan is the interval from a start instant to an end instant.
+          Create one with
+          <code>new Timespan(start, end)</code>, then read its endpoints,
+          calendar breakdown, and exact length. Fourteen days is two weeks in
+          the calendar breakdown, while <code>toMilliseconds()</code> stays
+          exact. <code>isZero()</code> is true when both endpoints are the same
+          instant, and <code>toString()</code> is then an empty string.
+        </p>
+      </header>
+
+      <section class="panel" aria-label="Sample intervals">
+        <div class="actions">
+          <button type="button" id="release">1–15 March 2024</button>
+          <button type="button" class="secondary" id="empty">
+            Same instant
+          </button>
+        </div>
+      </section>
+
+      <section class="panel" aria-live="polite">
+        <h2>Result</h2>
+        <p id="error" class="error" hidden></p>
+        <dl id="output"></dl>
+      </section>
+    </main>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>

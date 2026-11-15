@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Format a duration</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="collection">@undercroft/timespan@1.2.1</p>
+        <h1>Format a duration</h1>
+        <p class="task">
+          This span starts at 2023-06-01T00:00:00.000Z and lasts 1,483,506,123
+          milliseconds. A format directive is
+          <code>%[flags][width][.precision]specifier</code>. Uppercase
+          specifiers are totals (<code>%D</code> is every day). Lowercase
+          specifiers are the calendar components from
+          <code>toTimeframe()</code> (<code>%d</code> is only the day
+          remainder). <code>%f</code> is the fractional seconds, and
+          <code>%%</code> is a literal percent. The instance and static
+          <code>format</code> methods return the same text.
+        </p>
+      </header>
+
+      <section class="panel">
+        <form id="format-form">
+          <label>
+            Format string
+            <input
+              class="mono"
+              id="format"
+              name="format"
+              value="Time remaining: %h:%02m:%02s"
+              spellcheck="false"
+              autocomplete="off"
+            />
+          </label>
+          <p class="hint">
+            Flags are <code>0</code> to zero-pad, <code>-</code> to left-align,
+            <code>+</code> to show a plus, and a space to leave a leading blank.
+            Width is the minimum length. Precision is the minimum digits, except
+            for <code>%f</code>, where it is the number of fractional digits.
+          </p>
+          <div class="actions">
+            <button type="button" class="secondary" data-format="%D days">
+              Total days
+            </button>
+            <button
+              type="button"
+              class="secondary"
+              data-format="Time remaining: %h:%02m:%02s"
+            >
+              Clock
+            </button>
+            <button type="button" class="secondary" data-format="%s.%f seconds">
+              Fractional seconds
+            </button>
+            <button
+              type="button"
+              class="secondary"
+              data-format="100%% of %D days (%d in the remainder)"
+            >
+              Percent
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" aria-live="polite">
+        <h2>Result</h2>
+        <p id="error" class="error" hidden></p>
+        <dl id="output"></dl>
+      </section>
+    </main>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
