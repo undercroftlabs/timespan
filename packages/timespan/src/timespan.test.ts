@@ -1838,6 +1838,96 @@ describe('Timespan', () => {
       expect(Timespan.isTimespanJSON(null)).toBe(false);
     });
   });
+
+  describe('clone', () => {
+    const start = new Date('2022-01-01T06:24:00.000Z');
+    const end = new Date('2023-02-21T10:52:00.123Z');
+    const timespan = new Timespan(start, end);
+
+    /**
+     * Asserts that `cloned` is a distinct timespan with the same range.
+     * @param cloned - Timespan produced by `clone`.
+     * @param original - Timespan that was cloned.
+     * @returns Nothing.
+     */
+    function expectSameRange(cloned: Timespan, original: Timespan): void {
+      expect(cloned).toBeInstanceOf(Timespan);
+      expect(cloned).not.toBe(original);
+      expect(cloned.start.toISOString()).toBe(original.start.toISOString());
+      expect(cloned.end.toISOString()).toBe(original.end.toISOString());
+      expect(cloned.toString()).toBe(original.toString());
+      expect(cloned.toTimeframe()).toEqual(original.toTimeframe());
+      expect(cloned.toJSON()).toEqual(original.toJSON());
+      expect(cloned.equals(original, 'range')).toBe(true);
+      expect(cloned.equals(original)).toBe(true);
+    }
+
+    it('returns a new timespan with the same range', () => {
+      expectSameRange(timespan.clone(), timespan);
+    });
+
+    it('returns the same range from the static method', () => {
+      const cloned = Timespan.clone(timespan);
+      expectSameRange(cloned, timespan);
+      expect(cloned.toJSON()).toEqual(timespan.clone().toJSON());
+    });
+
+    it('delegates the static method to the instance method', () => {
+      const span = new Timespan(start, end);
+      const replacement = new Timespan(new Date(0), new Date(1));
+      const original = span.clone;
+      span.clone = () => replacement;
+      try {
+        expect(Timespan.clone(span)).toBe(replacement);
+      } finally {
+        span.clone = original;
+      }
+    });
+
+    it('does not change the original timespan', () => {
+      const startInstant = timespan.start.toISOString();
+      const endInstant = timespan.end.toISOString();
+      const text = timespan.toString();
+      const frame = timespan.toTimeframe();
+
+      timespan.clone();
+      Timespan.clone(timespan);
+
+      expect(timespan.start.toISOString()).toBe(startInstant);
+      expect(timespan.end.toISOString()).toBe(endInstant);
+      expect(timespan.toString()).toBe(text);
+      expect(timespan.toTimeframe()).toEqual(frame);
+    });
+
+    it('does not let a caller change the clone through its dates', () => {
+      const cloned = timespan.clone();
+
+      cloned.start.setUTCFullYear(1999);
+      cloned.end.setUTCFullYear(1999);
+
+      expect(cloned.start.toISOString()).toBe(start.toISOString());
+      expect(cloned.end.toISOString()).toBe(end.toISOString());
+      expect(timespan.start.toISOString()).toBe(start.toISOString());
+      expect(timespan.end.toISOString()).toBe(end.toISOString());
+    });
+
+    it('returns a distinct timespan on each call', () => {
+      const first = timespan.clone();
+      const second = timespan.clone();
+      expect(first).not.toBe(second);
+      expect(first.clone()).not.toBe(first);
+      expectSameRange(first, second);
+    });
+
+    it('clones a zero-length span and a pre-epoch instant', () => {
+      const epoch = new Date(0);
+      const zero = new Timespan(epoch, new Date(epoch.getTime()));
+      const beforeEpoch = new Timespan(new Date(-1), epoch);
+
+      expectSameRange(zero.clone(), zero);
+      expectSameRange(Timespan.clone(beforeEpoch), beforeEpoch);
+    });
+  });
 });
 
 describe('Timespan JSON Interoperability', () => {

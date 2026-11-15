@@ -445,6 +445,14 @@ export class Timespan {
   };
 
   /**
+   * Clone a timespan.
+   * @param timespan - The timespan to clone.
+   * @returns A new timespan with the same start and end dates.
+   */
+  public static readonly clone = (timespan: Timespan): Timespan =>
+    timespan.clone();
+
+  /**
    * Convert the timespan to a TimeFrame object.
    * @returns The TimeFrame object representing the timespan.
    */
@@ -581,5 +589,13 @@ export class Timespan {
       start: this.startDate.toISOString(),
       end: this.endDate.toISOString(),
     };
+  };
+
+  /**
+   * Clone this timespan.
+   * @returns A new timespan with the same start and end dates.
+   */
+  public clone = (): Timespan => {
+    return new Timespan(this.startDate, this.endDate);
   };
 }
