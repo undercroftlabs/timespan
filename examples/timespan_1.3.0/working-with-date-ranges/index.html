@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Time between two dates</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="collection">@undercroft/timespan@1.3.0</p>
+        <h1>Time between two dates</h1>
+        <p class="task">
+          Pass the two instants to <code>new Timespan(start, end)</code>. The
+          start must be the same instant as the end, or earlier.
+          <code>start</code> and <code>end</code> give those instants back,
+          <code>toString()</code> prints the calendar breakdown, and the total
+          methods count the whole interval.
+        </p>
+      </header>
+
+      <section class="panel">
+        <form id="range-form">
+          <div class="fields two">
+            <label>
+              Kickoff
+              <input
+                class="mono"
+                id="start"
+                name="start"
+                value="2024-01-08T00:00:00.000Z"
+                spellcheck="false"
+                autocomplete="off"
+              />
+            </label>
+            <label>
+              Launch
+              <input
+                class="mono"
+                id="end"
+                name="end"
+                value="2024-06-21T00:00:00.000Z"
+                spellcheck="false"
+                autocomplete="off"
+              />
+            </label>
+          </div>
+          <div class="actions">
+            <button type="submit">Calculate</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" aria-live="polite">
+        <h2>Result</h2>
+        <p id="error" class="error" hidden></p>
+        <dl id="output"></dl>
+      </section>
+    </main>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>

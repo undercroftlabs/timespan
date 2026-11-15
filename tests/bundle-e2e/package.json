@@ -1,0 +1,20 @@
+{
+  "name": "@undercroft/timespan-bundle-e2e",
+  "private": true,
+  "type": "module",
+  "description": "External consumer tests for the built CJS, ESM, and UMD bundles.",
+  "scripts": {
+    "test:load": "node --test ./load-bundles.test.mjs",
+    "test:playwright": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report ../../playwright-report"
+  },
+  "dependencies": {
+    "@undercroft/timespan": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.0",
+    "@types/node": "^26.6.6"
+  }
+}

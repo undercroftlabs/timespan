@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Copy a timespan</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="collection">@undercroft/timespan@1.3.0</p>
+        <h1>Copy a timespan</h1>
+        <p class="task">
+          <code>clone</code> returns a new timespan with the same endpoints.
+          <code>start</code> and <code>end</code> also return new
+          <code>Date</code> objects, so changing a date you read does not move
+          the original span or its copy.
+        </p>
+      </header>
+
+      <section class="panel" aria-label="Copy actions">
+        <div class="actions">
+          <button type="button" id="shift">
+            Change the Date returned by start
+          </button>
+          <button type="button" class="secondary" id="reset">Reset</button>
+        </div>
+      </section>
+
+      <section class="panel" aria-live="polite">
+        <h2>Result</h2>
+        <p id="error" class="error" hidden></p>
+        <dl id="output"></dl>
+      </section>
+    </main>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>

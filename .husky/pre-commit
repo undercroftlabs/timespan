@@ -1,11 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/common.sh"
 
-npm i --no-audit --no-fund
-npm audit --omit=dev
-npm run license-check
-npm run dep-check
-npm run no-console
-npm run test:cov
-npm run badge:cov
-git add badges/\*
+pnpm run lint

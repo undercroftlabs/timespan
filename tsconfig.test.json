@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "types": ["jest"],
-    "ignoreDeprecations": "6.0"
-  },
-  "include": ["src/**/*", "test/**/*"]
-}

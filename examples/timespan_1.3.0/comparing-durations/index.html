@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Compare two operations</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="collection">@undercroft/timespan@1.3.0</p>
+        <h1>Compare two operations</h1>
+        <p class="task">
+          <code>compareTo</code> orders spans by duration and returns
+          <code>-1</code>, <code>0</code>, or <code>1</code>.
+          <code>equals</code> compares duration unless you pass
+          <code>'range'</code>, which also requires the same start and end. Two
+          jobs can take the same time on different days.
+        </p>
+      </header>
+
+      <section class="panel">
+        <form id="compare-form">
+          <fieldset>
+            <legend>Database migration</legend>
+            <div class="fields two">
+              <label>
+                Start
+                <input
+                  class="mono"
+                  id="migration-start"
+                  value="2024-04-01T08:00:00.000Z"
+                  spellcheck="false"
+                  autocomplete="off"
+                />
+              </label>
+              <label>
+                End
+                <input
+                  class="mono"
+                  id="migration-end"
+                  value="2024-04-01T10:30:00.000Z"
+                  spellcheck="false"
+                  autocomplete="off"
+                />
+              </label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Report export</legend>
+            <div class="fields two">
+              <label>
+                Start
+                <input
+                  class="mono"
+                  id="export-start"
+                  value="2024-04-02T13:00:00.000Z"
+                  spellcheck="false"
+                  autocomplete="off"
+                />
+              </label>
+              <label>
+                End
+                <input
+                  class="mono"
+                  id="export-end"
+                  value="2024-04-02T14:15:00.000Z"
+                  spellcheck="false"
+                  autocomplete="off"
+                />
+              </label>
+            </div>
+          </fieldset>
+          <div class="actions">
+            <button type="submit">Compare</button>
+            <button type="button" class="secondary" id="same-length">
+              Same length, different days
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" aria-live="polite">
+        <h2>Result</h2>
+        <p id="error" class="error" hidden></p>
+        <p id="verdict" class="verdict" hidden></p>
+        <dl id="output"></dl>
+      </section>
+    </main>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>

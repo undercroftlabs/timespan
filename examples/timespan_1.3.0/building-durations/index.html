@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Build a duration from numbers</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="collection">@undercroft/timespan@1.3.0</p>
+        <h1>Build a duration from numbers</h1>
+        <p class="task">
+          Named factories such as <code>fromHours</code> accept fractions of
+          fixed-length units. <code>fromUnits</code> accepts the same amounts,
+          including short names such as <code>mins</code>.
+          <code>fromObject</code> takes a timeframe literal and applies every
+          unit it contains. The start instant defaults to now when you omit it;
+          these examples pass one so the end instant stays fixed.
+        </p>
+      </header>
+
+      <section class="panel">
+        <form id="unit-form">
+          <div class="fields two">
+            <label>
+              Amount
+              <input
+                id="amount"
+                name="amount"
+                type="number"
+                step="any"
+                value="1.5"
+              />
+            </label>
+            <label>
+              Unit
+              <select id="unit" name="unit">
+                <option value="milliseconds">milliseconds</option>
+                <option value="seconds">seconds</option>
+                <option value="minutes">minutes</option>
+                <option value="hours" selected>hours</option>
+                <option value="days">days</option>
+                <option value="weeks">weeks</option>
+                <option value="months">months</option>
+                <option value="years">years</option>
+              </select>
+            </label>
+          </div>
+          <div class="fields">
+            <label>
+              Start
+              <input
+                class="mono"
+                id="start"
+                name="start"
+                value="2024-01-15T09:00:00.000Z"
+                spellcheck="false"
+                autocomplete="off"
+              />
+            </label>
+          </div>
+          <div class="actions">
+            <button type="submit">Build</button>
+            <button type="button" class="secondary" id="alias">90 mins</button>
+            <button type="button" class="secondary" id="month-end">
+              31 January plus one month
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <form id="object-form">
+          <label>
+            Timeframe object
+            <textarea
+              class="mono"
+              id="timeframe"
+              name="timeframe"
+              spellcheck="false"
+            >
+{
+  "days": 3,
+  "hours": 4,
+  "minutes": 30
+}</textarea>
+          </label>
+          <p class="hint">Uses the start instant from the form above.</p>
+          <div class="actions">
+            <button type="submit">Build from object</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" aria-live="polite">
+        <h2>Result</h2>
+        <p id="error" class="error" hidden></p>
+        <dl id="output"></dl>
+      </section>
+    </main>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
