@@ -1,5 +1,6 @@
 import Constants from '../constants';
 import { TimeUnit } from '../types/time-unit';
+import { CanonicalUnit } from '../types/canonical-unit';
 
 /**
  * Represents a converter for a specific date unit.
@@ -13,7 +14,7 @@ export abstract class DateUnitConverter {
   /**
    * The plural name of the date unit.
    */
-  public abstract plural: string;
+  public abstract plural: CanonicalUnit;
 
   /**
    * The abbreviated name of the date unit.
