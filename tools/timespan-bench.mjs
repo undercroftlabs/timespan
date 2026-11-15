@@ -21,7 +21,7 @@ function resolveVersion(version) {
   }
 
   if (!/^\d+\.\d+\.\d+$/.test(version)) {
-    throw new Error(`Version must look like 1.2.1. Received "${version}".`);
+    throw new Error(`Version must look like 1.3.0. Received "${version}".`);
   }
 
   return version;

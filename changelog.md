@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.1] – Unreleased
+## [1.3.0] – Unreleased
 
 Formatting, JSON, and more ways to build a timespan. Calendar breakdowns after a clamped month or year are corrected. Successful calculations for ordinary dates are unchanged. Several error messages are not.
 
@@ -29,7 +29,7 @@ Formatting, JSON, and more ways to build a timespan. Calendar breakdowns after a
 ### Documentation
 
 - The README is organized by task. Each task has a short example plus a CodePen playground and preview.
-- The bundle size badge is the 1.2.1 ESM build, minified and Brotli-compressed. The install size badge is the unpacked package size. Neither badge follows the `latest` tag.
+- The bundle size badge is the 1.3.0 ESM build, minified and Brotli-compressed. The install size badge is the unpacked package size. Neither badge follows the `latest` tag.
 
 ---
 

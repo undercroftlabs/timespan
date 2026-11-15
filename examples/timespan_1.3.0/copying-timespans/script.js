@@ -1,5 +1,5 @@
 // CodePen JS panel. CodePen loads this as a module when it sees the import.
-import { Timespan } from 'https://esm.sh/@undercroft/timespan@1.2.1';
+import { Timespan } from 'https://esm.sh/@undercroft/timespan@1.3.0';
 
 const start = new Date('2024-07-01T00:00:00.000Z');
 const end = new Date('2024-07-10T00:00:00.000Z');

@@ -10,7 +10,7 @@ Works in Typescript too!
 [![NPM Version](https://img.shields.io/npm/v/@undercroft/timespan)](https://www.npmjs.com/package/@undercroft/timespan)
 [![npm downloads](https://img.shields.io/npm/dm/@undercroft/timespan)](https://www.npmjs.com/package/@undercroft/timespan)
 [![Bundle Size](https://img.shields.io/badge/bundle_size-3.8_kB_brotli-brightgreen)](https://github.com/undercroftlabs/timespan/actions/workflows/size-limit.yml)
-[![Install Size](https://img.shields.io/badge/install_size-402.3_kB-brightgreen)](https://github.com/undercroftlabs/timespan/blob/release/1.2.1/packages/timespan/package.json)
+[![Install Size](https://img.shields.io/badge/install_size-402.3_kB-brightgreen)](https://github.com/undercroftlabs/timespan/blob/release/1.3.0/packages/timespan/package.json)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](https://www.npmjs.com/package/@undercroft/timespan)
 [![codecov](https://codecov.io/gh/undercroftlabs/timespan/graph/badge.svg?token=XLOYLAS2X1)](https://codecov.io/gh/undercroftlabs/timespan)
 [![Known Vulnerabilities](https://snyk.io/test/npm/@undercroft/timespan/badge.svg)](https://snyk.io/test/npm/@undercroft/timespan)
@@ -80,7 +80,7 @@ Then use it like this.
 
 # Tasks
 
-Each task below has a short example, a playground you can edit, and a demo of the finished pen. The pens use `@undercroft/timespan@1.2.1`.
+Each task below has a short example, a playground you can edit, and a demo of the finished pen. The pens use `@undercroft/timespan@1.3.0`.
 
 ## Getting started
 

@@ -1,5 +1,5 @@
 // CodePen JS panel. CodePen loads this as a module when it sees the import.
-import { Timespan } from 'https://esm.sh/@undercroft/timespan@1.2.1';
+import { Timespan } from 'https://esm.sh/@undercroft/timespan@1.3.0';
 
 const unitForm = document.querySelector('#unit-form');
 const objectForm = document.querySelector('#object-form');

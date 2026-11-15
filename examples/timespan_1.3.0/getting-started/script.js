@@ -1,10 +1,8 @@
 // CodePen JS panel. CodePen loads this as a module when it sees the import.
-import { Timespan } from 'https://esm.sh/@undercroft/timespan@1.2.1';
+import { Timespan } from 'https://esm.sh/@undercroft/timespan@1.3.0';
 
-const start = new Date('2023-06-01T00:00:00.000Z');
-const span = new Timespan(start, new Date(start.getTime() + 1483506123));
-const form = document.querySelector('#format-form');
-const formatInput = document.querySelector('#format');
+const releaseStart = new Date('2024-03-01T00:00:00.000Z');
+const releaseEnd = new Date('2024-03-15T00:00:00.000Z');
 const output = document.querySelector('#output');
 const error = document.querySelector('#error');
 
@@ -31,32 +29,32 @@ function render(rows) {
   );
 }
 
-function applyFormat() {
-  const format = formatInput.value;
+function inspect(start, end) {
   try {
+    const span = new Timespan(start, end);
     render([
-      ['span.format(format)', span.format(format)],
-      ['Timespan.format(format, span)', Timespan.format(format, span)],
-      ['toString()', span.toString()],
+      [
+        'toString()',
+        span.toString() === '' ? '(empty string)' : span.toString(),
+      ],
+      ['start', span.start.toISOString()],
+      ['end', span.end.toISOString()],
       ['toTimeframe()', JSON.stringify(span.toTimeframe(), null, 2)],
+      ['toMilliseconds()', String(span.toMilliseconds())],
+      ['span.isZero()', String(span.isZero())],
+      ['Timespan.isZero(span)', String(Timespan.isZero(span))],
     ]);
   } catch (caught) {
     showError(caught instanceof Error ? caught.message : String(caught));
   }
 }
 
-formatInput.addEventListener('input', applyFormat);
-
-form.addEventListener('submit', (event) => {
-  event.preventDefault();
-  applyFormat();
+document.querySelector('#release').addEventListener('click', () => {
+  inspect(releaseStart, releaseEnd);
 });
 
-for (const button of form.querySelectorAll('[data-format]')) {
-  button.addEventListener('click', () => {
-    formatInput.value = button.dataset.format;
-    applyFormat();
-  });
-}
+document.querySelector('#empty').addEventListener('click', () => {
+  inspect(releaseStart, releaseStart);
+});
 
-applyFormat();
+inspect(releaseStart, releaseEnd);

@@ -4,7 +4,7 @@ Each release gets its own directory. `results.json` is Vitest's benchmark report
 
 ```
 benchmarks/timespan/
-└── 1.2.1/
+└── 1.3.0/
     ├── results.json
     └── environment.json
 ```
@@ -14,13 +14,13 @@ benchmarks/timespan/
 Save a release record from the repository root:
 
 ```bash
-pnpm bench:save -- 1.2.1
+pnpm bench:save -- 1.3.0
 ```
 
 Compare the current source with a saved release:
 
 ```bash
-pnpm bench:compare -- 1.2.1
+pnpm bench:compare -- 1.3.0
 ```
 
 Vitest prints the ratio of current operations per second to the saved operations per second. A ratio above 1 is faster. These are local judgments, not a CI failure:
