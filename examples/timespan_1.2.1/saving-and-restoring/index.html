@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Save and restore a timespan</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="collection">@undercroft/timespan@1.2.1</p>
+        <h1>Save and restore a timespan</h1>
+        <p class="task">
+          <code>toJSON</code> returns
+          <code>{ $type: "Timespan", start, end }</code> with both instants as
+          ISO strings. <code>JSON.stringify</code> calls it automatically.
+          <code>parse</code> and <code>fromJSON</code> rebuild one timespan.
+          <code>JSON.parse(text, Timespan.reviver)</code> rebuilds timespans
+          nested in a larger document. <code>isTimespanJSON</code> checks that
+          shape only: a true result can still fail when the strings are not a
+          valid range.
+        </p>
+      </header>
+
+      <section class="panel">
+        <form id="restore-form">
+          <label>
+            Saved JSON
+            <textarea
+              class="mono"
+              id="json"
+              name="json"
+              spellcheck="false"
+            ></textarea>
+          </label>
+          <div class="actions">
+            <button type="submit">Restore</button>
+            <button type="button" class="secondary" id="single">
+              Single timespan
+            </button>
+            <button type="button" class="secondary" id="nested">
+              Nested document
+            </button>
+            <button type="button" class="secondary" id="invalid-dates">
+              Shape with invalid dates
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" aria-live="polite">
+        <h2>Result</h2>
+        <p id="error" class="error" hidden></p>
+        <dl id="output"></dl>
+      </section>
+    </main>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>

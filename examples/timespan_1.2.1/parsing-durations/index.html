@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Parse a duration string</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="collection">@undercroft/timespan@1.2.1</p>
+        <h1>Parse a duration string</h1>
+        <p class="task">
+          Turn a human-readable duration into a timespan with
+          <code>Timespan.fromString</code>. Values are whole numbers. Units can
+          be short or written out, and a capital <code>M</code> means months
+          while <code>m</code> means minutes. Pass a start instant when the
+          result should not begin at the current time.
+        </p>
+      </header>
+
+      <section class="panel">
+        <form id="parse-form">
+          <div class="fields">
+            <label>
+              Duration
+              <input
+                class="mono"
+                id="duration"
+                name="duration"
+                value="3d 5h 30m"
+                spellcheck="false"
+                autocomplete="off"
+              />
+            </label>
+            <label>
+              Start
+              <input
+                class="mono"
+                id="start"
+                name="start"
+                value="2024-01-15T09:00:00.000Z"
+                spellcheck="false"
+                autocomplete="off"
+              />
+            </label>
+            <label class="choice">
+              <input id="use-now" name="use-now" type="checkbox" />
+              Start from the current time instead
+            </label>
+          </div>
+          <div class="actions">
+            <button type="submit">Parse</button>
+            <button
+              type="button"
+              class="secondary"
+              data-duration="2years 1month 3weeks 4days"
+            >
+              Written units
+            </button>
+            <button
+              type="button"
+              class="secondary"
+              data-duration="1y 2M 3w 4d 5h 6m 7s 8ms"
+            >
+              Every unit
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" aria-live="polite">
+        <h2>Result</h2>
+        <p id="error" class="error" hidden></p>
+        <dl id="output"></dl>
+      </section>
+    </main>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>

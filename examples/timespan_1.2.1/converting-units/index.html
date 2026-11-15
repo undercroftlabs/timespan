@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Convert a duration</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="collection">@undercroft/timespan@1.2.1</p>
+        <h1>Convert a duration</h1>
+        <p class="task">
+          The default span is 90 days from 15 January 2024.
+          <code>toDays()</code> counts all 90 days.
+          <code>toTimeframe()</code> splits the same interval from the largest
+          unit, so those 90 days are 2 months, 4 weeks, and 2 days. Totals are
+          whole units. <code>toUnit</code> accepts the same names as the
+          factories, including short forms such as <code>hr</code>. Months and
+          years follow the calendar from the start instant.
+        </p>
+      </header>
+
+      <section class="panel">
+        <form id="convert-form">
+          <div class="fields two">
+            <label>
+              Amount
+              <input
+                id="amount"
+                name="amount"
+                type="number"
+                step="any"
+                value="90"
+              />
+            </label>
+            <label>
+              Build with
+              <select id="unit" name="unit">
+                <option value="milliseconds">milliseconds</option>
+                <option value="seconds">seconds</option>
+                <option value="minutes">minutes</option>
+                <option value="hours">hours</option>
+                <option value="days" selected>days</option>
+                <option value="weeks">weeks</option>
+                <option value="months">months</option>
+                <option value="years">years</option>
+              </select>
+            </label>
+          </div>
+          <div class="fields two">
+            <label>
+              Start
+              <input
+                class="mono"
+                id="start"
+                name="start"
+                value="2024-01-15T00:00:00.000Z"
+                spellcheck="false"
+                autocomplete="off"
+              />
+            </label>
+            <label>
+              toUnit
+              <input
+                class="mono"
+                id="as-unit"
+                name="as-unit"
+                value="hr"
+                spellcheck="false"
+                autocomplete="off"
+              />
+            </label>
+          </div>
+          <div class="actions">
+            <button type="submit">Convert</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" aria-live="polite">
+        <h2>Result</h2>
+        <p id="error" class="error" hidden></p>
+        <dl id="output"></dl>
+      </section>
+    </main>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
