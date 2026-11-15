@@ -147,14 +147,17 @@ jobs:
         run: |
           set -euo pipefail
           PACKAGE_NAME="$(node -p "require('./packages/timespan/package.json').name")"
-          for attempt in 1 2 3 4 5 6; do
-            PUBLISHED="$(npm view "${PACKAGE_NAME}@${VERSION}" version 2>/dev/null || true)"
+          for attempt in $(seq 1 30); do
+            PUBLISHED="$(npm view "${PACKAGE_NAME}@${VERSION}" version --prefer-online 2>/dev/null || true)"
             if [[ "$PUBLISHED" == "$VERSION" ]]; then
               echo "Verified ${PACKAGE_NAME}@${VERSION} on the npm registry."
               exit 0
             fi
-            echo "Waiting for npm to show ${PACKAGE_NAME}@${VERSION} (attempt ${attempt})..."
-            sleep 5
+            if [[ "$attempt" -eq 30 ]]; then
+              break
+            fi
+            echo "Waiting for npm to show ${PACKAGE_NAME}@${VERSION} (attempt ${attempt}/30)..."
+            sleep 10
           done
           echo "npm publish appeared to succeed, but ${PACKAGE_NAME}@${VERSION} is not visible yet."
           exit 1
