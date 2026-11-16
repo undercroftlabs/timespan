@@ -181,7 +181,11 @@ export class Timespan {
    * @param startDate - The date to start from.
    * @returns A Timespan object representing the specified number of time units.
    */
-  public static fromUnits(amount: number, unit: TimeUnit, startDate?: Date): Timespan {
+  public static fromUnits(
+    amount: number,
+    unit: TimeUnit,
+    startDate?: Date,
+  ): Timespan {
     const start = startDate || new Date();
     assertValidDate(start);
     assertValidTimeUnit(unit);
@@ -315,10 +319,7 @@ export class Timespan {
    * @example
    * Timespan.format('%D days', timespan);
    */
-  public static format(
-    formatString: string,
-    timespan: Timespan,
-  ): string {
+  public static format(formatString: string, timespan: Timespan): string {
     return timespan.format(formatString);
   }
 
@@ -424,7 +425,7 @@ export class Timespan {
    */
   public static isTimespanJSON(value: unknown): value is TimespanJson {
     return isTimespanJson(value);
-  };
+  }
 
   public static fromObject(
     input: Partial<TimeFrame>,
