@@ -493,72 +493,92 @@ export class Timespan {
    * Convert the timespan to a TimeFrame object.
    * @returns The TimeFrame object representing the timespan.
    */
-  public toTimeframe = (): TimeFrame => ({ ...this.timeFrame });
+  public toTimeframe(): TimeFrame {
+    return ({ ...this.timeFrame });
+  }
 
   /**
    * Convert the timespan to a string representation.
    * @returns The string representation of the timespan.
    */
-  public toString = (): string => this.stringValue;
+  public toString(): string {
+    return this.stringValue;
+  }
 
   /**
    * Convert the timespan to the specified unit of measurement.
    * @param unit - The unit of time
    * @returns The duration in the specified time unit.
    */
-  public toUnit = (unit: TimeUnit): number => {
+  public toUnit(unit: TimeUnit): number {
     assertValidTimeUnit(unit);
     const converter = getConverter(unit);
     return converter.between(this.startDate, this.endDate);
-  };
+  }
 
   /**
    * Convert the timespan to the total duration in milliseconds.
    * @returns The duration in milliseconds.
    */
-  public toMilliseconds = (): number => this.toUnit('milliseconds');
+  public toMilliseconds(): number {
+    return this.toUnit('milliseconds');
+  }
 
   /**
    * Convert the timespan to the total duration in seconds.
    * @returns The duration in seconds.
    */
-  public toSeconds = (): number => this.toUnit('seconds');
+  public toSeconds(): number {
+    return this.toUnit('seconds');
+  }
 
   /**
    * Convert the timespan to the total duration in minutes.
    * @returns The duration in minutes.
    */
-  public toMinutes = (): number => this.toUnit('minutes');
+  public toMinutes(): number {
+    return this.toUnit('minutes');
+  }
 
   /**
    * Convert the timespan to the total duration in hours.
    * @returns The duration in hours.
    */
-  public toHours = (): number => this.toUnit('hours');
+  public toHours(): number {
+    return this.toUnit('hours');
+  }
 
   /**
    * Convert the timespan to the total duration in days.
    * @returns The duration in days.
    */
-  public toDays = (): number => this.toUnit('days');
+  public toDays(): number {
+    return this.toUnit('days');
+  }
 
   /**
    * Convert the timespan to the total duration in weeks.
    * @returns The duration in weeks.
    */
-  public toWeeks = (): number => this.toUnit('weeks');
+  public toWeeks(): number {
+    return this.toUnit('weeks');
+  }
 
   /**
    * Convert the timespan to the total duration in months.
    * @returns The duration in months.
    */
-  public toMonths = (): number => this.toUnit('months');
+  public toMonths(): number {
+    return this.toUnit('months');
+  }
 
   /**
    * Convert the timespan to the total duration in years.
    * @returns The duration in years.
    */
-  public toYears = (): number => this.toUnit('years');
+  public toYears(): number {
+    return this.toUnit('years');
+  }
 
   /**
    * Check if two timespans are equal.
@@ -584,7 +604,7 @@ export class Timespan {
    * @param other - The other Timespan to compare with.
    * @returns A negative number if this timespan is less than the other,
    */
-  public compareTo = (other: Timespan): number => {
+  public compareTo(other: Timespan): number {
     const thisMillis = this.toMilliseconds();
     const otherMillis = other.toMilliseconds();
     if (thisMillis < otherMillis) {
@@ -594,7 +614,7 @@ export class Timespan {
       return 1;
     }
     return 0;
-  };
+  }
 
   /**
    * Format this timespan with a caller-supplied format string.
@@ -607,10 +627,10 @@ export class Timespan {
    * @example
    * timespan.format('%h:%02m:%02s');
    */
-  public format = (formatString: string): string => {
+  public format(formatString: string): string {
     assertValidFormatString(formatString);
     return formatTimespan(formatString, this);
-  };
+  }
 
   /**
    * Convert this timespan to its JSON object.
@@ -620,25 +640,27 @@ export class Timespan {
    * @example
    * timespan.toJSON();
    */
-  public toJSON = (): TimespanJson => {
+  public toJSON(): TimespanJson {
     return {
       $type: 'Timespan',
       start: this.startDate.toISOString(),
       end: this.endDate.toISOString(),
     };
-  };
+  }
 
   /**
    * Clone this timespan.
    * @returns A new timespan with the same start and end dates.
    */
-  public clone = (): Timespan => {
+  public clone(): Timespan {
     return new Timespan(this.startDate, this.endDate);
-  };
+  }
 
   /**
    * Check if this timespan has a zero duration.
    * @returns True if the timespan has a zero duration, false otherwise.
    */
-  public isZero = (): boolean => this.toMilliseconds() === 0;
+  public isZero(): boolean {
+    return this.toMilliseconds() === 0;
+  }
 }
