@@ -9,8 +9,8 @@ Works in Typescript too!
 [![Build Status](https://img.shields.io/github/actions/workflow/status/undercroftlabs/timespan/test.yml?branch=main)](https://github.com/undercroftlabs/timespan/actions/workflows/test.yml)
 [![NPM Version](https://img.shields.io/npm/v/@undercroft/timespan)](https://www.npmjs.com/package/@undercroft/timespan)
 [![npm downloads](https://img.shields.io/npm/dm/@undercroft/timespan)](https://www.npmjs.com/package/@undercroft/timespan)
-[![Bundle Size](https://img.shields.io/badge/bundle_size-3.8_kB_brotli-brightgreen)](https://github.com/undercroftlabs/timespan/actions/workflows/size-limit.yml)
-[![Install Size](https://img.shields.io/badge/install_size-402.3_kB-brightgreen)](https://github.com/undercroftlabs/timespan/blob/release/1.3.0/packages/timespan/package.json)
+[![Bundle Size](https://img.shields.io/badge/optimized_bundle-3.77_kB_brotli-brightgreen)](https://github.com/undercroftlabs/timespan/actions/workflows/size-limit.yml)
+[![Install Size](https://img.shields.io/badge/install_size-530.3_kB-brightgreen)](https://github.com/undercroftlabs/timespan/blob/release/1.4.0/packages/timespan/package.json)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](https://www.npmjs.com/package/@undercroft/timespan)
 [![codecov](https://codecov.io/gh/undercroftlabs/timespan/graph/badge.svg?token=XLOYLAS2X1)](https://codecov.io/gh/undercroftlabs/timespan)
 [![Known Vulnerabilities](https://snyk.io/test/npm/@undercroft/timespan/badge.svg)](https://snyk.io/test/npm/@undercroft/timespan)
@@ -23,22 +23,41 @@ supported.
 
 ## CDNs
 
-- jsDelivr: `https://cdn.jsdelivr.net/npm/@undercroft/timespan/dist/index.umd.js`
-- unpkg: `https://unpkg.com/@undercroft/timespan/dist/index.umd.js`
-- esm.sh: `https://esm.sh/@undercroft/timespan`
-- esm.run: `https://esm.run/@undercroft/timespan`
+These URLs follow the package currently published on npm. They do not select an unpublished 1.4.0 release.
+
+- jsDelivr: `https://cdn.jsdelivr.net/npm/@undercroft/timespan/dist/index.umd.js`. This path is the UMD file from the package.
+- unpkg: `https://unpkg.com/@undercroft/timespan/dist/index.umd.js`. unpkg returns that published file for this path.
+- esm.sh: `https://esm.sh/@undercroft/timespan`. esm.sh builds its own module. `?dev` selects that development build. `?raw` requests the original package bytes and skips the transform. The `?dev` result is esm.sh's build, not a copy of the published source.
+- esm.run: `https://esm.run/@undercroft/timespan`. This is jsDelivr's ESM address. It builds a module, and that result is separate from the published UMD file and from esm.sh. jsDelivr documents it for demos and prototyping.
+
+After 1.4.0 is published, jsDelivr can minify the UMD file on request at `https://cdn.jsdelivr.net/npm/@undercroft/timespan@1.4.0/dist/index.umd.min.js`. That path is not a file in the npm package. A source map for the generated response is outside this document.
 
 # Distribution & Compatibility
 
-- Small bundle footprint (<4kB brotli-compressed)
-- Works in Node.js, modern browsers, and bundlers
+The package publishes readable ESM, CommonJS, and UMD JavaScript, with declarations and source maps. Those entry points are unchanged.
+
+| Format   | File                | Public use                                       |
+| -------- | ------------------- | ------------------------------------------------ |
+| ESM      | `dist/index.mjs`    | `import`                                         |
+| CommonJS | `dist/index.js`     | `require`, and the package `main` field          |
+| UMD      | `dist/index.umd.js` | `@undercroft/timespan/umd`, or `window.Timespan` |
+
+`import` types resolve to `dist/index.d.mts`. `require` and the UMD subpath use `dist/index.d.ts`. Source maps are `dist/index.mjs.map`, `dist/index.js.map`, and `dist/index.umd.js.map`.
+
+A bundler can minify its own copy. Size Limit does that, then measures Brotli. The budget for that optimized consumer bundle stays under 4 kB. The figures below are from the local 1.4.0 build.
+
+- Optimized consumer bundle: 3.77 kB ESM, 3.85 kB CommonJS, 3.87 kB UMD. The bundle badge is the ESM figure.
+- Published file: ESM `dist/index.mjs` is 61,575 bytes (12,392 gzip, 10,620 Brotli). CommonJS `dist/index.js` is 61,699 bytes (12,459 gzip, 10,675 Brotli). UMD `dist/index.umd.js` is 63,621 bytes (12,529 gzip, 10,790 Brotli). Gzip is Node zlib level 9. Brotli is Node's default quality.
+- Package: 104,357 bytes packed, 542,992 bytes unpacked. The install badge shows that unpacked size as 530.3 kB.
+
+Works in Node.js, modern browsers, and bundlers.
 
 # Test Coverage & CI
 
 - Full unit test coverage with Vitest
 - Automatically tested on Ubuntu and Windows
 - Browser distribution tests (UMD and ESM) with Playwright on Chromium, Firefox, and WebKit
-- Bundle size tracked via Size Limit
+- Optimized consumer bundle tracked via Size Limit, with a 4 kB Brotli budget
 - Code coverage reported via Codecov
 
 See [TESTING.md](https://github.com/undercroftlabs/timespan/blob/main/TESTING.md) for local setup, including Playwright browser install on Linux, and [RELEASE.md](https://github.com/undercroftlabs/timespan/blob/main/RELEASE.md) for tagged npm Trusted Publishing.
@@ -80,7 +99,7 @@ Then use it like this.
 
 # Tasks
 
-Each task below has a short example, a playground you can edit, and a demo of the finished pen. The pens use `@undercroft/timespan@1.3.0`.
+Each task below has a short example, a playground you can edit, and a demo of the finished pen.
 
 ## Getting started
 
