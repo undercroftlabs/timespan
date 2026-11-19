@@ -1,5 +1,5 @@
-import { spawnSync } from 'node:child_process';
 import path from 'node:path';
+import { runPnpm } from './run-pnpm.mjs';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
 
@@ -22,7 +22,7 @@ if (!scriptName) {
 }
 
 const args = pnpmArgs(scriptName, target, extra);
-const result = spawnSync('pnpm', args, {
+const result = runPnpm(args, {
   cwd: repoRoot,
   stdio: 'inherit',
 });

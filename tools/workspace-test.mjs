@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { runPnpm } from './run-pnpm.mjs';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
 
@@ -122,14 +123,10 @@ function runPackageScript(target, script) {
       continue;
     }
 
-    const result = spawnSync(
-      'pnpm',
-      ['--filter', packages[name], 'run', script],
-      {
-        cwd: repoRoot,
-        stdio: 'inherit',
-      },
-    );
+    const result = runPnpm(['--filter', packages[name], 'run', script], {
+      cwd: repoRoot,
+      stdio: 'inherit',
+    });
     if (result.error) {
       process.stderr.write(`${result.error.message}\n`);
       return 1;
@@ -151,14 +148,10 @@ function runPackageScript(target, script) {
 function runBrowser(target) {
   const selected = target === 'all' ? Object.keys(directories) : [target];
   for (const name of selected) {
-    const built = spawnSync(
-      'pnpm',
-      ['--filter', packages[name], 'run', 'build'],
-      {
-        cwd: repoRoot,
-        stdio: 'inherit',
-      },
-    );
+    const built = runPnpm(['--filter', packages[name], 'run', 'build'], {
+      cwd: repoRoot,
+      stdio: 'inherit',
+    });
     if (built.error) {
       process.stderr.write(`${built.error.message}\n`);
       return 1;
@@ -167,8 +160,7 @@ function runBrowser(target) {
       return built.status ?? 1;
     }
 
-    const tested = spawnSync(
-      'pnpm',
+    const tested = runPnpm(
       ['--filter', '@undercroft/timespan-bundle-e2e', 'run', 'test:playwright'],
       {
         cwd: repoRoot,
