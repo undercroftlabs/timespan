@@ -7,7 +7,7 @@ export default defineConfig({
   fixedExtension: false,
   platform: 'neutral',
   target: 'es2022',
-  minify: true,
+  minify: false,
   sourcemap: true,
   dts: true,
   deps: {
