@@ -47,7 +47,7 @@ pnpm test --browser
 pnpm test timespan --browser
 ```
 
-Playwright runs headless. The command builds the selected package, then serves that package's `dist/` in `tests/bundle-e2e`. Results print in the terminal. An HTML report is written to `playwright-report/` and is not opened.
+Playwright runs headless. The command builds each selected package that publishes `./umd`, then serves that package's `dist/` in `tests/bundle-e2e`. `@undercroft/react-timespan` has no `./umd` export, so the suite skips it. Results print in the terminal. An HTML report is written to `playwright-report/` and is not opened.
 
 See `tests/bundle-e2e/README.md` for fixture details.
 

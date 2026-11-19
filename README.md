@@ -27,13 +27,13 @@ Run these from the repository root.
 
 `build`, `typecheck`, `test`, `verify:package`, `size`, `bench`, and `sandbox` take an optional package name. `timespan` is `@undercroft/timespan`. `rtspan` is `@undercroft/react-timespan`. Leaving the name off runs every package under `packages/`, the same as `all`.
 
-`pnpm test` runs unit tests. Add `--coverage` for coverage, `--ci` for the CI coverage report, `--dist` for the published-package checks, and `--browser` for the headless browser suite. `--browser --docker` runs that suite in the Playwright container. The browser suite follows the same package name, so `pnpm test rtspan --browser` tests `@undercroft/react-timespan` and `pnpm test --browser` tests every package.
+`pnpm test` runs unit tests. Add `--coverage` for coverage, `--ci` for the CI coverage report, `--dist` for the published-package checks, and `--browser` for the headless browser suite. `--browser --docker` runs that suite in the Playwright container. The suite serves packages that publish ESM and UMD files. `@undercroft/react-timespan` does not publish `./umd`, so `pnpm test --browser` skips it.
 
 ```bash
 pnpm build
 pnpm build timespan
 pnpm test
-pnpm test rtspan --browser
+pnpm test timespan --browser
 pnpm test --ci --coverage --dist --browser
 ```
 

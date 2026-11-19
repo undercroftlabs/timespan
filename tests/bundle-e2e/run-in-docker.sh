@@ -189,6 +189,10 @@ for target in $targets; do
       exit 1
       ;;
   esac
+  if ! node -e "const pkg=require(process.argv[1]); process.exit(pkg.exports && pkg.exports['./umd'] ? 0 : 2)" "$package_dir/package.json"; then
+    echo "${filter} has no ./umd export, so the browser distribution suite skips it."
+    continue
+  fi
   corepack pnpm --filter "$filter" run build
   set +e
   TIMESPAN_PACKAGE_DIR="$package_dir" \

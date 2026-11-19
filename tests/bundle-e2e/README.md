@@ -27,10 +27,9 @@ Then:
 ```bash
 pnpm test --browser
 pnpm test timespan --browser
-pnpm test rtspan --browser
 ```
 
-That command builds the selected package and serves its `dist/` headlessly. Results print in the terminal. The HTML report stays in `playwright-report/`.
+That command builds each selected package that publishes `./umd` and serves its `dist/` headlessly. `@undercroft/react-timespan` has no `./umd` export, so the suite skips it. Results print in the terminal. The HTML report stays in `playwright-report/`.
 
 On Fedora, WebKit may fail to launch natively. Keep the WebKit project enabled so CI still covers Safari. Prefer the official Playwright image instead of installing Ubuntu browser packages:
 

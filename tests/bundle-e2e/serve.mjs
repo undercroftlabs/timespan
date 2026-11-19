@@ -63,14 +63,27 @@ const mimeTypes = {
  * @returns Absolute path of the published file.
  */
 function resolvePublishedFile(exportPath, condition) {
-  const entry = packageJson.exports[exportPath];
+  const entry = packageJson.exports?.[exportPath];
+  if (!entry) {
+    throw new Error(
+      `${packageJson.name} does not export ${exportPath}. The browser suite serves packages that publish ESM and UMD distributions.`,
+    );
+  }
   if (typeof entry === 'string') {
     return path.join(packageRoot, entry);
   }
+  const conditional = entry[condition];
   const target =
     typeof entry.default === 'string'
       ? entry.default
-      : entry[condition].default;
+      : typeof conditional === 'string'
+        ? conditional
+        : conditional?.default;
+  if (typeof target !== 'string') {
+    throw new Error(
+      `${packageJson.name} export ${exportPath} has no ${condition} file.`,
+    );
+  }
   return path.join(packageRoot, target);
 }
 

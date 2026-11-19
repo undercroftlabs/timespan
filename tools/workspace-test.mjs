@@ -141,13 +141,43 @@ function runPackageScript(target, script) {
 }
 
 /**
+ * The browser suite loads the published ESM and UMD files.
+ * @param {string} name - Short package name.
+ * @returns {boolean} Whether that package exports `./umd`.
+ */
+function publishesBrowserDistribution(name) {
+  const manifest = JSON.parse(
+    readFileSync(path.join(directories[name], 'package.json'), 'utf8'),
+  );
+  return Boolean(manifest.exports?.['./umd']);
+}
+
+/**
+ * @param {string} target - `timespan`, `rtspan`, or `all`.
+ * @returns {string[]} Short names whose packages publish a browser distribution.
+ */
+function browserTargets(target) {
+  const selected = target === 'all' ? Object.keys(directories) : [target];
+  const runnable = [];
+  for (const name of selected) {
+    if (publishesBrowserDistribution(name)) {
+      runnable.push(name);
+      continue;
+    }
+    process.stdout.write(
+      `${packages[name]} has no ./umd export, so the browser distribution suite skips it.\n`,
+    );
+  }
+  return runnable;
+}
+
+/**
  * Build each selected package and run the headless browser suite against it.
  * @param {string} target - `timespan`, `rtspan`, or `all`.
  * @returns {number} Exit status.
  */
 function runBrowser(target) {
-  const selected = target === 'all' ? Object.keys(directories) : [target];
-  for (const name of selected) {
+  for (const name of browserTargets(target)) {
     const built = runPnpm(['--filter', packages[name], 'run', 'build'], {
       cwd: repoRoot,
       stdio: 'inherit',
@@ -188,7 +218,10 @@ function runBrowser(target) {
  * @returns {number} Exit status.
  */
 function runBrowserInDocker(target) {
-  const selected = target === 'all' ? Object.keys(directories) : [target];
+  const selected = browserTargets(target);
+  if (selected.length === 0) {
+    return 0;
+  }
   const result = spawnSync('bash', ['tests/bundle-e2e/run-in-docker.sh'], {
     cwd: repoRoot,
     stdio: 'inherit',
