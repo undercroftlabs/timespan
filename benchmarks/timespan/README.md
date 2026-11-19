@@ -36,6 +36,6 @@ A single run's margin of error is not the same as variation between runs. Repeat
 
 The table inside one run, such as a short valid string versus a long invalid string, is not a regression. Those cases do different work.
 
-These records measure the TypeScript source through Vitest. They do not measure the published, minified bundle.
+These records measure the TypeScript source through Vitest. They do not measure the published files or the optimized consumer bundle.
 
 Omitting the version uses the version in `packages/timespan/package.json`.
