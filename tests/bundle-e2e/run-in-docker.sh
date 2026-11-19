@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Run TimeSpan Playwright browser tests in Podman or Docker.
 # Usage:
-#   pnpm run test:browser:docker
-#   CONTAINER_ENGINE=podman pnpm run test:browser:docker
-#   CONTAINER_ENGINE=docker pnpm run test:browser:docker
+#   pnpm test --browser --docker
+#   CONTAINER_ENGINE=podman pnpm test --browser --docker
+#   CONTAINER_ENGINE=docker pnpm test --browser --docker
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -54,7 +54,7 @@ resolve_engine() {
 
   echo "Neither Podman nor Docker is installed." >&2
   echo "On Fedora: sudo dnf install podman" >&2
-  echo "Or install Docker and retry. Native Chromium/Firefox: pnpm run test:browser" >&2
+  echo "Or install Docker and retry. Native Chromium/Firefox: pnpm test --browser" >&2
   return 1
 }
 
@@ -172,11 +172,37 @@ if [ "$installed" != "$expected" ]; then
   echo "Playwright package ${installed} does not match image version ${expected}." >&2
   exit 1
 fi
-corepack pnpm run build
-set +e
-corepack pnpm --filter @undercroft/timespan-bundle-e2e test:playwright
-status=$?
-set -e
+targets="${TIMESPAN_TEST_TARGETS:-timespan rtspan}"
+status=0
+for target in $targets; do
+  case "$target" in
+    timespan)
+      filter="@undercroft/timespan"
+      package_dir="/tmp/work/packages/timespan"
+      ;;
+    rtspan)
+      filter="@undercroft/react-timespan"
+      package_dir="/tmp/work/packages/react-timespan"
+      ;;
+    *)
+      echo "Unknown browser test target ${target}." >&2
+      exit 1
+      ;;
+  esac
+  if ! node -e "const pkg=require(process.argv[1]); process.exit(pkg.exports && pkg.exports['./umd'] ? 0 : 2)" "$package_dir/package.json"; then
+    echo "${filter} has no ./umd export, so the browser distribution suite skips it."
+    continue
+  fi
+  corepack pnpm --filter "$filter" run build
+  set +e
+  TIMESPAN_PACKAGE_DIR="$package_dir" \
+    corepack pnpm --filter @undercroft/timespan-bundle-e2e test:playwright
+  status=$?
+  set -e
+  if [ "$status" -ne 0 ]; then
+    break
+  fi
+done
 if [ -d playwright-report ]; then
   cp -a playwright-report/. /out/playwright-report/
 fi

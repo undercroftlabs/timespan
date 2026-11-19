@@ -3,7 +3,10 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
-const packageDir = path.join(repoRoot, 'packages/timespan');
+const packageDir = process.cwd();
+const sourceManifest = JSON.parse(
+  readFileSync(path.join(packageDir, 'package.json'), 'utf8'),
+);
 const gaugeConfig = path.join(packageDir, '.publish-gauge.json');
 const gaugeBin = path.join(packageDir, 'node_modules', '.bin', 'publish-gauge');
 const reportDir = path.join(packageDir, 'reports');
@@ -11,11 +14,7 @@ const requiredFiles = [
   'package.json',
   'README.md',
   'LICENSE',
-  'dist/index.js',
-  'dist/index.mjs',
-  'dist/index.umd.js',
-  'dist/index.d.ts',
-  'dist/index.d.mts',
+  ...entryPoints(sourceManifest),
 ];
 
 /**
@@ -72,6 +71,21 @@ function packedFiles(tarball) {
     .filter((entry) => entry.startsWith('package/'))
     .map((entry) => entry.slice('package/'.length))
     .filter((entry) => entry.length > 0 && !entry.endsWith('/'));
+}
+
+/**
+ * @param {Record<string, unknown>} manifest - Package manifest for the directory being packed.
+ * @returns {string[]} Relative paths declared by `exports`, `main`, and `types`.
+ */
+function entryPoints(manifest) {
+  const paths = [];
+  collectExportPaths(manifest.exports, paths);
+  for (const field of ['main', 'types']) {
+    if (typeof manifest[field] === 'string') {
+      paths.push(manifest[field].replace(/^\.\//, ''));
+    }
+  }
+  return [...new Set(paths)];
 }
 
 /**
@@ -164,9 +178,9 @@ function releaseBlockers(tarball, files) {
     }
   }
 
-  if (manifest.name !== '@undercroft/timespan') {
+  if (manifest.name !== sourceManifest.name) {
     blockers.push(
-      `Expected package name @undercroft/timespan, received ${manifest.name}.`,
+      `Expected package name ${sourceManifest.name}, received ${manifest.name}.`,
     );
   }
   if (typeof manifest.version !== 'string' || manifest.version.length === 0) {

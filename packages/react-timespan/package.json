@@ -1,0 +1,89 @@
+{
+  "name": "@undercroft/react-timespan",
+  "version": "1.4.0",
+  "description": "React hooks for managing time intervals and durations with @undercroft/timespan.",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": "^22.0.0 || ^24.0.0 || ^26.0.0"
+  },
+  "author": "Michael Goodwin <mikejg101@icloud.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/undercroftlabs/timespan/tree/main/packages/react-timespan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/undercroftlabs/timespan.git",
+    "directory": "packages/react-timespan"
+  },
+  "keywords": [
+    "react",
+    "react-hooks",
+    "hooks",
+    "timespan",
+    "duration",
+    "date",
+    "time",
+    "interval",
+    "typescript",
+    "javascript",
+    "date utilities",
+    "state management",
+    "controlled state",
+    "uncontrolled state",
+    "undercroft"
+  ],
+  "bugs": {
+    "url": "https://github.com/undercroftlabs/timespan/issues"
+  },
+  "scripts": {
+    "prepublishOnly": "pnpm run test:dist",
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit --strict",
+    "verify:package": "node ../../tools/verify-package.mjs",
+    "package": "pnpm run build && npm pack",
+    "test:dist": "pnpm run build && pnpm run test:dist:lint && pnpm run test:dist:types",
+    "test:dist:lint": "publint --strict --pack npm",
+    "test:dist:types": "attw --pack . --entrypoints .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage",
+    "test:ci": "vitest run --coverage --reporter=default --reporter=junit",
+    "size": "size-limit"
+  },
+  "peerDependencies": {
+    "@undercroft/timespan": "1.4.0",
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@undercroft/timespan": "workspace:*",
+    "@vitest/coverage-v8": "^4.1.12",
+    "jsdom": "^31.0.1",
+    "publish-gauge": "1.0.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tsdown": "^0.23.7",
+    "vitest": "^4.1.12"
+  }
+}
