@@ -6,11 +6,16 @@ Vitest unit tests live in `packages/timespan` and run against TypeScript source:
 
 ```bash
 pnpm test
+pnpm test timespan
+pnpm test --coverage
+pnpm test --ci
 ```
+
+No package name tests every package under `packages/`. `--ci` writes the CI coverage report.
 
 ## Distribution tests
 
-`pnpm run test:dist` rebuilds the package, then checks the published tarball. The Node load test runs in `tests/bundle-e2e`, which depends on `@undercroft/timespan` through the workspace and imports the package name:
+`pnpm test --dist` rebuilds the selected packages, then checks each published tarball. The Node load test runs in `tests/bundle-e2e`, which depends on `@undercroft/timespan` through the workspace and imports the package name:
 
 - `publint` checks the package entry points
 - `attw` checks TypeScript resolution of the root export
@@ -38,12 +43,11 @@ pnpm --filter @undercroft/timespan-bundle-e2e exec playwright install --with-dep
 Then:
 
 ```bash
-pnpm run test:browser
-pnpm run test:browser:headed
-pnpm run test:browser:ui
+pnpm test --browser
+pnpm test timespan --browser
 ```
 
-Those commands build `packages/timespan` first, then start Playwright in `tests/bundle-e2e`. View the last HTML report with `pnpm run test:browser:report`.
+Playwright runs headless. The command builds the selected package, then serves that package's `dist/` in `tests/bundle-e2e`. Results print in the terminal. An HTML report is written to `playwright-report/` and is not opened.
 
 See `tests/bundle-e2e/README.md` for fixture details.
 
@@ -61,23 +65,23 @@ On Fedora, install Podman and run the same official image. That avoids installin
 
 ```bash
 sudo dnf install podman
-pnpm run test:browser:docker
+pnpm test --browser --docker
 ```
 
 The script prefers Podman on Linux when both engines are installed. Override with `CONTAINER_ENGINE`:
 
 ```bash
-CONTAINER_ENGINE=podman pnpm run test:browser:docker
-CONTAINER_ENGINE=docker pnpm run test:browser:docker
+CONTAINER_ENGINE=podman pnpm test --browser --docker
+CONTAINER_ENGINE=docker pnpm test --browser --docker
 ```
 
-The container copies the repo into a writable workspace, runs `pnpm install --frozen-lockfile` and `pnpm run build` there (host `node_modules` is not mounted), then runs Chromium, Firefox, and WebKit. HTML output lands in `playwright-report/` (`pnpm run test:browser:report`). Local engines cache the image after the first pull; CI does not.
+The container copies the repo into a writable workspace, runs `pnpm install --frozen-lockfile`, builds the selected packages there (host `node_modules` is not mounted), then runs Chromium, Firefox, and WebKit headlessly. HTML output lands in `playwright-report/`. Local engines cache the image after the first pull; CI does not.
 
 If a bind mount fails with a SELinux denial on Fedora, the runner already adds `:Z` for Podman. Do not run the container as privileged or with `sudo`. If reports are missing, check that `playwright-report/` and `test-results/` are writable by your user.
 
-Native `pnpm run test:browser` remains the default for Chromium/Firefox on Fedora. Docker/Podman is optional.
+Native `pnpm test --browser` remains the default for Chromium/Firefox on Fedora. Docker/Podman is optional.
 
-To compare CI time before and after the container change, open the Browser Tests workflow run and compare total job duration plus the old “Install Playwright browsers” step against the new job (image pull + `pnpm install` + `pnpm run test:browser`). Do not assume the image is cached between runs.
+To compare CI time before and after the container change, open the Browser Tests workflow run and compare total job duration plus the old “Install Playwright browsers” step against the new job (image pull + `pnpm install` + `pnpm test --browser`). Do not assume the image is cached between runs.
 
 ## Pull request CI
 

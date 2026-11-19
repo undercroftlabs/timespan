@@ -32,10 +32,19 @@ function findPackage(startDir) {
   }
 }
 
-const entryPath = fileURLToPath(import.meta.resolve('@undercroft/timespan'));
-const { root: packageRoot, pkg: packageJson } = findPackage(
-  path.dirname(entryPath),
-);
+const requestedPackageDir = process.env.TIMESPAN_PACKAGE_DIR
+  ? path.resolve(process.env.TIMESPAN_PACKAGE_DIR)
+  : '';
+const { root: packageRoot, pkg: packageJson } = requestedPackageDir
+  ? {
+      root: requestedPackageDir,
+      pkg: JSON.parse(
+        readFileSync(path.join(requestedPackageDir, 'package.json'), 'utf8'),
+      ),
+    }
+  : findPackage(
+      path.dirname(fileURLToPath(import.meta.resolve('@undercroft/timespan'))),
+    );
 const fixturesRoot = path.join(import.meta.dirname, 'fixtures');
 const port = Number(process.env.PLAYWRIGHT_SERVER_PORT || 4173);
 const host = '127.0.0.1';

@@ -18,15 +18,24 @@ Run these from the repository root.
 
 | Command               | What it does                                                                   |
 | --------------------- | ------------------------------------------------------------------------------ |
-| `pnpm build`          | Build the library                                                              |
-| `pnpm typecheck`      | Typecheck with `tsc --noEmit --strict`. The build does not do this             |
-| `pnpm test`           | Run unit tests                                                                 |
-| `pnpm test:cov`       | Run unit tests with coverage                                                   |
-| `pnpm test:dist`      | Pack and check the built distribution                                          |
-| `pnpm test:browser`   | Run browser tests against the built bundles                                    |
-| `pnpm bench`          | Run benchmarks once                                                            |
-| `pnpm verify:package` | Pack the library and fail on every publish-gauge finding                       |
+| `pnpm build`          | Build every package under `packages/`                                          |
+| `pnpm typecheck`      | Typecheck every package under `packages/`. The build does not do this          |
+| `pnpm test`           | Test every package under `packages/`                                           |
+| `pnpm bench`          | Run benchmarks for every package that defines them                             |
+| `pnpm verify:package` | Pack each package and fail on every publish-gauge finding                      |
 | `pnpm verify`         | Lint, typecheck, require 100% unit-test coverage, build, and check the package |
+
+`build`, `typecheck`, `test`, `verify:package`, `size`, `bench`, and `sandbox` take an optional package name. `timespan` is `@undercroft/timespan`. `rtspan` is `@undercroft/react-timespan`. Leaving the name off runs every package under `packages/`, the same as `all`.
+
+`pnpm test` runs unit tests. Add `--coverage` for coverage, `--ci` for the CI coverage report, `--dist` for the published-package checks, and `--browser` for the headless browser suite. `--browser --docker` runs that suite in the Playwright container. The browser suite follows the same package name, so `pnpm test rtspan --browser` tests `@undercroft/react-timespan` and `pnpm test --browser` tests every package.
+
+```bash
+pnpm build
+pnpm build timespan
+pnpm test
+pnpm test rtspan --browser
+pnpm test --ci --coverage --dist --browser
+```
 
 `pnpm build` and then `pnpm verify:package` checks the npm tarball without publishing.
 
