@@ -29,7 +29,7 @@ export default defineConfig({
     [
       'html',
       {
-        open: isCi ? 'never' : 'on-failure',
+        open: 'never',
         outputFolder: path.join(repoRoot, 'playwright-report'),
       },
     ],
@@ -47,12 +47,15 @@ export default defineConfig({
     command: 'node serve.mjs',
     cwd: packageDir,
     url: `${baseURL}/umd.html`,
-    reuseExistingServer: !isCi,
+    reuseExistingServer: !isCi && !process.env.TIMESPAN_PACKAGE_DIR,
     timeout: 60_000,
     stdout: 'pipe',
     stderr: 'pipe',
     env: {
       PLAYWRIGHT_SERVER_PORT: String(port),
+      ...(process.env.TIMESPAN_PACKAGE_DIR
+        ? { TIMESPAN_PACKAGE_DIR: process.env.TIMESPAN_PACKAGE_DIR }
+        : {}),
     },
   },
   projects: [

@@ -32,10 +32,19 @@ function findPackage(startDir) {
   }
 }
 
-const entryPath = fileURLToPath(import.meta.resolve('@undercroft/timespan'));
-const { root: packageRoot, pkg: packageJson } = findPackage(
-  path.dirname(entryPath),
-);
+const requestedPackageDir = process.env.TIMESPAN_PACKAGE_DIR
+  ? path.resolve(process.env.TIMESPAN_PACKAGE_DIR)
+  : '';
+const { root: packageRoot, pkg: packageJson } = requestedPackageDir
+  ? {
+      root: requestedPackageDir,
+      pkg: JSON.parse(
+        readFileSync(path.join(requestedPackageDir, 'package.json'), 'utf8'),
+      ),
+    }
+  : findPackage(
+      path.dirname(fileURLToPath(import.meta.resolve('@undercroft/timespan'))),
+    );
 const fixturesRoot = path.join(import.meta.dirname, 'fixtures');
 const port = Number(process.env.PLAYWRIGHT_SERVER_PORT || 4173);
 const host = '127.0.0.1';
@@ -54,14 +63,27 @@ const mimeTypes = {
  * @returns Absolute path of the published file.
  */
 function resolvePublishedFile(exportPath, condition) {
-  const entry = packageJson.exports[exportPath];
+  const entry = packageJson.exports?.[exportPath];
+  if (!entry) {
+    throw new Error(
+      `${packageJson.name} does not export ${exportPath}. The browser suite serves packages that publish ESM and UMD distributions.`,
+    );
+  }
   if (typeof entry === 'string') {
     return path.join(packageRoot, entry);
   }
+  const conditional = entry[condition];
   const target =
     typeof entry.default === 'string'
       ? entry.default
-      : entry[condition].default;
+      : typeof conditional === 'string'
+        ? conditional
+        : conditional?.default;
+  if (typeof target !== 'string') {
+    throw new Error(
+      `${packageJson.name} export ${exportPath} has no ${condition} file.`,
+    );
+  }
   return path.join(packageRoot, target);
 }
 
