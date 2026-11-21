@@ -15,6 +15,7 @@ import { TimespanJson } from './types/timespan-json';
 import { assertValidTimespanJson } from './assertions/assert-valid-timespan-json';
 import { isTimespanJson } from './type-guards/is-timespan-json';
 import { CanonicalUnit } from './types/canonical-unit';
+import type { TimespanCreationResult } from './types/timespan-creation-result';
 
 /**
  * Represents a time span between two dates.
@@ -48,15 +49,61 @@ export class Timespan {
    * Create a new Timespan instance.
    * @param start - The start date of the timespan.
    * @param end - The end date of the timespan.
+   * @see {@link Timespan.tryCreate} for the same checks without throwing.
    */
   constructor(start: Date, end: Date) {
-    assertValidDate(start);
-    assertValidDate(end);
-    assertValidDateRange(start, end);
+    Timespan.rejectInvalidEndpoints(start, end);
     this.startDate = new Date(start.getTime());
     this.endDate = new Date(end.getTime());
     this.timeFrame = calculateTimeFrame(this.startDate, this.endDate);
     this.stringValue = timeFrameToString(this.timeFrame);
+  }
+
+  /**
+   * Run the constructor's endpoint checks.
+   *
+   * An invalid date is rejected before a reversed range. Equal instants are
+   * accepted. The Date objects are not modified.
+   * @param start - Proposed start.
+   * @param end - Proposed end.
+   * @throws {Error} `Invalid date: expected a valid Date.`
+   * @throws {Error} `Invalid date range: expected the start date to be less than or equal to the end date.`
+   */
+  private static rejectInvalidEndpoints(start: Date, end: Date): void {
+    assertValidDate(start);
+    assertValidDate(end);
+    assertValidDateRange(start, end);
+  }
+
+  /**
+   * Construct a Timespan, returning a validation failure instead of throwing it.
+   *
+   * The constructor throws when a date is invalid or the start is after the
+   * end. This factory runs those same checks. A success result carries the
+   * Timespan. A failure result carries the `Error` those checks threw. Equal
+   * endpoints are valid. Invalid endpoints are left unchanged. An exception
+   * from anything other than those checks is thrown.
+   * @param start - Proposed start. This Date is not modified.
+   * @param end - Proposed end. This Date is not modified.
+   * @returns A discriminated result containing either the constructed Timespan or a validation error.
+   * @example
+   * const created = Timespan.tryCreate(start, end);
+   * if (created.success) {
+   *   created.value.toMilliseconds();
+   * } else {
+   *   created.error.message;
+   * }
+   */
+  public static tryCreate(start: Date, end: Date): TimespanCreationResult {
+    try {
+      Timespan.rejectInvalidEndpoints(start, end);
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        throw error;
+      }
+      return { success: false, error };
+    }
+    return { success: true, value: new Timespan(start, end) };
   }
 
   /**

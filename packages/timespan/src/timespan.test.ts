@@ -1,6 +1,8 @@
 // noinspection DuplicatedCode
 
-import { Timespan } from '../src';
+import { Timespan, type TimespanCreationResult } from '../src';
+import { expectTypeOf } from 'vitest';
+import * as validDateAssertions from './assertions/assert-valid-date';
 import { TimeFrame } from './types/timeframe';
 import { formatTimespan } from './utils/format-timespan';
 
@@ -68,6 +70,165 @@ describe('Timespan', () => {
       expect(() => new Timespan(startDate, new Date(Number.NaN))).toThrow(
         'Invalid date: expected a valid Date.',
       );
+    });
+  });
+
+  describe('tryCreate', () => {
+    const invalidDateMessage = 'Invalid date: expected a valid Date.';
+    const reversedRangeMessage =
+      'Invalid date range: expected the start date to be less than or equal to the end date.';
+
+    /**
+     * Read the Error thrown by the constructor for the same endpoints.
+     * @param startDate - Proposed start.
+     * @param endDate - Proposed end.
+     * @returns The Error thrown by `new Timespan`.
+     */
+    function constructorError(startDate: Date, endDate: Date): Error {
+      try {
+        new Timespan(startDate, endDate);
+      } catch (error) {
+        if (error instanceof Error) {
+          return error;
+        }
+      }
+      throw new Error('Expected the constructor to throw an Error.');
+    }
+
+    /**
+     * Read a failed tryCreate result.
+     * @param startDate - Proposed start.
+     * @param endDate - Proposed end.
+     * @returns The failure branch.
+     */
+    function failedCreate(
+      startDate: Date,
+      endDate: Date,
+    ): Extract<TimespanCreationResult, { success: false }> {
+      const result = Timespan.tryCreate(startDate, endDate);
+      expect(result.success).toBe(false);
+      if (result.success) {
+        throw new Error('Expected tryCreate to fail.');
+      }
+      expect('value' in result).toBe(false);
+      expect(result).not.toBeInstanceOf(Timespan);
+      return result;
+    }
+
+    it('should return a Timespan for a valid range', () => {
+      const startTime = start.getTime();
+      const endTime = end.getTime();
+      const result = Timespan.tryCreate(start, end);
+
+      expect(result).toEqual({
+        success: true,
+        value: expect.any(Timespan),
+      });
+      if (!result.success) {
+        return;
+      }
+      expect(result.value.start.getTime()).toBe(startTime);
+      expect(result.value.end.getTime()).toBe(endTime);
+      expect(result.value.start).not.toBe(start);
+      expect(result.value.end).not.toBe(end);
+      expect(start.getTime()).toBe(startTime);
+      expect(end.getTime()).toBe(endTime);
+    });
+
+    it('should accept equal endpoints as a zero-duration interval', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const endDate = new Date(startDate.getTime());
+      const result = Timespan.tryCreate(startDate, endDate);
+
+      expect(result.success).toBe(true);
+      if (!result.success) {
+        return;
+      }
+      expect(result.value.toMilliseconds()).toBe(0);
+      expect(result.value.toString()).toBe('');
+      expect(startDate.getTime()).toBe(endDate.getTime());
+    });
+
+    it('should return the constructor error for a reversed range', () => {
+      const startDate = new Date('2023-06-01T00:00:00.000Z');
+      const endDate = new Date('2023-05-31T00:00:00.000Z');
+      const thrown = constructorError(startDate, endDate);
+      const result = failedCreate(startDate, endDate);
+
+      expect(result).toEqual({ success: false, error: expect.any(Error) });
+      expect(result.error).toBeInstanceOf(thrown.constructor);
+      expect(result.error.message).toBe(thrown.message);
+      expect(result.error.message).toBe(reversedRangeMessage);
+      expect(startDate.toISOString()).toBe('2023-06-01T00:00:00.000Z');
+      expect(endDate.toISOString()).toBe('2023-05-31T00:00:00.000Z');
+    });
+
+    it('should return the constructor error for an invalid start date', () => {
+      const startDate = new Date('not a date');
+      const endDate = new Date('2023-06-15T12:00:00.000Z');
+      const thrown = constructorError(startDate, endDate);
+      const result = failedCreate(startDate, endDate);
+
+      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error.message).toBe(thrown.message);
+      expect(result.error.message).toBe(invalidDateMessage);
+      expect(Number.isNaN(startDate.getTime())).toBe(true);
+      expect(endDate.toISOString()).toBe('2023-06-15T12:00:00.000Z');
+    });
+
+    it('should return the constructor error for an invalid end date', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const endDate = new Date(Number.NaN);
+      const thrown = constructorError(startDate, endDate);
+      const result = failedCreate(startDate, endDate);
+
+      expect(result.error.message).toBe(thrown.message);
+      expect(result.error.message).toBe(invalidDateMessage);
+      expect(startDate.toISOString()).toBe('2023-06-15T12:00:00.000Z');
+      expect(Number.isNaN(endDate.getTime())).toBe(true);
+    });
+
+    it('should report the invalid start when both dates are invalid', () => {
+      const startDate = new Date(Number.NaN);
+      const endDate = new Date('not a date');
+      const thrown = constructorError(startDate, endDate);
+      const result = failedCreate(startDate, endDate);
+
+      expect(result.error.message).toBe(thrown.message);
+      expect(result.error.message).toBe(invalidDateMessage);
+    });
+
+    it('should narrow a success to the Timespan and a failure to the Error', () => {
+      const created: TimespanCreationResult = Timespan.tryCreate(start, end);
+      if (created.success) {
+        expectTypeOf(created.value).toEqualTypeOf<Timespan>();
+        expect(created.value).toBeInstanceOf(Timespan);
+      } else {
+        expectTypeOf(created.error).toEqualTypeOf<Error>();
+      }
+
+      const rejected: TimespanCreationResult = Timespan.tryCreate(end, start);
+      if (rejected.success) {
+        expect(rejected.value).toBeInstanceOf(Timespan);
+      } else {
+        expectTypeOf(rejected.error).toEqualTypeOf<Error>();
+        expect(rejected.error).toBeInstanceOf(Error);
+        expect(rejected.error.message).toBe(reversedRangeMessage);
+      }
+    });
+
+    it('should throw an unexpected non-Error from the endpoint checks', () => {
+      const spy = vi
+        .spyOn(validDateAssertions, 'assertValidDate')
+        .mockImplementation(() => {
+          throw 'not an Error';
+        });
+
+      try {
+        expect(() => Timespan.tryCreate(start, end)).toThrow('not an Error');
+      } finally {
+        spy.mockRestore();
+      }
     });
   });
 

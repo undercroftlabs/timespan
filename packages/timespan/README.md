@@ -188,6 +188,28 @@ timespan.toMonths(); // 5
 
 [Try the Playground](https://codepen.io/editor/undercroft/pen/01a1e09d-0e43-7c5d-b32e-76e4ddbf02a7) · [View the Demo](https://codepen.io/editor/undercroft/pen/01a1e09d-0e43-7c5d-b32e-76e4ddbf02a7?panel=false&show=preview)
 
+## Constructing without throwing
+
+`new Timespan(start, end)` throws when a date is invalid or the start is after the end. `Timespan.tryCreate(start, end)` runs those same checks and returns the outcome. Equal endpoints are a valid zero-length interval. A failure returns that `Error` and leaves both dates as they were.
+
+```javascript
+import { Timespan } from '@undercroft/timespan';
+
+const start = new Date('2024-03-01T00:00:00.000Z');
+const end = new Date('2024-03-15T00:00:00.000Z');
+
+const created = Timespan.tryCreate(start, end);
+if (created.success) {
+  created.value.toString(); // '2w'
+}
+
+const rejected = Timespan.tryCreate(end, start);
+if (!rejected.success) {
+  rejected.error.message;
+  // 'Invalid date range: expected the start date to be less than or equal to the end date.'
+}
+```
+
 ## Converting units
 
 `toDays()` and the other `to*` methods count the whole span in one unit. `toTimeframe()` splits that same span from the largest unit. Ninety days from 15 January 2024 is 90 total days, and also 2 months, 4 weeks, and 2 days in the breakdown. Totals are whole units. `toUnit` accepts the same names as the factories, including short forms such as `hr`. Months and years follow the calendar from the start instant.
