@@ -3,10 +3,11 @@ import { runPnpm } from './run-pnpm.mjs';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
 
-/** Short names for the publishable workspace packages. */
+/** Short names for workspace packages the root scripts can target. */
 const packages = {
   timespan: '@undercroft/timespan',
   rtspan: '@undercroft/react-timespan',
+  docs: 'timespan-documentation',
 };
 
 const scriptName = process.argv[2];
@@ -36,7 +37,7 @@ process.exit(result.status ?? 1);
 
 /**
  * @param {string} script - Package script name, such as `build` or `test`.
- * @param {string} target - `timespan`, `rtspan`, or `all`.
+ * @param {string} target - `timespan`, `rtspan`, `docs`, or `all`.
  * @param {string[]} extra - Arguments forwarded to that package script.
  * @returns {string[]} Arguments for `pnpm`.
  */
@@ -47,6 +48,8 @@ function pnpmArgs(script, target, extra) {
     return [
       '--filter',
       './packages/*',
+      '--filter',
+      './apps/*',
       '--recursive',
       'run',
       script,

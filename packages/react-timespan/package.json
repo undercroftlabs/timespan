@@ -76,16 +76,16 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@testing-library/react": "^16.3.3",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "@undercroft/timespan": "workspace:*",
-    "@vitest/coverage-v8": "^4.1.12",
+    "@vitest/coverage-v8": "catalog:",
     "jsdom": "^31.0.1",
     "publint": "^0.3.25",
-    "publish-gauge": "1.0.2",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1",
-    "tsdown": "^0.23.7",
-    "vitest": "^4.1.12"
+    "publish-gauge": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tsdown": "catalog:",
+    "vitest": "catalog:"
   }
 }

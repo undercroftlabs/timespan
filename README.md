@@ -18,14 +18,14 @@ Run these from the repository root.
 
 | Command               | What it does                                                                   |
 | --------------------- | ------------------------------------------------------------------------------ |
-| `pnpm build`          | Build every package under `packages/`                                          |
+| `pnpm build`          | Build every package under `packages/` and `apps/`                              |
 | `pnpm typecheck`      | Typecheck every package under `packages/`. The build does not do this          |
 | `pnpm test`           | Test every package under `packages/`                                           |
 | `pnpm bench`          | Run benchmarks for every package that defines them                             |
 | `pnpm verify:package` | Pack each package and fail on every publish-gauge finding                      |
 | `pnpm verify`         | Lint, typecheck, require 100% unit-test coverage, build, and check the package |
 
-`build`, `typecheck`, `test`, `verify:package`, `size`, `bench`, and `sandbox` take an optional package name. `timespan` is `@undercroft/timespan`. `rtspan` is `@undercroft/react-timespan`. Leaving the name off runs every package under `packages/`, the same as `all`.
+`build`, `typecheck`, `test`, `verify:package`, `size`, `bench`, and `sandbox` take an optional package name. `timespan` is `@undercroft/timespan`. `rtspan` is `@undercroft/react-timespan`. `docs` is `timespan-documentation`. Leaving the name off runs every package under `packages/` and `apps/`, the same as `all`. A package that does not define the script is skipped.
 
 `pnpm test` runs unit tests. Add `--coverage` for coverage, `--ci` for the CI coverage report, `--dist` for the published-package checks, and `--browser` for the headless browser suite. `--browser --docker` runs that suite in the Playwright container. The suite serves packages that publish ESM and UMD files. `@undercroft/react-timespan` does not publish `./umd`, so `pnpm test --browser` skips it.
 
