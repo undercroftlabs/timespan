@@ -56,14 +56,12 @@ Fractions of a fixed-length unit are accepted by the factories, such as `Timespa
 
 ## Amounts
 
-| Call                                          | Condition                                   | Message                                                         |
-| --------------------------------------------- | ------------------------------------------- | --------------------------------------------------------------- |
-| Unit factories and `fromUnits`                | `amount < 0`                                | `Invalid unit input <amount>.`                                  |
-| Unit factories, `fromUnits`, and `fromObject` | `NaN`, `Infinity`, or a non-number field    | `Invalid number of <unit>: expected zero or a positive number.` |
-| `fromObject`                                  | `amount < 0`                                | `Invalid number of <unit>: expected zero or a positive number.` |
-| `fromObject`                                  | Value is `null`, an array, or not an object | `TypeError: Invalid timeframe: expected an object.`             |
+| Call                                          | Condition                                    | Message                                                                |
+| --------------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------- |
+| Unit factories, `fromUnits`, and `fromObject` | Negative, `NaN`, `Infinity`, or a non-number | `Error: Invalid number of <unit>: expected zero or a positive number.` |
+| `fromObject`                                  | Value is `null`, an array, or not an object  | `TypeError: Invalid timeframe: expected an object.`                    |
 
-A negative factory amount and a negative `fromObject` field throw different messages.
+`<unit>` is the canonical plural. `fromUnits(-1, 'hr')` reports `hours`. Zero, negative zero, and fractions are accepted. The amount error is an `Error`, including when the value is a string or `null`.
 
 ## Format strings
 

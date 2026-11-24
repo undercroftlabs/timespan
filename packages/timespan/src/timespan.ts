@@ -239,10 +239,14 @@ export class Timespan {
 
   /**
    * Creates a Timespan from the specified number of units.
+   * Zero, negative zero, and fractional amounts are accepted. A negative,
+   * non-finite, or non-number amount is rejected by the unit converter.
+   * The message names the canonical plural, so `hr` reports `hours`.
    * @param amount - The number of the specified units.
    * @param unit - The unit of time.
    * @param startDate - The date to start from.
    * @returns A Timespan object representing the specified number of time units.
+   * @throws {Error} `Invalid number of <unit>: expected zero or a positive number.`
    */
   public static fromUnits(
     amount: number,
@@ -252,9 +256,6 @@ export class Timespan {
     const start = startDate || new Date();
     assertValidDate(start);
     assertValidTimeUnit(unit);
-    if (amount < 0) {
-      throw new Error(`Invalid unit input ${amount}.`);
-    }
     const converter = getConverter(unit);
     const endDate = converter.add(amount, start);
     assertValidDateRange(start, endDate);

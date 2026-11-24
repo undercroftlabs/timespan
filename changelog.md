@@ -8,6 +8,7 @@ Published ESM, CommonJS, and UMD files are readable JavaScript. Entry points, `w
 
 ### Changed
 
+- Unit factories and `fromUnits` reject a negative, non-finite, or non-number amount with `Invalid number of <unit>: expected zero or a positive number.` The name is the canonical plural. This replaces `Invalid unit input <amount>.` Zero, negative zero, and fractions are unchanged, and `fromObject` already used the new message.
 - The files on npm are the readable build. `import` loads `dist/index.mjs`, `require` loads `dist/index.js`, and browsers load `dist/index.umd.js` with the global `window.Timespan`. Declarations stay at `dist/index.d.mts` and `dist/index.d.ts`. Source maps stay beside the JavaScript files. The tarball has no separate `*.min.js` file.
 - A direct download of those files is the larger readable build. An application bundler can still minify its own copy. The Size Limit budget remains 4 kB Brotli for that optimized output. The measured optimized sizes are 3.85 kB CommonJS, 3.77 kB ESM, and 3.87 kB UMD.
 - Published file sizes for this build: ESM 61,575 bytes (12,392 gzip, 10,620 Brotli), CommonJS 61,699 bytes (12,459 gzip, 10,675 Brotli), and UMD 63,621 bytes (12,529 gzip, 10,790 Brotli). The packed tarball is 104,357 bytes. The unpacked package is 542,992 bytes.

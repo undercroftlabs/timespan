@@ -55,7 +55,7 @@ Behavior, zero-length ranges, and endpoint copies: [Date ranges](/docs/timespan/
 
 ## Creating
 
-Omitted start dates use the current time. Negative factory amounts throw `Invalid unit input <amount>.` `fromObject` uses a different message for the same case. Full rules: [Building durations](/docs/timespan/building) and [Parsing durations](/docs/timespan/parsing).
+Omitted start dates use the current time. A negative, non-finite, or non-number amount throws `Invalid number of <unit>: expected zero or a positive number.` from both the factories and `fromObject`. Full rules: [Building durations](/docs/timespan/building) and [Parsing durations](/docs/timespan/parsing).
 
 | Method             | Signature                                                      |
 | ------------------ | -------------------------------------------------------------- |
