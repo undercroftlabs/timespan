@@ -7,8 +7,6 @@ type DocsPageProps = {
   params: Promise<{ slug?: string[] }>;
 };
 
-export const instant = false;
-
 export function generateStaticParams() {
   return getDocPages().map((page) => ({
     slug: page.href.split('/').filter(Boolean).slice(1),

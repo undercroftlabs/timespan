@@ -16,8 +16,6 @@ type BlogPostPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export const instant = false;
-
 export function generateStaticParams() {
   return getBlogPosts().map((post) => ({ slug: post.slug }));
 }
