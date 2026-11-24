@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest run",
+    "test:cov": "vitest run",
+    "test:ci": "vitest run --reporter=default --reporter=junit"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -27,6 +30,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "tailwindcss": "4.3.3",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

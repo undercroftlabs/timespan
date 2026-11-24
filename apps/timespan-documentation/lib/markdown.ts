@@ -79,6 +79,57 @@ function slugify(text: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
+const htmlEscapes: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => htmlEscapes[character]);
+}
+
+const allowedLinkProtocols = new Set(['http:', 'https:', 'mailto:']);
+const allowedImageProtocols = new Set(['http:', 'https:']);
+
+function trustedHref(
+  href: string,
+  protocols: ReadonlySet<string>,
+): string | null {
+  const value = href.trim();
+
+  if (value === '' || /["'<>]/.test(value)) {
+    return null;
+  }
+
+  if (
+    value.startsWith('#') ||
+    (value.startsWith('/') && !value.startsWith('//'))
+  ) {
+    return value;
+  }
+
+  if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(value) && !value.startsWith('//')) {
+    return value;
+  }
+
+  try {
+    const url = new URL(value);
+    return protocols.has(url.protocol) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function hrefAttribute(href: string): string {
+  return escapeHtml(encodeURI(href));
+}
+
+// Markdown is the authoring format for docs and blog posts. Raw HTML is
+// escaped. href and src values may be a hash, a root-relative or relative
+// path, or an http(s) or mailto URL.
 export function renderMarkdown(markdown: string): {
   html: string;
   sections: MarkdownSection[];
@@ -89,6 +140,9 @@ export function renderMarkdown(markdown: string): {
 
   marked.use({
     renderer: {
+      html({ text }: Tokens.HTML | Tokens.Tag) {
+        return escapeHtml(text);
+      },
       heading(
         this: { parser: { parseInline: (tokens: Tokens.Generic[]) => string } },
         token: Tokens.Heading,
@@ -111,6 +165,41 @@ export function renderMarkdown(markdown: string): {
         const colored = highlight(text, { lang: codeLanguage(lang) });
 
         return `<pre><code>${colored}</code></pre>`;
+      },
+      link(
+        this: { parser: { parseInline: (tokens: Tokens.Generic[]) => string } },
+        { href, title, text, tokens, autolink }: Tokens.Link,
+      ) {
+        const inner = autolink
+          ? escapeHtml(text)
+          : this.parser.parseInline(tokens);
+        const safe = trustedHref(href, allowedLinkProtocols);
+
+        if (!safe) {
+          return inner;
+        }
+
+        const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
+        return `<a href="${hrefAttribute(safe)}"${titleAttr}>${inner}</a>`;
+      },
+      image(
+        this: {
+          parser: { parseInline: (tokens: Tokens.Generic[]) => string };
+        },
+        { href, title, text, tokens }: Tokens.Image,
+      ) {
+        const alt =
+          tokens.length > 0
+            ? this.parser.parseInline(tokens)
+            : escapeHtml(text);
+        const safe = trustedHref(href, allowedImageProtocols);
+
+        if (!safe) {
+          return alt;
+        }
+
+        const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
+        return `<img src="${hrefAttribute(safe)}" alt="${escapeHtml(text)}"${titleAttr}>`;
       },
     },
   });
