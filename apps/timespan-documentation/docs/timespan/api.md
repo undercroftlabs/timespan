@@ -99,12 +99,12 @@ Timespan.fromObject({ days: 3, hours: 4 }, start).toString(); // '3d 4h'
 
 ## Comparing
 
-| Method                                                      | Returns                                                |
-| ----------------------------------------------------------- | ------------------------------------------------------ |
-| `compareTo(other: Timespan): number`                        | `-1`, `0`, or `1` by millisecond length                |
-| `Timespan.compareTo(ts1, ts2): number`                      | `ts1.compareTo(ts2)`                                   |
-| `equals(other, compareBy?: 'range' \| 'duration'): boolean` | Duration by default. `'range'` compares both endpoints |
-| `Timespan.equals(ts1, ts2, compareBy?): boolean`            | `ts1.equals(ts2, compareBy)`                           |
+| Method                                                      | Returns                                                                        |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `compareTo(other: Timespan): number`                        | `-1`, `0`, or `1` by millisecond length                                        |
+| `Timespan.compareTo(ts1, ts2): number`                      | `ts1.compareTo(ts2)`                                                           |
+| `equals(other, compareBy?: 'range' \| 'duration'): boolean` | Duration by default. `'range'` compares both endpoints. Any other mode throws. |
+| `Timespan.equals(ts1, ts2, compareBy?): boolean`            | `ts1.equals(ts2, compareBy)`                                                   |
 
 [Comparing](/docs/timespan/comparing).
 

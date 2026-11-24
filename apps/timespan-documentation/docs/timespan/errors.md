@@ -81,6 +81,14 @@ const timespan = Timespan.fromHours(1);
 timespan.format('%Q');
 ```
 
+## Comparison
+
+| Call                           | Condition                                    | Message                                                    |
+| ------------------------------ | -------------------------------------------- | ---------------------------------------------------------- |
+| `equals` and `Timespan.equals` | `compareBy` is not `'range'` or `'duration'` | `Invalid comparison mode: expected 'range' or 'duration'.` |
+
+Omitting `compareBy`, or passing `undefined`, still compares duration. The static method calls the instance method, so both throw the same message.
+
 ## JSON
 
 | Call                           | Condition                                            | Message                             |

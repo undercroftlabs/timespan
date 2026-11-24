@@ -42,7 +42,7 @@ The migration is 2 hours 30 minutes. The export is 1 hour 15 minutes.
 
 The default `compareBy` is `'duration'`. Two intervals are equal when their millisecond lengths are equal, including intervals that occupy different dates.
 
-`'range'` requires both `start.getTime()` and `end.getTime()` to match. Any other runtime value uses the duration comparison.
+`'range'` requires both `start.getTime()` and `end.getTime()` to match. Any other value throws `Invalid comparison mode: expected 'range' or 'duration'.` Omitting `compareBy`, or passing `undefined`, still compares duration.
 
 ```typescript
 import { Timespan } from '@undercroft/timespan';
