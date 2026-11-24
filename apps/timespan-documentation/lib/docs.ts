@@ -3,6 +3,7 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import type { DocNavProduct } from '@/lib/doc-nav';
 import { renderMarkdown, type MarkdownSection } from '@/lib/markdown';
+import { safeDocHref } from '@/lib/safe-url';
 
 export type DocPage = {
   title: string;
@@ -51,8 +52,9 @@ function pageHref(file: string): string {
   const slug = withoutExtension.endsWith('/index')
     ? withoutExtension.slice(0, -'/index'.length)
     : withoutExtension;
+  const filename = path.relative(docsDirectory, file);
 
-  return `/docs/${slug}`;
+  return safeDocHref(`/docs/${slug}`, filename);
 }
 
 function readDoc(file: string): DocPage {
@@ -104,7 +106,7 @@ function productHref(href: string): string {
     throw new Error(`Documentation URL ${href} is outside /docs`);
   }
 
-  return `/docs/${product}`;
+  return safeDocHref(`/docs/${product}`, href);
 }
 
 function orderedPages(pages: DocPage[]): DocPage[] {

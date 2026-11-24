@@ -34,8 +34,8 @@ export function SiteHeader({ products }: { products: DocNavProduct[] }) {
 
             return (
               <Link
-                key={product.href}
-                href={product.href}
+                key={encodeURI(product.href)}
+                href={encodeURI(product.href)}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground',

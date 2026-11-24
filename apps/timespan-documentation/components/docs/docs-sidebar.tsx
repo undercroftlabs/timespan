@@ -31,9 +31,9 @@ export function DocsSidebar({
                 const active = docPage.href === pathname;
 
                 return (
-                  <li key={docPage.href}>
+                  <li key={encodeURI(docPage.href)}>
                     <Link
-                      href={docPage.href}
+                      href={encodeURI(docPage.href)}
                       aria-current={active ? 'page' : undefined}
                       className={cn(
                         'block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground',

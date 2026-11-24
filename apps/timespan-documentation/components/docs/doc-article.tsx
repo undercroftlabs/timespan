@@ -51,7 +51,7 @@ export function DocArticle({ page }: { page: DocPage }) {
         >
           {previous ? (
             <Link
-              href={previous.href}
+              href={encodeURI(previous.href)}
               className="rounded-lg border px-4 py-3 hover:bg-muted"
             >
               <span className="block text-xs text-muted-foreground">
@@ -64,7 +64,7 @@ export function DocArticle({ page }: { page: DocPage }) {
           )}
           {next ? (
             <Link
-              href={next.href}
+              href={encodeURI(next.href)}
               className="rounded-lg border px-4 py-3 text-right hover:bg-muted sm:col-start-2"
             >
               <span className="block text-xs text-muted-foreground">Next</span>
