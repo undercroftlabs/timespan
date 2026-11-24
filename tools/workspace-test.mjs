@@ -105,6 +105,32 @@ function runUnitTests(target, ci, coverage) {
 }
 
 /**
+ * React tests import the published `@undercroft/timespan` entry, which is `dist`.
+ * Build that package before those tests so a clean checkout can resolve it.
+ * @param {string} name - Short package name about to be tested.
+ * @param {string} script - Package script name.
+ * @returns {number} Exit status. `0` when no build is required.
+ */
+function buildTimespanBeforeReactTests(name, script) {
+  if (name !== 'rtspan' || !script.startsWith('test')) {
+    return 0;
+  }
+  if (script.startsWith('test:dist')) {
+    return 0;
+  }
+
+  const built = runPnpm(['--filter', packages.timespan, 'run', 'build'], {
+    cwd: repoRoot,
+    stdio: 'inherit',
+  });
+  if (built.error) {
+    process.stderr.write(`${built.error.message}\n`);
+    return 1;
+  }
+  return built.status ?? 1;
+}
+
+/**
  * @param {string} target - `timespan`, `rtspan`, or `all`.
  * @param {string} script - Package script name.
  * @returns {number} Exit status. Packages that do not define the script are skipped.
@@ -121,6 +147,11 @@ function runPackageScript(target, script) {
     const command = manifest.scripts?.[script];
     if (typeof command !== 'string') {
       continue;
+    }
+
+    const prepared = buildTimespanBeforeReactTests(name, script);
+    if (prepared !== 0) {
+      return prepared;
     }
 
     const result = runPnpm(['--filter', packages[name], 'run', script], {
