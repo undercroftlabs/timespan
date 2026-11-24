@@ -1,3 +1,6 @@
+// Optimized consumer budget. Size Limit minifies each published build, then
+// measures Brotli. These limits are not the raw, gzip, or Brotli size of the
+// files shipped on npm.
 module.exports = [
   {
     path: 'dist/index.js',

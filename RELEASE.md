@@ -78,7 +78,7 @@ pnpm build
 pnpm verify:package
 ```
 
-`verify:package` packs `packages/timespan` as it exists and checks that tarball with [publish-gauge](https://mrlouiswright.github.io/publish-gauge/) (`--fail-on low`). Every finding fails the command, including a missing README or LICENSE and low-severity source-map warnings. Reports are written to `packages/timespan/reports/`, which is gitignored.
+`verify:package` packs the package that owns the script and checks that tarball with [publish-gauge](https://mrlouiswright.github.io/publish-gauge/) (`--fail-on low`). Every finding fails the command, including a missing README or LICENSE and low-severity source-map warnings. Reports are written to that package's `reports/` directory, which is gitignored.
 
 publish-gauge is the public npm package `publish-gauge`. Installing it does not need a GitHub Packages token. The project site also mentions `@mrlouiswright/publish-gauge` on GitHub Packages; that scoped name is not the package this repository installs.
 

@@ -74,7 +74,7 @@ jobs:
           node-version: 26
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run test:dist
+      - run: pnpm test --dist
 
   browser-tests:
     needs: validate-tag

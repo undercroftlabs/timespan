@@ -8,7 +8,7 @@ import { getConverter } from './unit-conversion-map';
  * Calculate the TimeFrame representation of the timespan.
  * @param startDate - The start date of the timespan.
  * @param endDate - The end date of the timespan.
- * @returns The TimeFrame object representing the timespan.
+ * @returns The remainder breakdown. `years` is completed UTC years. Every other field is what remains after the larger units.
  * @throws {Error} `Invalid date: expected a valid Date.`
  * @throws {Error} `Invalid date range: expected the start date to be less than or equal to the end date.`
  */

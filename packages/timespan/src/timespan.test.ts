@@ -1,6 +1,8 @@
 // noinspection DuplicatedCode
 
-import { Timespan } from '../src';
+import { Timespan, type TimespanCreationResult } from '../src';
+import { expectTypeOf } from 'vitest';
+import * as validDateAssertions from './assertions/assert-valid-date';
 import { TimeFrame } from './types/timeframe';
 import { formatTimespan } from './utils/format-timespan';
 
@@ -71,6 +73,165 @@ describe('Timespan', () => {
     });
   });
 
+  describe('tryCreate', () => {
+    const invalidDateMessage = 'Invalid date: expected a valid Date.';
+    const reversedRangeMessage =
+      'Invalid date range: expected the start date to be less than or equal to the end date.';
+
+    /**
+     * Read the Error thrown by the constructor for the same endpoints.
+     * @param startDate - Proposed start.
+     * @param endDate - Proposed end.
+     * @returns The Error thrown by `new Timespan`.
+     */
+    function constructorError(startDate: Date, endDate: Date): Error {
+      try {
+        new Timespan(startDate, endDate);
+      } catch (error) {
+        if (error instanceof Error) {
+          return error;
+        }
+      }
+      throw new Error('Expected the constructor to throw an Error.');
+    }
+
+    /**
+     * Read a failed tryCreate result.
+     * @param startDate - Proposed start.
+     * @param endDate - Proposed end.
+     * @returns The failure branch.
+     */
+    function failedCreate(
+      startDate: Date,
+      endDate: Date,
+    ): Extract<TimespanCreationResult, { success: false }> {
+      const result = Timespan.tryCreate(startDate, endDate);
+      expect(result.success).toBe(false);
+      if (result.success) {
+        throw new Error('Expected tryCreate to fail.');
+      }
+      expect('value' in result).toBe(false);
+      expect(result).not.toBeInstanceOf(Timespan);
+      return result;
+    }
+
+    it('should return a Timespan for a valid range', () => {
+      const startTime = start.getTime();
+      const endTime = end.getTime();
+      const result = Timespan.tryCreate(start, end);
+
+      expect(result).toEqual({
+        success: true,
+        value: expect.any(Timespan),
+      });
+      if (!result.success) {
+        return;
+      }
+      expect(result.value.start.getTime()).toBe(startTime);
+      expect(result.value.end.getTime()).toBe(endTime);
+      expect(result.value.start).not.toBe(start);
+      expect(result.value.end).not.toBe(end);
+      expect(start.getTime()).toBe(startTime);
+      expect(end.getTime()).toBe(endTime);
+    });
+
+    it('should accept equal endpoints as a zero-duration interval', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const endDate = new Date(startDate.getTime());
+      const result = Timespan.tryCreate(startDate, endDate);
+
+      expect(result.success).toBe(true);
+      if (!result.success) {
+        return;
+      }
+      expect(result.value.toMilliseconds()).toBe(0);
+      expect(result.value.toString()).toBe('');
+      expect(startDate.getTime()).toBe(endDate.getTime());
+    });
+
+    it('should return the constructor error for a reversed range', () => {
+      const startDate = new Date('2023-06-01T00:00:00.000Z');
+      const endDate = new Date('2023-05-31T00:00:00.000Z');
+      const thrown = constructorError(startDate, endDate);
+      const result = failedCreate(startDate, endDate);
+
+      expect(result).toEqual({ success: false, error: expect.any(Error) });
+      expect(result.error).toBeInstanceOf(thrown.constructor);
+      expect(result.error.message).toBe(thrown.message);
+      expect(result.error.message).toBe(reversedRangeMessage);
+      expect(startDate.toISOString()).toBe('2023-06-01T00:00:00.000Z');
+      expect(endDate.toISOString()).toBe('2023-05-31T00:00:00.000Z');
+    });
+
+    it('should return the constructor error for an invalid start date', () => {
+      const startDate = new Date('not a date');
+      const endDate = new Date('2023-06-15T12:00:00.000Z');
+      const thrown = constructorError(startDate, endDate);
+      const result = failedCreate(startDate, endDate);
+
+      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error.message).toBe(thrown.message);
+      expect(result.error.message).toBe(invalidDateMessage);
+      expect(Number.isNaN(startDate.getTime())).toBe(true);
+      expect(endDate.toISOString()).toBe('2023-06-15T12:00:00.000Z');
+    });
+
+    it('should return the constructor error for an invalid end date', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const endDate = new Date(Number.NaN);
+      const thrown = constructorError(startDate, endDate);
+      const result = failedCreate(startDate, endDate);
+
+      expect(result.error.message).toBe(thrown.message);
+      expect(result.error.message).toBe(invalidDateMessage);
+      expect(startDate.toISOString()).toBe('2023-06-15T12:00:00.000Z');
+      expect(Number.isNaN(endDate.getTime())).toBe(true);
+    });
+
+    it('should report the invalid start when both dates are invalid', () => {
+      const startDate = new Date(Number.NaN);
+      const endDate = new Date('not a date');
+      const thrown = constructorError(startDate, endDate);
+      const result = failedCreate(startDate, endDate);
+
+      expect(result.error.message).toBe(thrown.message);
+      expect(result.error.message).toBe(invalidDateMessage);
+    });
+
+    it('should narrow a success to the Timespan and a failure to the Error', () => {
+      const created: TimespanCreationResult = Timespan.tryCreate(start, end);
+      if (created.success) {
+        expectTypeOf(created.value).toEqualTypeOf<Timespan>();
+        expect(created.value).toBeInstanceOf(Timespan);
+      } else {
+        expectTypeOf(created.error).toEqualTypeOf<Error>();
+      }
+
+      const rejected: TimespanCreationResult = Timespan.tryCreate(end, start);
+      if (rejected.success) {
+        expect(rejected.value).toBeInstanceOf(Timespan);
+      } else {
+        expectTypeOf(rejected.error).toEqualTypeOf<Error>();
+        expect(rejected.error).toBeInstanceOf(Error);
+        expect(rejected.error.message).toBe(reversedRangeMessage);
+      }
+    });
+
+    it('should throw an unexpected non-Error from the endpoint checks', () => {
+      const spy = vi
+        .spyOn(validDateAssertions, 'assertValidDate')
+        .mockImplementation(() => {
+          throw 'not an Error';
+        });
+
+      try {
+        expect(() => Timespan.tryCreate(start, end)).toThrow('not an Error');
+      } finally {
+        spy.mockRestore();
+      }
+    });
+  });
+
   describe('start', () => {
     it('should return the start date', () => {
       const timespan = new Timespan(start, end);
@@ -133,7 +294,9 @@ describe('Timespan', () => {
     it('should throw an error for negative day input', () => {
       const startDate = new Date('2023-05-01');
       expect(() => Timespan.fromUnits(-5, 'year', startDate)).toThrow(
-        'Invalid unit input -5.',
+        new Error(
+          'Invalid number of years: expected zero or a positive number.',
+        ),
       );
     });
 
@@ -172,30 +335,53 @@ describe('Timespan', () => {
 
     it('should throw an error for a negative amount in every factory', () => {
       const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const message = (unit: string) =>
+        `Invalid number of ${unit}: expected zero or a positive number.`;
       expect(() => Timespan.fromMilliseconds(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('milliseconds')),
       );
       expect(() => Timespan.fromSeconds(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('seconds')),
       );
       expect(() => Timespan.fromMinutes(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('minutes')),
       );
       expect(() => Timespan.fromHours(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('hours')),
       );
       expect(() => Timespan.fromDays(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('days')),
       );
       expect(() => Timespan.fromWeeks(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('weeks')),
       );
       expect(() => Timespan.fromMonths(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('months')),
       );
       expect(() => Timespan.fromYears(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('years')),
       );
+    });
+
+    it('accepts negative zero and names the canonical unit for a rejected amount', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(Timespan.fromHours(-0, startDate).toMilliseconds()).toBe(0);
+
+      const rejected = () => Timespan.fromUnits(Number.NaN, 'hr', startDate);
+      expect(rejected).toThrow(Error);
+      expect(rejected).not.toThrow(TypeError);
+      expect(rejected).toThrow(
+        'Invalid number of hours: expected zero or a positive number.',
+      );
+      expect(() =>
+        Timespan.fromUnits(Number.POSITIVE_INFINITY, 'hours', startDate),
+      ).toThrow('Invalid number of hours: expected zero or a positive number.');
+      expect(() =>
+        Timespan.fromUnits('1' as unknown as number, 'hours', startDate),
+      ).toThrow('Invalid number of hours: expected zero or a positive number.');
+      expect(() =>
+        Timespan.fromUnits(null as unknown as number, 'hours', startDate),
+      ).toThrow('Invalid number of hours: expected zero or a positive number.');
     });
 
     it('should throw an error for an invalid unit passed to fromUnits or toUnit', () => {
@@ -1166,6 +1352,42 @@ describe('Timespan', () => {
       expect(timespan1.equals(timespan2, 'range')).toBe(false);
       expect(timespan1.equals(timespan1, 'range')).toBe(true);
       expect(Timespan.equals(timespan1, timespan2, 'range')).toBe(false);
+    });
+
+    it('should compare duration when compareBy is duration', () => {
+      const timespan1 = Timespan.fromDays(
+        2,
+        new Date('2023-01-01T00:00:00.000Z'),
+      );
+      const timespan2 = Timespan.fromDays(
+        2,
+        new Date('2024-05-05T00:00:00.000Z'),
+      );
+      expect(timespan1.equals(timespan2, 'duration')).toBe(true);
+      expect(Timespan.equals(timespan1, timespan2, 'duration')).toBe(true);
+      expect(timespan1.equals(timespan2, undefined)).toBe(true);
+      expect(Timespan.equals(timespan1, timespan2, undefined)).toBe(true);
+    });
+
+    it('should reject an unsupported comparison mode', () => {
+      const timespan1 = new Timespan(start, end);
+      const timespan2 = new Timespan(start, end);
+      const message =
+        "Invalid comparison mode: expected 'range' or 'duration'.";
+      const unsupported = ['length', 'Range', '', null, 1] as const;
+
+      for (const compareBy of unsupported) {
+        expect(() =>
+          timespan1.equals(timespan2, compareBy as unknown as 'duration'),
+        ).toThrow(message);
+        expect(() =>
+          Timespan.equals(
+            timespan1,
+            timespan2,
+            compareBy as unknown as 'duration',
+          ),
+        ).toThrow(message);
+      }
     });
   });
 

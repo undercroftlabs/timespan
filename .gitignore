@@ -117,8 +117,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Documentation
-docs/
+# Generated documentation at the repository root.
+# Do not ignore apps/timespan-documentation/app/docs.
+/docs/
 
 .idea/
 

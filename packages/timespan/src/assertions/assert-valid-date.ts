@@ -1,4 +1,9 @@
 /**
+ * Message thrown for a non-Date or an Invalid Date.
+ */
+export const invalidDateMessage = 'Invalid date: expected a valid Date.';
+
+/**
  * Asserts that `value` is a `Date` whose time value is finite.
  * `Invalid Date` is rejected, as is any non-`Date`.
  * @param value - Value to check. `null`, `undefined`, date strings, timestamps,
@@ -9,6 +14,6 @@
  */
 export function assertValidDate(value: unknown): asserts value is Date {
   if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
-    throw new Error('Invalid date: expected a valid Date.');
+    throw new Error(invalidDateMessage);
   }
 }
