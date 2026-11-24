@@ -27,7 +27,7 @@ export default function BlogPage() {
                 <article key={post.slug} className="py-8">
                   <h3 className="text-2xl font-semibold tracking-tight">
                     <Link
-                      href={`/blog/${post.slug}`}
+                      href={encodeURI(`/blog/${post.slug}`)}
                       className="hover:underline"
                     >
                       {post.title}

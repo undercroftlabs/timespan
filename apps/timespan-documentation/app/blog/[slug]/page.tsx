@@ -11,6 +11,7 @@ import {
   getBlogPosts,
   type BlogPost,
 } from '@/lib/blog';
+import { jsonLdScript } from '@/lib/safe-url';
 
 type BlogPostPageProps = {
   params: Promise<{ slug: string }>;
@@ -124,7 +125,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(blogPostingJsonLd(post)),
+          __html: jsonLdScript(blogPostingJsonLd(post)),
         }}
       />
       <article className="min-w-0 max-w-3xl flex-1">

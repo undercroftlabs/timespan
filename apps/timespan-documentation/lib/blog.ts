@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
 import { renderMarkdown, type MarkdownSection } from '@/lib/markdown';
+import { safeBlogHref, safeBlogSlug } from '@/lib/safe-url';
 
 export type BlogSection = MarkdownSection;
 
@@ -94,7 +95,7 @@ function markdownFiles(directory: string): string[] {
 
 function readPost(file: string): BlogPost {
   const filename = path.relative(blogDirectory, file);
-  const slug = path.basename(file, '.md');
+  const slug = safeBlogSlug(path.basename(file, '.md'), filename);
   const raw = fs.readFileSync(file, 'utf8');
   const { data, content } = matter(raw);
   const { html, sections } = renderMarkdown(content);
@@ -113,7 +114,10 @@ function readPost(file: string): BlogPost {
     authorUrl: optionalString(data.authorUrl),
     keywords,
     tags: tags.length > 0 ? tags : keywords,
-    canonical: optionalString(data.canonical) ?? `/blog/${slug}`,
+    canonical: safeBlogHref(
+      optionalString(data.canonical) ?? `/blog/${slug}`,
+      filename,
+    ),
     image: optionalString(data.image),
     imageAlt: optionalString(data.imageAlt),
     robots: optionalString(data.robots),
@@ -130,8 +134,8 @@ export function getBlogPosts(): BlogPost[] {
   const seen = new Map<string, string>();
 
   for (const file of files) {
-    const slug = path.basename(file, '.md');
     const filename = path.relative(blogDirectory, file);
+    const slug = safeBlogSlug(path.basename(file, '.md'), filename);
     const previous = seen.get(slug);
 
     if (previous) {
