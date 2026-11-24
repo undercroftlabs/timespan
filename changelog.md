@@ -18,6 +18,10 @@ Published ESM, CommonJS, and UMD files are readable JavaScript. Entry points, `w
 - The jsDelivr URL `dist/index.umd.min.js` is documented as a generated response for after publication. It is not a file in the npm package. unpkg serves the published file. esm.sh builds its own module; `?dev` is its development build and `?raw` is the original package bytes. esm.run is jsDelivr's ESM address, not esm.sh.
 - The bundle size badge is the optimized ESM consumer bundle, 3.77 kB Brotli. The install size badge is the unpacked package, 530.3 kB (542,992 bytes). Neither badge follows the `latest` tag.
 
+### Fixed
+
+- `equals` rejects a `compareBy` value other than `'range'` or `'duration'` with `Invalid comparison mode: expected 'range' or 'duration'.` Omitting the argument, or passing `undefined`, still compares duration. `'range'` and `'duration'` are unchanged, and `Timespan.equals` still calls the instance method. A caller that passed another runtime value previously received a duration comparison.
+
 ---
 
 ## [1.3.0] – 2026-11-15

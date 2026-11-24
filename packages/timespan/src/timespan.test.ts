@@ -1328,6 +1328,42 @@ describe('Timespan', () => {
       expect(timespan1.equals(timespan1, 'range')).toBe(true);
       expect(Timespan.equals(timespan1, timespan2, 'range')).toBe(false);
     });
+
+    it('should compare duration when compareBy is duration', () => {
+      const timespan1 = Timespan.fromDays(
+        2,
+        new Date('2023-01-01T00:00:00.000Z'),
+      );
+      const timespan2 = Timespan.fromDays(
+        2,
+        new Date('2024-05-05T00:00:00.000Z'),
+      );
+      expect(timespan1.equals(timespan2, 'duration')).toBe(true);
+      expect(Timespan.equals(timespan1, timespan2, 'duration')).toBe(true);
+      expect(timespan1.equals(timespan2, undefined)).toBe(true);
+      expect(Timespan.equals(timespan1, timespan2, undefined)).toBe(true);
+    });
+
+    it('should reject an unsupported comparison mode', () => {
+      const timespan1 = new Timespan(start, end);
+      const timespan2 = new Timespan(start, end);
+      const message =
+        "Invalid comparison mode: expected 'range' or 'duration'.";
+      const unsupported = ['length', 'Range', '', null, 1] as const;
+
+      for (const compareBy of unsupported) {
+        expect(() =>
+          timespan1.equals(timespan2, compareBy as unknown as 'duration'),
+        ).toThrow(message);
+        expect(() =>
+          Timespan.equals(
+            timespan1,
+            timespan2,
+            compareBy as unknown as 'duration',
+          ),
+        ).toThrow(message);
+      }
+    });
   });
 
   describe('compareTo', () => {

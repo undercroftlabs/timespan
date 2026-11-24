@@ -266,7 +266,7 @@ Timespan.format('%s.%f seconds', timespan); // '6.123 seconds'
 
 ## Comparing durations
 
-`compareTo` orders spans by duration and returns `-1`, `0`, or `1`. `equals` compares duration unless you pass `'range'`, which also requires the same start and end. Two operations can take the same time on different days. Static `Timespan.equals` and `Timespan.compareTo` call the same logic.
+`compareTo` orders spans by duration and returns `-1`, `0`, or `1`. `equals` compares duration unless you pass `'range'`, which also requires the same start and end. Any other comparison mode throws `Invalid comparison mode: expected 'range' or 'duration'.` Two operations can take the same time on different days. Static `Timespan.equals` and `Timespan.compareTo` call the same logic.
 
 ```javascript
 import { Timespan } from '@undercroft/timespan';

@@ -17,6 +17,22 @@ import { isTimespanJson } from './type-guards/is-timespan-json';
 import { CanonicalUnit } from './types/canonical-unit';
 import type { TimespanCreationResult } from './types/timespan-creation-result';
 
+const invalidComparisonModeMessage =
+  "Invalid comparison mode: expected 'range' or 'duration'.";
+
+/**
+ * Rejects a comparison mode other than the two `equals` supports.
+ * @param compareBy - Value passed as `compareBy`.
+ * @throws {Error} `Invalid comparison mode: expected 'range' or 'duration'.`
+ */
+function assertComparisonMode(
+  compareBy: unknown,
+): asserts compareBy is 'range' | 'duration' {
+  if (compareBy !== 'range' && compareBy !== 'duration') {
+    throw new Error(invalidComparisonModeMessage);
+  }
+}
+
 /**
  * Represents a time span between two dates.
  */
@@ -329,8 +345,10 @@ export class Timespan {
    * Check if two timespans are equal.
    * @param ts1 - The first Timespan to compare.
    * @param ts2 - The second Timespan to compare.
-   * @param compareBy - The method of comparison: 'range' for start and end dates, 'duration' for total duration.
+   * @param compareBy - `'duration'` compares total milliseconds. `'range'`
+   * compares both endpoints. The default is `'duration'`.
    * @returns True if the two timespans are equal, false otherwise.
+   * @throws {Error} `Invalid comparison mode: expected 'range' or 'duration'.`
    */
   public static equals(
     ts1: Timespan,
@@ -625,13 +643,16 @@ export class Timespan {
   /**
    * Check if two timespans are equal.
    * @param other - The other Timespan to compare with.
-   * @param compareBy - The method of comparison: 'range' for start and end dates, 'duration' for total duration.
+   * @param compareBy - `'duration'` compares total milliseconds. `'range'`
+   * compares both endpoints. The default is `'duration'`.
    * @returns True if the two timespans are equal, false otherwise.
+   * @throws {Error} `Invalid comparison mode: expected 'range' or 'duration'.`
    */
   public equals(
     other: Timespan,
     compareBy: 'range' | 'duration' = 'duration',
   ): boolean {
+    assertComparisonMode(compareBy);
     if (compareBy === 'range') {
       return (
         this.start.getTime() === other.start.getTime() &&
