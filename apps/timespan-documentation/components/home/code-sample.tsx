@@ -49,10 +49,18 @@ span.toHours();`,
     label: 'React',
     filename: 'shift.tsx',
     lang: 'typescript',
-    code: `import { useTimespan } from '@undercroft/react-timespan';
+    code: `import { Timespan } from '@undercroft/timespan';
+import { useTimespan } from '@undercroft/react-timespan';
 
 export function Shift() {
-  useTimespan();
+  const { timespan } = useTimespan(
+    new Timespan(
+      new Date('2024-03-01T00:00:00.000Z'),
+      new Date('2024-03-15T00:00:00.000Z'),
+    ),
+  );
+
+  return timespan.toString();
 }`,
   },
 ] as const;

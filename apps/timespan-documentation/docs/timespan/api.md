@@ -7,13 +7,19 @@ order: 11
 ---
 
 ```typescript
-import { Timespan, type TimespanJson } from '@undercroft/timespan';
+import {
+  Timespan,
+  type TimeFrame,
+  type TimeUnit,
+  type TimespanCreationResult,
+  type TimespanJson,
+} from '@undercroft/timespan';
 import Timespan from '@undercroft/timespan';
 ```
 
-`Timespan` is the class. `TimespanJson` is the serialized object. Both the named class and the default export are that class. Version 1.4.0.
+`Timespan` is the class. Both the named class and the default export are that class. Version 1.4.0.
 
-`TimeUnit` and `TimeFrame` appear in the declarations below and are not separate exports. `TimeUnit` is the alias union on [Parsing durations](/docs/timespan/parsing#units). `TimeFrame` is the remainder object on [Converting units](/docs/timespan/units#calendar-breakdown).
+`TimespanJson` is the serialized object. `TimespanCreationResult` is the result of `Timespan.tryCreate`. `TimeUnit` is the alias union on [Parsing durations](/docs/timespan/parsing#units). `TimeFrame` is the remainder object on [Converting units](/docs/timespan/units#calendar-breakdown). All four types are exported.
 
 Methods read or return new values. They do not move the stored endpoints.
 
@@ -64,8 +70,11 @@ Omitted start dates use the current time. Negative factory amounts throw `Invali
 | `fromMonths`       | `(months: number, startDate?: Date): Timespan`                 |
 | `fromYears`        | `(years: number, startDate?: Date): Timespan`                  |
 | `fromObject`       | `(input: Partial<TimeFrame>, startDate?: Date): Timespan`      |
+| `tryCreate`        | `(start: Date, end: Date): TimespanCreationResult`             |
 
 `fromObject` reads the plural fields `years`, `months`, `weeks`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds`. Other keys are ignored.
+
+`tryCreate` runs the constructor's date checks and returns the result. `success: true` carries the timespan on `value`. `success: false` carries the validation `Error` on `error`. Those two failures do not throw.
 
 ```typescript
 const start = new Date('2024-01-15T09:00:00.000Z');

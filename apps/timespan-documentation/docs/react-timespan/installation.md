@@ -18,9 +18,18 @@ npm install @undercroft/react-timespan @undercroft/timespan react
 The Timespan peer is an exact version. `engines` declares Node.js `^22.0.0 || ^24.0.0 || ^26.0.0`.
 
 ```typescript
-import { useTimespan } from '@undercroft/react-timespan';
+import { Timespan } from '@undercroft/timespan';
+import {
+  useTimespan,
+  type UseTimespanResult,
+} from '@undercroft/react-timespan';
 
-useTimespan(); // undefined
+const { timespan }: UseTimespanResult = useTimespan(
+  new Timespan(
+    new Date('2024-03-01T00:00:00.000Z'),
+    new Date('2024-03-15T00:00:00.000Z'),
+  ),
+);
 ```
 
 `import` loads `dist/index.mjs`. `require` loads `dist/index.js`.

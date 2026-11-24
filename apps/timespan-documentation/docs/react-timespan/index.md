@@ -6,15 +6,23 @@ group: Get Started
 order: 20
 ---
 
-`@undercroft/react-timespan` 1.4.0 exports one function, `useTimespan`. The hook takes no arguments and returns `undefined`. It does not store an interval, format a value, or subscribe to anything.
-
-Interval calculations stay in [`@undercroft/timespan`](/docs/timespan), which this package lists as a peer dependency at version 1.4.0.
+`@undercroft/react-timespan` 1.4.0 exports `useTimespan` and the `UseTimespanResult` type. The hook stores one `Timespan` in React state. It does not format that value and it does not follow the clock. Formatting and interval math stay on [`Timespan`](/docs/timespan/api).
 
 ```typescript
+import { Timespan } from '@undercroft/timespan';
 import { useTimespan } from '@undercroft/react-timespan';
 
-useTimespan(); // undefined
+const { timespan } = useTimespan(
+  new Timespan(
+    new Date('2024-03-01T00:00:00.000Z'),
+    new Date('2024-03-15T00:00:00.000Z'),
+  ),
+);
+
+timespan.toString(); // '2w'
 ```
+
+The package lists `@undercroft/timespan` 1.4.0 as a peer dependency.
 
 ## Related
 

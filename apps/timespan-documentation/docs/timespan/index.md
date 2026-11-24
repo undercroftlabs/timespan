@@ -20,7 +20,7 @@ timespan.toString(); // '3d 5h 30m'
 timespan.toMinutes(); // 4650
 ```
 
-`Timespan` is the named export and the default export. `TimespanJson` is the only other export.
+`Timespan` is the named export and the default export. The type exports are `TimespanJson`, `TimespanCreationResult`, `TimeFrame`, and `TimeUnit`.
 
 ## Where to go next
 

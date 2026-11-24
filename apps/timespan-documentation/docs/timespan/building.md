@@ -20,7 +20,7 @@ static fromYears(years: number, startDate?: Date): Timespan
 static fromUnits(amount: number, unit: TimeUnit, startDate?: Date): Timespan
 ```
 
-`TimeUnit` is every alias in the [parsing table](/docs/timespan/parsing#units). It is part of the method signature and is not a separate package export. `fromUnits` is the method the other factories call.
+`TimeUnit` is every alias in the [parsing table](/docs/timespan/parsing#units). It is exported from `@undercroft/timespan`. `fromUnits` is the method the other factories call.
 
 ```typescript
 import { Timespan } from '@undercroft/timespan';

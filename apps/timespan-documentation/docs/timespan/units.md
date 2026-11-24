@@ -22,7 +22,7 @@ toTimeframe(): TimeFrame
 toString(): string
 ```
 
-`TimeUnit` is an alias from the [parsing table](/docs/timespan/parsing#units). `TimeFrame` is the object below. Neither name is a separate export.
+`TimeUnit` and `TimeFrame` are exported from `@undercroft/timespan`. `TimeUnit` is an alias from the [parsing table](/docs/timespan/parsing#units). `TimeFrame` is the object below. `years` matches `toYears()`. `months` is the months left after those years, and each smaller field is what remains after the field above it.
 
 ## Totals
 

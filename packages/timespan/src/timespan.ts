@@ -529,8 +529,11 @@ export class Timespan {
   }
 
   /**
-   * Convert the timespan to a TimeFrame object.
-   * @returns The TimeFrame object representing the timespan.
+   * Copy the remainder breakdown.
+   * `years` matches `toYears()`. Every other field is what remains after the
+   * larger units. `months` is the months left after those years, and `days`
+   * is the days left after the weeks.
+   * @returns A new {@link TimeFrame}. Changing the copy leaves this timespan unchanged.
    */
   public toTimeframe(): TimeFrame {
     return { ...this.timeFrame };
