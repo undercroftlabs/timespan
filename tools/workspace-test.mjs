@@ -8,11 +8,13 @@ const repoRoot = path.resolve(import.meta.dirname, '..');
 const packages = {
   timespan: '@undercroft/timespan',
   rtspan: '@undercroft/react-timespan',
+  docs: 'timespan-documentation',
 };
 
 const directories = {
   timespan: path.join(repoRoot, 'packages/timespan'),
   rtspan: path.join(repoRoot, 'packages/react-timespan'),
+  docs: path.join(repoRoot, 'apps/timespan-documentation'),
 };
 
 const flags = new Set([
@@ -273,6 +275,6 @@ function runBrowserInDocker(target) {
  */
 function printHelp() {
   process.stderr.write(
-    'pnpm test [timespan|rtspan|all] [--ci] [--coverage] [--dist] [--browser] [--docker]\n',
+    'pnpm test [timespan|rtspan|docs|all] [--ci] [--coverage] [--dist] [--browser] [--docker]\n',
   );
 }
