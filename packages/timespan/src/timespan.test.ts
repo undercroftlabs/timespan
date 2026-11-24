@@ -294,7 +294,9 @@ describe('Timespan', () => {
     it('should throw an error for negative day input', () => {
       const startDate = new Date('2023-05-01');
       expect(() => Timespan.fromUnits(-5, 'year', startDate)).toThrow(
-        'Invalid unit input -5.',
+        new Error(
+          'Invalid number of years: expected zero or a positive number.',
+        ),
       );
     });
 
@@ -333,30 +335,53 @@ describe('Timespan', () => {
 
     it('should throw an error for a negative amount in every factory', () => {
       const startDate = new Date('2023-06-15T12:00:00.000Z');
+      const message = (unit: string) =>
+        `Invalid number of ${unit}: expected zero or a positive number.`;
       expect(() => Timespan.fromMilliseconds(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('milliseconds')),
       );
       expect(() => Timespan.fromSeconds(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('seconds')),
       );
       expect(() => Timespan.fromMinutes(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('minutes')),
       );
       expect(() => Timespan.fromHours(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('hours')),
       );
       expect(() => Timespan.fromDays(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('days')),
       );
       expect(() => Timespan.fromWeeks(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('weeks')),
       );
       expect(() => Timespan.fromMonths(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('months')),
       );
       expect(() => Timespan.fromYears(-1, startDate)).toThrow(
-        'Invalid unit input -1.',
+        new Error(message('years')),
       );
+    });
+
+    it('accepts negative zero and names the canonical unit for a rejected amount', () => {
+      const startDate = new Date('2023-06-15T12:00:00.000Z');
+      expect(Timespan.fromHours(-0, startDate).toMilliseconds()).toBe(0);
+
+      const rejected = () => Timespan.fromUnits(Number.NaN, 'hr', startDate);
+      expect(rejected).toThrow(Error);
+      expect(rejected).not.toThrow(TypeError);
+      expect(rejected).toThrow(
+        'Invalid number of hours: expected zero or a positive number.',
+      );
+      expect(() =>
+        Timespan.fromUnits(Number.POSITIVE_INFINITY, 'hours', startDate),
+      ).toThrow('Invalid number of hours: expected zero or a positive number.');
+      expect(() =>
+        Timespan.fromUnits('1' as unknown as number, 'hours', startDate),
+      ).toThrow('Invalid number of hours: expected zero or a positive number.');
+      expect(() =>
+        Timespan.fromUnits(null as unknown as number, 'hours', startDate),
+      ).toThrow('Invalid number of hours: expected zero or a positive number.');
     });
 
     it('should throw an error for an invalid unit passed to fromUnits or toUnit', () => {

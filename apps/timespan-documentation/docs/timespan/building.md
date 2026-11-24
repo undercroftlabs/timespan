@@ -6,7 +6,7 @@ group: Guides
 order: 5
 ---
 
-Each factory adds a finite amount of one unit to a start date. The start defaults to the current time. A negative amount throws `Invalid unit input <amount>.` `NaN` and `Infinity` throw `Invalid number of <unit>: expected zero or a positive number.` A result outside `-8.64e15` through `8.64e15` milliseconds throws `Invalid number of <unit>: expected a result within the representable date range.`
+Each factory adds a finite amount of one unit to a start date. The start defaults to the current time. A negative amount, `NaN`, `Infinity`, or a non-number throws `Invalid number of <unit>: expected zero or a positive number.` The unit in that message is the canonical plural, so `hr` reports `hours`. Zero, negative zero, and fractions are accepted. A result outside `-8.64e15` through `8.64e15` milliseconds throws `Invalid number of <unit>: expected a result within the representable date range.`
 
 ```typescript
 static fromMilliseconds(millis: number, startDate?: Date): Timespan
@@ -88,7 +88,7 @@ Timespan.fromObject(
 
 January 31 plus one month is February 28, and the extra day then lands on March 1.
 
-A negative or non-finite field throws `Invalid number of <field>: expected zero or a positive number.` That message differs from the factory message for a negative amount. `null`, an array, or any other non-object throws `TypeError: Invalid timeframe: expected an object.` The supplied object and start date are not modified.
+A negative, non-finite, or non-number field throws `Invalid number of <field>: expected zero or a positive number.`, the same message the unit factories use. `null`, an array, or any other non-object throws `TypeError: Invalid timeframe: expected an object.` The supplied object and start date are not modified.
 
 ## Related
 
