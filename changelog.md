@@ -9,14 +9,14 @@ Published ESM, CommonJS, and UMD files are readable JavaScript. Entry points, `w
 ### Changed
 
 - The files on npm are the readable build. `import` loads `dist/index.mjs`, `require` loads `dist/index.js`, and browsers load `dist/index.umd.js` with the global `window.Timespan`. Declarations stay at `dist/index.d.mts` and `dist/index.d.ts`. Source maps stay beside the JavaScript files. The tarball has no separate `*.min.js` file.
-- A direct download of those files is the larger readable build. An application bundler can still minify its own copy. The Size Limit budget remains 4 kB Brotli for that optimized output. The measured optimized sizes are 3.85 kB CommonJS, 3.77 kB ESM, and 3.87 kB UMD.
-- Published file sizes for this build: ESM 61,575 bytes (12,392 gzip, 10,620 Brotli), CommonJS 61,699 bytes (12,459 gzip, 10,675 Brotli), and UMD 63,621 bytes (12,529 gzip, 10,790 Brotli). The packed tarball is 104,357 bytes. The unpacked package is 542,992 bytes.
+- A direct download of those files is the larger readable build. An application bundler can still minify its own copy. The Size Limit budget remains 4 kB Brotli for that optimized output. The measured optimized sizes are 3.91 kB CommonJS, 3.83 kB ESM, and 3.94 kB UMD.
+- Published file sizes for this build: ESM 63,766 bytes (13,066 gzip, 11,185 Brotli), CommonJS 63,890 bytes (13,130 gzip, 11,232 Brotli), and UMD 65,871 bytes (13,212 gzip, 11,343 Brotli). The packed tarball is 110,520 bytes. The unpacked package is 567,929 bytes.
 
 ### Documentation
 
 - The README describes the readable builds, declarations, and source maps. It separates the optimized consumer bundle, the published file size, and the package size.
 - The jsDelivr URL `dist/index.umd.min.js` is documented as a generated response for after publication. It is not a file in the npm package. unpkg serves the published file. esm.sh builds its own module; `?dev` is its development build and `?raw` is the original package bytes. esm.run is jsDelivr's ESM address, not esm.sh.
-- The bundle size badge is the optimized ESM consumer bundle, 3.77 kB Brotli. The install size badge is the unpacked package, 530.3 kB (542,992 bytes). Neither badge follows the `latest` tag.
+- The bundle size badge is the optimized ESM consumer bundle, 3.83 kB Brotli. The install size badge is the unpacked package, 554.6 kB (567,929 bytes). Neither badge follows the `latest` tag.
 
 ---
 

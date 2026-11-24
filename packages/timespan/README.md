@@ -9,8 +9,8 @@ Works in Typescript too!
 [![Build Status](https://img.shields.io/github/actions/workflow/status/undercroftlabs/timespan/test.yml?branch=main)](https://github.com/undercroftlabs/timespan/actions/workflows/test.yml)
 [![NPM Version](https://img.shields.io/npm/v/@undercroft/timespan)](https://www.npmjs.com/package/@undercroft/timespan)
 [![npm downloads](https://img.shields.io/npm/dm/@undercroft/timespan)](https://www.npmjs.com/package/@undercroft/timespan)
-[![Bundle Size](https://img.shields.io/badge/optimized_bundle-3.77_kB_brotli-brightgreen)](https://github.com/undercroftlabs/timespan/actions/workflows/size-limit.yml)
-[![Install Size](https://img.shields.io/badge/install_size-530.3_kB-brightgreen)](https://github.com/undercroftlabs/timespan/blob/release/1.4.0/packages/timespan/package.json)
+[![Bundle Size](https://img.shields.io/badge/optimized_bundle-3.83_kB_brotli-brightgreen)](https://github.com/undercroftlabs/timespan/actions/workflows/size-limit.yml)
+[![Install Size](https://img.shields.io/badge/install_size-554.6_kB-brightgreen)](https://github.com/undercroftlabs/timespan/blob/release/1.4.0/packages/timespan/package.json)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](https://www.npmjs.com/package/@undercroft/timespan)
 [![codecov](https://codecov.io/gh/undercroftlabs/timespan/graph/badge.svg?token=XLOYLAS2X1)](https://codecov.io/gh/undercroftlabs/timespan)
 [![Known Vulnerabilities](https://snyk.io/test/npm/@undercroft/timespan/badge.svg)](https://snyk.io/test/npm/@undercroft/timespan)
@@ -46,9 +46,9 @@ The package publishes readable ESM, CommonJS, and UMD JavaScript, with declarati
 
 A bundler can minify its own copy. Size Limit does that, then measures Brotli. The budget for that optimized consumer bundle stays under 4 kB. The figures below are from the local 1.4.0 build.
 
-- Optimized consumer bundle: 3.77 kB ESM, 3.85 kB CommonJS, 3.87 kB UMD. The bundle badge is the ESM figure.
-- Published file: ESM `dist/index.mjs` is 61,575 bytes (12,392 gzip, 10,620 Brotli). CommonJS `dist/index.js` is 61,699 bytes (12,459 gzip, 10,675 Brotli). UMD `dist/index.umd.js` is 63,621 bytes (12,529 gzip, 10,790 Brotli). Gzip is Node zlib level 9. Brotli is Node's default quality.
-- Package: 104,357 bytes packed, 542,992 bytes unpacked. The install badge shows that unpacked size as 530.3 kB.
+- Optimized consumer bundle: 3.83 kB ESM, 3.91 kB CommonJS, 3.94 kB UMD. The bundle badge is the ESM figure.
+- Published file: ESM `dist/index.mjs` is 63,766 bytes (13,066 gzip, 11,185 Brotli). CommonJS `dist/index.js` is 63,890 bytes (13,130 gzip, 11,232 Brotli). UMD `dist/index.umd.js` is 65,871 bytes (13,212 gzip, 11,343 Brotli). Gzip is Node zlib level 9. Brotli is Node's default quality.
+- Package: 110,520 bytes packed, 567,929 bytes unpacked. The install badge shows that unpacked size as 554.6 kB.
 
 Works in Node.js, modern browsers, and bundlers.
 
